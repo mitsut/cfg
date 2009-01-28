@@ -84,14 +84,23 @@ namespace toppers
           boost::spirit::error_status<> operator()( Scanner const& scan, Error const& error ) const
         {
           typename Error::iterator_t iter( error.where );
-          while ( *iter != '\0' && *iter != '\n' )
+          std::string str;
+          text_line ln;
+          if ( iter != scan.last )
           {
-            ++iter;
+            while ( *iter != '\0' && *iter != '\n' )
+            {
+              ++iter;
+            }
+            str = '\"' + std::string( error.where, iter ) + '\"';
+            ln = get_text_line( error.where );
           }
-          std::string str( error.where, iter );
-          str = '\"' + str + '\"';
+          else
+          {
+            str = "\"end of file\"";
+            ln = get_text_line( iter - 1 );
+          }
 
-          text_line ln( get_text_line( error.where ) );
           switch ( error.descriptor )
           {
           case open_paren_expected:

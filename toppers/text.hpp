@@ -125,18 +125,36 @@ namespace toppers
       void advance( difference_type n )
       {
         typename container::const_iterator row = row_;
-        size_type col = col_;
-        while ( col + n > row->buf.size() )
+        difference_type col = static_cast< difference_type >( col_ );
+        if ( n >= 0 )
         {
-          n -= row->buf.size() - col;
-          ++row;
-          col = 0;
+          while ( static_cast< size_type>( col + n ) > row->buf.size() )
+          {
+            n -= row->buf.size() - col;
+            ++row;
+            col = 0;
+          }
+          col += n;
+          if ( col == row->buf.size() )
+          {
+            col = 0;
+            ++row;
+          }
         }
-        col += n;
-        if ( col == row->buf.size() )
+        else  // n < 0
         {
-          col = 0;
-          ++row;
+          while ( col + n < -1 )
+          {
+            n += col;
+            --row;
+            col = row->buf.size() - 1;
+          }
+          col += n;
+          if ( col == -1 )
+          {
+            --row;
+            col = row->buf.size() - 1;
+          }
         }
         row_ = row;
         col_ = col;

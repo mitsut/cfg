@@ -58,7 +58,7 @@
 #include <boost/utility.hpp>
 #include <boost/format.hpp>
 
-#define CFG_VERSION 20080807L
+#define CFG_VERSION 20081016L
 
 bool cfg0_main();
 bool cfg1_main();

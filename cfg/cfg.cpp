@@ -271,7 +271,7 @@ int cfg_main( int argc, char* argv[] )
   bool ( * pfn_cfg[] )() = { &cfg0_main, &cfg1_main, &cfg2_main, &cfg3_main };
   int max_pass = static_cast< int >( sizeof( pfn_cfg ) / sizeof( pfn_cfg[0] ) );
 
-  if ( pass < 0 || max_pass < pass )
+  if ( pass < 0 || max_pass <= pass )
   {
     fatal( _( "illegal cfg pass #%d" ), pass );
   }
