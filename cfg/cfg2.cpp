@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2008 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2009 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -53,7 +53,7 @@ void assign_id( toppers::itronx::cfg1_out::static_api_map& api_map )
   using namespace toppers;
   using namespace toppers::itronx;
 
-  std::string id_input_file( boost::any_cast< std::string& >( global( "id-input-file" ) ) );
+  std::string id_input_file( get_global< std::string >( "id-input-file" ) );
   if ( id_input_file.empty() )  // --id-input-file オプションが指定されていない場合...
   {
     for ( cfg1_out::static_api_map::iterator iter( api_map.begin() ), last( api_map.end() );
@@ -147,7 +147,7 @@ void assign_id( toppers::itronx::cfg1_out::static_api_map& api_map )
   }
 
   // --id-output-file オプションが指定されている場合
-  std::string id_output_file( boost::any_cast< std::string& >( global( "id-output-file" ) ) );
+  std::string id_output_file( get_global< std::string >( "id-output-file" ) );
   if ( !id_output_file.empty() )
   {
     std::ofstream ofs( id_output_file.c_str() );
@@ -184,23 +184,23 @@ bool cfg2_main()
   using namespace toppers;
   using namespace toppers::itronx;
 
-  std::string kernel( boost::any_cast< std::string& >( global( "kernel" ) ) );
+  std::string kernel( get_global< std::string >( "kernel" ) );
   itronx::factory factory( kernel );
 
   // *.cfgとcfg1_out.srecの読み込み
   std::string input_file;
   try
   {
-    input_file = boost::any_cast< std::string const& >( toppers::global( "input-file" ) );
+    input_file = get_global< std::string >( "input-file" );
   }
   catch ( boost::bad_any_cast& )
   {
     fatal( _( "no input files" ) );
   }
-  std::string cfg1_out_name( boost::any_cast< std::string& >( global( "cfg1_out" ) ) );
+  std::string cfg1_out_name( get_global< std::string >( "cfg1_out" ) );
   std::auto_ptr< cfg1_out > cfg1_out( factory.create_cfg1_out( cfg1_out_name ) );
 
-  codeset_t codeset = boost::any_cast< codeset_t >( global( "codeset" ) );
+  codeset_t codeset = get_global< codeset_t >( "codeset" );
   cfg1_out->load_cfg( input_file, codeset, *factory.get_static_api_info_map() );
   cfg1_out->load_srec();
   cfg1_out::static_api_map api_map( cfg1_out->merge() );
@@ -213,8 +213,8 @@ bool cfg2_main()
   // テンプレート処理
   boost::any template_file( global( "template-file" ) );
   namespace fs = boost::filesystem;
-  fs::path cfg_dir( boost::any_cast< std::string& >( global( "cfg-directory" ) ), fs::native );
-  std::vector< std::string > include_paths = boost::any_cast< std::vector< std::string > >( global( "include-path" ) );
+  fs::path cfg_dir( get_global< std::string >( "cfg-directory" ), fs::native );
+  std::vector< std::string > include_paths = get_global< std::vector< std::string > >( "include-path" );
   include_paths.push_back( cfg_dir.empty() ? "." : cfg_dir.native_file_string() );
   if ( !template_file.empty() )
   {

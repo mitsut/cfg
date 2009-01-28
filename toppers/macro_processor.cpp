@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2008 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2009 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -89,7 +89,8 @@ namespace toppers
         id_postfix_expr, id_primary_expr, id_lvalue_expr, id_identifier, id_constant,
         id_string_literal, id_ordered_list, id_ordered_sequence, id_ordered_item,
 
-        id_root, id_top, id_if_, id_foreach_, id_joineach_, id_error_, id_warning_,
+        id_root, id_top,
+        id_function_, id_if_, id_foreach_, id_joineach_, id_error_, id_warning_,
         id_file_, id_expr_, id_plain,
 
         id_illegal = -1
@@ -194,6 +195,7 @@ namespace toppers
 
         rule_t  root,
                 top,
+                function_,
                 if_,
                 foreach_,
                 joineach_,
@@ -204,7 +206,8 @@ namespace toppers
                 call,
                 plain;
 
-        guard_t guard_if_,
+        guard_t guard_function_,
+                guard_if_,
                 guard_foreach_,
                 guard_joineach_,
                 guard_expr,
@@ -254,7 +257,7 @@ namespace toppers
           multiplicative_expr =
               unary_expr >> *( chset<>( "*/%" ) >> unary_expr );
           unary_expr =
-              *chset<>( "-+~!" ) >> postfix_expr;
+              *chset<>( "-+~!@" ) >> postfix_expr;
           postfix_expr =
             guard_postfix_expr
             (
@@ -312,9 +315,17 @@ namespace toppers
               expression >> *( ',' >> expression );
 
           root =
-              top >> lexeme_d[ !space_p ];  // Boost 1.34 対策
+              top >> lexeme_d[ !space_p ];
           top =
-              *( if_ | foreach_ | joineach_ | warning_ | error_ | file_ | expr_ | plain );
+              *( function_ | if_ | foreach_ | joineach_ | warning_ | error_ | file_ | expr_ | plain );
+          function_ =
+            guard_function_
+            (
+              "$FUNCTION" >> identifier >> expect_doller( ch_p( '$' ) ) >> top >> expect_end( str_p( "$END$" ) )
+            )
+            [
+              error_handler()
+            ];
           if_ =
             guard_if_
             (
@@ -387,6 +398,7 @@ namespace toppers
 
           root.set_id( id_root );
           top.set_id( id_top );
+          function_.set_id( id_function_ );
           if_.set_id( id_if_ );
           foreach_.set_id( id_foreach_ );
           joineach_.set_id( id_joineach_ );
@@ -436,6 +448,10 @@ namespace toppers
         if ( !iter->s.empty() )
         {
           result += iter->s;
+        }
+        else if ( !iter->v.empty() )
+        {
+          result += iter->v;
         }
         else if ( iter->i )
         {
@@ -925,41 +941,55 @@ namespace toppers
           std::string op( node.children[i].value.begin(), node.children[i].value.end() );
           element e;
           std::tr1::int64_t value = 0;
-          try
+          if ( op != "@" )
           {
-            value = get_i( expr, p_ctx );
-          }
-          catch ( expr_error& )
-          {
-            error( node.children[0].value.begin().line(), _( "`%1%\' is undefined" ), get_s( expr, p_ctx ) );
-            throw;
-          }
-          if ( op == "+" )
-          {
-            e.i = +value;
-          }
-          else if ( op == "-" )
-          {
-            if ( value == std::numeric_limits< std::tr1::int64_t >::min() )
+            try
             {
-              error( node.children[0].value.begin().line(), _( "overflow at `%1%\'" ), "-" + get_s( expr, p_ctx ) );
-              // e.i に値はセットされない
+              value = get_i( expr, p_ctx );
+            }
+            catch ( expr_error& )
+            {
+              error( node.children[0].value.begin().line(), _( "`%1%\' is undefined" ), get_s( expr, p_ctx ) );
+              throw;
+            }
+            if ( op == "+" )
+            {
+              e.i = +value;
+            }
+            else if ( op == "-" )
+            {
+              if ( value == std::numeric_limits< std::tr1::int64_t >::min() )
+              {
+                error( node.children[0].value.begin().line(), _( "overflow at `%1%\'" ), "-" + get_s( expr, p_ctx ) );
+                // e.i に値はセットされない
+              }
+              else
+              {
+                e.i = -value;
+              }
+            }
+            else if ( op == "~" )
+            {
+              e.i = ~value;
+            }
+            else if ( op == "!" )
+            {
+              e.i = !value;
+            }
+            value = *e.i;
+          }
+          else  // op == "@" （値属性 → 文字列属性）
+          {
+            if ( expr.front().i )
+            {
+              e.s = boost::lexical_cast< std::string >( *expr.front().i );
             }
             else
             {
-              e.i = -value;
+              e.s = expr.front().v;
             }
           }
-          else if ( op == "~" )
-          {
-            e.i = ~value;
-          }
-          else if ( op == "!" )
-          {
-            e.i = !value;
-          }
-          expr[0] = e;  // 演算結果を累積する
-          value = *e.i;
+          expr[ 0 ] = e;  // 演算結果を累積する
           if ( i == t )
           {
             break;
@@ -970,7 +1000,7 @@ namespace toppers
       return true;
     }
 
-    //! 後置式（組み込み関数呼び出し、一次式）
+    //! 後置式（関数呼び出し、一次式）
     bool postfix_expr( tree_node_t const& node, context* p_ctx )
     {
       //            0 1    2 3 4..2+2*n-1 2+2*n 2+2*n+1 
@@ -988,7 +1018,7 @@ namespace toppers
             error( node.children[0].value.begin().line(), _( "function `%1%\' is undefined" ), func_name );
             p_ctx->stack.push( var_t() );
           }
-          else
+          else  // 関数を呼び出す
           {
             std::vector< var_t > arg_list;
             for ( std::size_t i = 0, n = node.children.size() - 1; 2 + 2*i < n; i++ )
@@ -999,7 +1029,47 @@ namespace toppers
                 arg_list.push_back( arg );
               }
             }
-            var_t result = ( *iter->second.f )( node.children[0].value.begin().line(), arg_list, p_ctx );
+            var_t result;
+            if ( iter->second.f != 0 )  // 組み込み関数
+            {
+              result = ( *iter->second.f )( node.children[0].value.begin().line(), arg_list, p_ctx );
+            }
+            else if ( iter->second.node != 0 )  // ユーザー定義関数
+            {
+              // ARGC
+              {
+                element e;
+                e.i = static_cast< std::tr1::int64_t >( arg_list.size() + 1 );
+                p_ctx->var_map[ "ARGC" ] = var_t( 1, e );
+              }
+
+              // ARGV
+              {
+                element e;
+                e.s = func_name;
+                p_ctx->var_map[ "ARGV[0]" ] = var_t( 1, e );
+
+                std::size_t n = arg_list.size() + 1;
+                for ( std::size_t i = 1; i < n; i++ )
+                {
+                  std::string argv_i = boost::str( boost::format( "ARGV[%d]" ) % i );
+                  p_ctx->var_map[ argv_i ] = arg_list[ i - 1 ];
+                }
+
+                std::string argv_n = boost::str( boost::format( "ARGV[%d]" ) % n );
+                p_ctx->var_map[ argv_n ] = var_t();
+              }
+
+              tree_node_t const* func_body_node = reinterpret_cast< tree_node_t const* >( iter->second.node );
+              if ( !eval_node( *func_body_node, p_ctx ) )
+              {
+                // 呼び出し失敗
+                p_ctx->stack.push( result );
+                return false;
+              }
+
+              result = p_ctx->var_map[ "RESULT" ];
+            }
             p_ctx->stack.push( result );
           }
         }
@@ -1209,6 +1279,41 @@ namespace toppers
         }
         result &= eval_node( node.children[i], p_ctx );
       }
+      return result;
+    }
+
+    //! $FUNCTION命令
+    bool function_( tree_node_t const& node, context* p_ctx )
+    {
+      bool result = true;
+
+      if ( node.children.empty() )
+      {
+        fatal( node.value.begin().line(), "no body of %1%", "'FUNCTION'" );
+      }
+
+      if ( p_ctx->in_function )
+      {
+        fatal( node.value.begin().line(), "function cannot be nested" );
+      }
+      p_ctx->in_function = true;
+
+      //         0          1 2   3    4
+      // $FUNCTION identifier $ top $END$
+      if ( eval_node( node.children[1], p_ctx ) )   // identifier
+      {
+        var_t ident( p_ctx->stack.top() ); p_ctx->stack.pop();
+        macro_processor::func_t func;
+        func.name = get_s( ident, p_ctx );
+        func.node = &node.children[3];
+        func.f = 0; // 組み込み関数ではないので
+        p_ctx->func_map[ func.name ] = func;
+      }
+      else
+      {
+        result = false;
+      }
+      p_ctx->in_function = false;
       return result;
     }
 
@@ -1524,6 +1629,9 @@ namespace toppers
       case parser::id_top:
         result = top( node, p_ctx );
         break;
+      case parser::id_function_:
+        result = function_( node, p_ctx );
+        break;
       case parser::id_if_:
         result = if_( node, p_ctx );
         break;
@@ -1631,7 +1739,7 @@ namespace toppers
   {
     try
     {
-      for ( func_t const* p_bf = builtin_function_table; p_bf->name != 0; p_bf++ )
+      for ( func_t const* p_bf = builtin_function_table; !p_bf->name.empty(); p_bf++ )
       {
         p_ctx_->func_map[ p_bf->name ] = *p_bf;
       }
@@ -1648,7 +1756,7 @@ namespace toppers
 
   void macro_processor::set_var( std::string const& name, var_t const& value )
   {
-#if defined( _MSC_VER ) && DEBUG_TRACE
+#if defined( _MSC_VER ) && /* DEBUG_TRACE */ 1
     std::string s( "$" + name + " = " + get_s( value, p_ctx_ ) + "$" );
     if ( !value.empty() && value[0].i )
     {
@@ -1742,7 +1850,7 @@ std::string debug_str;
                       >> '$' ) );
         if ( info.hit )
         {
-          std::vector< std::string > include_paths = boost::any_cast< std::vector< std::string >& >( global( "include-path" ) );
+          std::vector< std::string > include_paths = get_global< std::vector< std::string > >( "include-path" );
           std::string hname = search_include_file( include_paths.begin(), include_paths.end(), headername );
           if ( hname.empty() )
           {
@@ -1790,6 +1898,49 @@ std::string debug_str;
   void macro_processor::add_builtin_function( func_t const& f )
   {
     p_ctx_->func_map[ f.name ] = f;
+  }
+
+  macro_processor::var_t macro_processor::call_user_function( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
+  {
+    if ( arg_list.empty() )
+    {
+      return var_t();
+    }
+
+    func_t func = p_ctx->func_map[ get_s( arg_list.front(), p_ctx ) ]; 
+    if ( func.name.empty() )
+    {
+      fatal( line, "function is not defined" );
+      return var_t();
+    }
+
+    // ARGC
+    {
+      element e;
+      e.i = static_cast< std::tr1::int64_t >( arg_list.size() );
+      p_ctx->var_map[ "ARGC" ] =var_t( 1, e );
+    }
+
+    // ARGV
+    {
+      std::size_t n = arg_list.size();
+      for ( std::size_t i = 0; i < n; i++ )
+      {
+        std::string argv_i = boost::str( boost::format( "ARGV[%d]" ) % i );
+        p_ctx->var_map[ argv_i ] = arg_list[ i ];
+      }
+
+      std::string argv_n = boost::str( boost::format( "ARGV[%d]" ) % n );
+      p_ctx->var_map[ argv_n ] = var_t();
+    }
+
+    tree_node_t const* func_body_node = reinterpret_cast< tree_node_t const* >( func.node );
+    if ( !eval_node( *func_body_node, p_ctx ) )
+    {
+      return var_t();
+    }
+
+    return p_ctx->var_map[ "RESULT" ];
   }
 
 }

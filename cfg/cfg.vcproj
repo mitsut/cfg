@@ -4,6 +4,7 @@
 	Version="7.10"
 	Name="cfg"
 	ProjectGUID="{E2E91785-C5CB-4E57-98F0-7953A42FFEC0}"
+	RootNamespace="cfg"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -39,6 +40,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="oldnames.lib"
 				OutputFile="$(OutDir)/cfg.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
@@ -95,6 +97,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="oldnames.lib"
 				OutputFile="$(OutDir)/cfg.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="TRUE"
@@ -145,6 +148,12 @@
 			</File>
 			<File
 				RelativePath=".\cfg3.cpp">
+			</File>
+			<File
+				RelativePath=".\cfg4.cpp">
+			</File>
+			<File
+				RelativePath=".\cfg_version.cpp">
 			</File>
 		</Filter>
 		<Filter

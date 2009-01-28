@@ -128,8 +128,6 @@ namespace toppers
         iss >> symbol;
         if ( symbol == "{" || symbol == "}" )
         {
-          // TODO 省略可能パラメータのスキップはここで行う
-
           if ( symbol != *iter )
           {
             error( temp.line_, _( "missing token `%1%\'" ), symbol );
@@ -138,7 +136,11 @@ namespace toppers
         }
         else if ( *iter == "{" || *iter == "}" )
         {
-          error( temp.line_, _( "illegal token `%1%\'" ), *iter );
+          // 省略可能パラメータのスキップ
+          if ( *symbol.rbegin() != '\?' )
+          {
+            error( temp.line_, _( "illegal token `%1%\'" ), *iter );
+          }
         }
         else
         {

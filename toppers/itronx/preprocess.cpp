@@ -118,7 +118,7 @@ namespace toppers
                           >> ')' >> *space_p >> ';' ) );  // 行番号がずれるので、スキップパーサは使用しない
             if ( info.hit )
             {
-              std::vector< std::string > include_paths = boost::any_cast< std::vector< std::string >& >( global( "include-path" ) );
+              std::vector< std::string > include_paths = get_global< std::vector< std::string > >( "include-path" );
               std::string hname = search_include_file( include_paths.begin(), include_paths.end(), headername );
               if ( hname.empty() )  // ヘッダ名が見つからない
               {

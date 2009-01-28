@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2008 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2009 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -46,6 +46,7 @@
 #include "toppers/diagnostics.hpp"
 #include "toppers/macro_processor.hpp"
 #include "toppers/io.hpp"
+#include "toppers/cpp.hpp"
 #include "toppers/itronx/factory.hpp"
 #include "toppers/itronx/cfg1_out.hpp"
 
@@ -117,11 +118,24 @@ namespace toppers
                   ++api_iter )
             {
               std::string name( toppers::toupper( ( boost::format( "%s.%s" ) % info->type % ( api_iter->symbol.c_str() + 1 ) ).str() ) );
+              // 末尾の ? を除去
+              if ( *name.rbegin() == '\?' ) 
+              {
+                name.resize( name.size() - 1 );
+              }
+
               element e;
-              e.s = api_iter->text;
+              e.s = api_iter->text; // ソースの字面
               if ( api_iter->symbol[0] != '&' )   // 一般定数式パラメータは値が特定できない
               {
-                e.i = api_iter->value;
+                if ( api_iter->symbol[0] == '$' )  // 文字列定数式パラメータ
+                {
+                  e.v = api_iter->string; // 展開後の文字列
+                }
+                else
+                {
+                  e.i = api_iter->value;
+                }
                 if ( api_iter->symbol[0] == '%' )
                 {
                   continue;
@@ -167,8 +181,38 @@ namespace toppers
         }
 
         element external_id;
-        external_id.i = boost::any_cast< bool >( global( "external-id" ) );
+        external_id.i = get_global< bool >( "external-id" );
         mproc.set_var( "USE_EXTERNAL_ID", var_t( 1, external_id ) );
+      }
+
+      // クラスIDリストをマクロプロセッサの変数として設定する。
+      void set_clsid_vars( std::vector< std::pair< std::string, long > > const& table, macro_processor& mproc )
+      {
+        typedef macro_processor::element element;
+        typedef macro_processor::var_t var_t;
+
+        // TODO
+      }
+
+      // ドメインIDリストをマクロプロセッサの変数として設定する。
+      void set_domid_vars( std::vector< std::pair< std::string, long > > const& table, macro_processor& mproc )
+      {
+        typedef macro_processor::element element;
+        macro_processor::var_t var;
+
+        for ( std::vector< std::pair< std::string, long > >::const_iterator iter( table.begin() ), last( table.end() );
+              iter != last;
+              ++iter )
+        {
+          if ( !iter->first.empty() )
+          {
+            element e;
+            e.s = iter->first;
+            e.i = iter->second;
+            var.push_back( e );
+          }
+        }
+        mproc.set_var( "DOM.ID_LIST", var );
       }
 
       // プラットフォーム・コンパイラ依存の値をマクロプロセッサの変数として設定する。
@@ -426,8 +470,16 @@ namespace toppers
       e.s = " ";    mproc->set_var( "SPC", var_t( 1, e ) );  // $SPC$
       e.s = "\t";   mproc->set_var( "TAB", var_t( 1, e ) );  // $TAB$
       e.s = "\n";   mproc->set_var( "NL",  var_t( 1, e ) );  // $NL$
-        
+
+      // バージョン情報
+      e.s = toppers::get_global< std::string >( "version" );
+      e.i = toppers::get_global< std::tr1::int64_t >( "timestamp" );
+      mproc->set_var( "CFG_VERSION", var_t( 1, e ) );   // $CFG_VERSION$
+
+      // その他の組み込み変数の設定
       set_object_vars( api_map, *mproc );
+      set_clsid_vars( cfg1out.get_clsid_table(), *mproc );
+      set_domid_vars( cfg1out.get_domid_table(), *mproc );
       set_platform_vars( cfg1out, *mproc );
       e.s = cfg1out.get_includes();
       mproc->set_var( "INCLUDES", var_t( 1, e ) );

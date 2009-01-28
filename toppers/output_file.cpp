@@ -187,7 +187,7 @@ namespace toppers
     {
       return filename;
     }
-    fs::path dir( boost::any_cast< std::string >( global( "output-directory" ) ), fs::native  );
+    fs::path dir( get_global< std::string >( "output-directory" ), fs::native  );
     return ( dir/filename ).native_file_string();
   }
 

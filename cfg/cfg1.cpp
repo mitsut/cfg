@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2008 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2009 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -48,21 +48,21 @@ bool cfg1_main()
   using namespace toppers;
   using namespace toppers::itronx;
 
-  std::string kernel( boost::any_cast< std::string const& >( global( "kernel" ) ) );
+  std::string kernel( get_global< std::string >( "kernel" ) );
   itronx::factory factory( kernel );
 
   std::string input_file;
   try
   {
-    input_file = boost::any_cast< std::string const& >( toppers::global( "input-file" ) );
+    input_file = get_global< std::string >( "input-file" );
   }
   catch ( boost::bad_any_cast& )
   {
     fatal( _( "no input files" ) );
   }
-  codeset_t codeset = boost::any_cast< codeset_t >( global( "codeset" ) );
+  codeset_t codeset = get_global< codeset_t >( "codeset" );
 
-  std::string cfg1_out_name( boost::any_cast< std::string& >( global( "cfg1_out" ) ) );
+  std::string cfg1_out_name( get_global< std::string >( "cfg1_out" ) );
   std::auto_ptr< cfg1_out > cfg1_out( factory.create_cfg1_out( cfg1_out_name + ".c" ) );
   cfg1_out->load_cfg( input_file, codeset, *factory.get_static_api_info_map() );
   cfg1_out->generate();

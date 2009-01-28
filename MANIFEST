@@ -11,7 +11,9 @@ cfg/cfg0.cpp
 cfg/cfg1.cpp
 cfg/cfg2.cpp
 cfg/cfg3.cpp
+cfg/cfg4.cpp
 cfg/cfg_init.cpp
+cfg/cfg_version.cpp
 cfg/ja.po
 cfg/Makefile
 cfg/require_modules.hpp

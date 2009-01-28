@@ -92,6 +92,8 @@ namespace toppers
       void load_cfg( std::string const& input_file, codeset_t codeset, std::map< std::string, static_api::info > const& info_map );
       void generate( char const* type = 0 ) const;
       std::vector< static_api > const& get_static_api_array() const;
+      std::vector< std::pair< std::string, long > > const& get_domid_table() const;
+      std::vector< std::pair< std::string, long > > const& get_clsid_table() const;
       std::string const& get_includes() const;
 
       void load_srec();
@@ -121,6 +123,9 @@ namespace toppers
         }
         return result;
       }
+
+      static void load_id_input_file( std::map< std::string, std::pair< long, bool > >& id_map );
+
     protected:
       struct implementation;
       explicit cfg1_out( implementation* pimpl ) : pimpl_( pimpl ) {}

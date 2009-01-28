@@ -9,7 +9,9 @@ CXXFILES = \
 	cfg0.cpp \
 	cfg1.cpp \
 	cfg2.cpp \
-	cfg3.cpp
+	cfg3.cpp \
+	cfg4.cpp \
+	cfg_version.cpp
 
 OBJFILES := $(CXXFILES:%.cpp=%.o)
 

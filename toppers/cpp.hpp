@@ -186,6 +186,7 @@ namespace toppers
   }
 
   std::string expand_quote( std::string const& str );
+  std::string quote_string( std::string const& str );
 
 }
 

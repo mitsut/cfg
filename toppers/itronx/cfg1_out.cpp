@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2008 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2009 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -76,7 +76,10 @@ namespace toppers
       std::vector< static_api > static_api_array_;
       std::string cfg1_out_list_;
       std::string includes_;
+      std::string domid_defs_;
       std::vector< block_t > block_table_;
+      std::vector< std::pair< std::string, long > > clsid_table_;
+      std::vector< std::pair< std::string, long > > domid_table_;
 
       std::tr1::shared_ptr< s_record > srec_;
       std::tr1::shared_ptr< nm_symbol > syms_;
@@ -228,6 +231,10 @@ namespace toppers
       std::stack< block_t > block_stack;
       std::vector< block_t > block_table;
       std::string current_class, current_domain;
+      long domain_serial = 1;
+      std::map< std::string, std::pair< long, bool > > id_map;
+      std::vector< std::pair< std::string, long > > clsid_table;
+      std::vector< std::pair< std::string, long > > domid_table;
 
       for ( text::const_iterator iter( txt.begin() ), last( txt.end() ); iter != last; ++iter )
       {
@@ -293,6 +300,9 @@ namespace toppers
                         (
                           ( str_p( "CLASS" ) | "DOMAIN" )[ assign_a( block_type ) ]
                           >> '(' >> c_ident_p[ assign_a( id ) ] >> ')' >> '{'
+                        )
+                      | (
+                          str_p( "KERNEL_DOMAIN" )[ assign_a( block_type ) ] >> '{'
                         ),
                         space_p );
           if ( info.hit )               // CLASS or DOMAINブロック開始ならば...
@@ -301,6 +311,65 @@ namespace toppers
             b.type = block_type;
             b.id = id;
             b.line = iter.line();
+
+            if ( block_type == "CLASS" )
+            {
+              if ( !get_global< bool >( "has-class" ) )
+              {
+                error( "cannot use `%1%'", "CLASS" );
+              }
+            }
+            if ( block_type == "DOMAIN" || block_type == "KERNEL_DOMAIN"  )
+            {
+              if ( !get_global< bool >( "has-domain" ) )
+              {
+                error( "cannot use `%1%'", block_type );
+              }
+            }
+            // カーネルドメインを通常のドメインと同じように扱えるように変形
+            if ( block_type == "KERNEL_DOMAIN" )
+            {
+              block_type = "DOMAIN";
+              id = "TDOM_KERNEL";
+              b.type = block_type;
+              b.id = id;
+            }
+            else if ( block_type == "DOMAIN" ) // ドメインIDの仮登録
+            {
+              bool hit = false;
+              for ( std::vector< std::pair< std::string, long > >::const_iterator iter( domid_table.begin() ), last( domid_table.end() );
+                    iter != last;
+                    ++iter )
+              {
+                if ( iter->first == id )
+                {
+                  hit = true;
+                  break;
+                }
+              }
+              if ( !hit )
+              {
+                domid_table.push_back( std::make_pair( id, 0L ) );
+              }
+            }
+            else if ( block_type == "CLASS" ) // クラスIDの登録
+            {
+              bool hit = false;
+              for ( std::vector< std::pair< std::string, long > >::const_iterator iter( clsid_table.begin() ), last( clsid_table.end() );
+                    iter != last;
+                    ++iter )
+              {
+                if ( iter->first == id )
+                {
+                  hit = true;
+                  break;
+                }
+              }
+              if ( !hit )
+              {
+                clsid_table.push_back( std::make_pair( id, 0L ) );
+              }
+            }
 
             // 入れ子判定
             if ( block_type == "CLASS" && !current_class.empty()
@@ -323,7 +392,15 @@ namespace toppers
             if ( block_type == "DOMAIN" )
             {
               current_domain = id;
-              // DOMAINには未対応
+              oss << "const unsigned_t TOPPERS_cfg_valueof_" << id << " = ";
+              if ( id == "TDOM_KERNEL" )
+              {
+                oss << "-1" << ";\n";
+              }
+              else
+              {
+                oss << id << ";\n";
+              }
             }
             oss << "\n#endif\n";
 
@@ -370,6 +447,7 @@ namespace toppers
               if ( !current_domain.empty() )
               {
                 api.set_domain( current_domain );
+                oss << "const unsigned_t TOPPERS_cfg_valueof_DOMAIN_" << serial << " = " << current_domain << ";";
               }
 
               api_array.push_back( api );
@@ -423,7 +501,15 @@ namespace toppers
                   {
                     oss << "const signed_t ";
                   }
-                  oss << "TOPPERS_cfg_valueof_" << ( api_iter->symbol.c_str() + 1 ) << "_" << serial << " = ( " << api_iter->text << " ); ";
+
+                  // 省略可能パラメータ情報の末尾にある ? を除去
+                  std::string parameter_name( api_iter->symbol.c_str() + 1 );
+                  if ( *parameter_name.rbegin() == '\?' )
+                  {
+                    parameter_name.resize( parameter_name.size() - 1 );
+                  }
+
+                  oss << "TOPPERS_cfg_valueof_" << parameter_name << "_" << serial << " = ( " << api_iter->text << " ); ";
 
                   // 暫定値を設定
                   char* endptr;
@@ -433,6 +519,17 @@ namespace toppers
                   {
                     api_iter->value = value;
                   }
+                }
+                else if ( api_iter->symbol[0] == '$' )  // 文字列定数式パラメータ
+                {
+                  // 省略可能パラメータ情報の末尾にある ? を除去
+                  std::string parameter_name( api_iter->symbol.c_str() + 1 );
+                  if ( *parameter_name.rbegin() == '\?' )
+                  {
+                    parameter_name.resize( parameter_name.size() - 1 );
+                  }
+
+                  oss << "const char TOPPERS_cfg_valueof_" << parameter_name << "_" << serial << "[] = " << api_iter->text << "; ";
                 }
               }
             }
@@ -452,15 +549,82 @@ namespace toppers
             ++iter )
       {
         oss << "\n#ifdef TOPPERS_cfg_inside_of_" << iter->id << "\n";
-//        oss << boost::format( "\n#line %1% \"%2%\"\n" ) % ( txt.end() - 1 ).line().line % ( txt.end() - 1 ).line().file;
         oss << "#error missing \'}\'\n"
                "#endif\n";
+      }
+
+      const std::size_t domain_max = 32;  // ドメインIDは32個まで
+      if ( domid_table.size() > domain_max )
+      {
+        fatal( _( "there are too many %1% ids" ), "domain" );
+      }
+
+      std::string domid_defs_temp;
+
+      if ( get_global< bool >( "has-domain" ) )
+      {
+        load_id_input_file( id_map ); // --id-input-fileによるドメインIDの読み込み
+
+        std::string domids[ domain_max ];
+
+        // 一周目は、--id-input-fileオプションを反映
+        for ( std::vector< std::pair< std::string, long > >::iterator iter( domid_table.begin() ), last( domid_table.end() );
+              iter != last;
+              ++iter )
+        {
+          std::map< std::string, std::pair< long, bool > >::iterator hit = id_map.find( iter->first );
+          if ( hit != id_map.end() )
+          {
+            long domid = hit->second.first; // --id-input-fileオプションで指定された値
+            if ( domid > 32 )
+            {
+              fatal( _( "%1% id `%2%' is too large" ), "domain", hit->first );
+            }
+            domids[ domid - 1 ] = hit->first;
+          }
+        }
+        // 二周目は、残りのドメインIDを割り付ける
+        for ( std::vector< std::pair< std::string, long > >::iterator iter( domid_table.begin() ), last( domid_table.end() );
+              iter != last;
+              ++iter )
+        {
+          if ( id_map.find( iter->first ) == id_map.end() )
+          {
+            for ( int i = 0; i < sizeof( domids ) / sizeof( domids[ 0 ] ); i++ )
+            {
+              if ( domids[ i ].empty() )
+              {
+                domids[ i ] = iter->first;
+                break;
+              }
+            }
+          }
+        }
+        domid_table.clear();
+        for ( std::size_t i = 0; i < sizeof( domids ) / sizeof( domids[ 0 ] ); i++ )
+        {
+          domid_table.push_back( std::make_pair( domids[ i ], long( i + 1 ) ) );
+        }
+
+        // cfg1_out.c出力用のコードを生成
+        for ( std::vector< std::pair< std::string, long > >::iterator iter( domid_table.begin() ), last( domid_table.end() );
+              iter != last;
+              ++iter )
+        {
+          if ( !iter->first.empty() )
+          {
+            domid_defs_temp += ( boost::format( "#define %1%\t%2%\n" ) % iter->first % iter->second ).str();
+          }
+        }
       }
 
       // データメンバへの反映
       std::string cfg1_list_temp( oss.str() );
       std::string includes_temp( includes_oss.str() );
 
+      clsid_table_.swap( clsid_table );
+      domid_table_.swap( domid_table );
+      domid_defs_.swap( domid_defs_temp );
       cfg1_out_list_.swap( cfg1_list_temp );
       includes_.swap( includes_temp );
       static_api_array_.swap( api_array );
@@ -496,6 +660,7 @@ namespace toppers
       pimpl_->ofile_ << "\n#include <target_cfg1_out.h>\n\n";
 
       pimpl_->do_generate_cfg1_def();
+      pimpl_->ofile_ << '\n' << pimpl_->domid_defs_ << '\n';
       pimpl_->ofile_ << pimpl_->cfg1_out_list_ << '\n';
     }
 
@@ -506,6 +671,24 @@ namespace toppers
     std::vector< static_api > const& cfg1_out::get_static_api_array() const
     {
       return pimpl_->static_api_array_;
+    }
+
+    /*!
+     *  \brief  ドメインIDテーブルの参照
+     *  \return 内部で保持しているドメインIDテーブルへの参照
+     */
+    std::vector< std::pair< std::string, long > > const& cfg1_out::get_domid_table() const
+    {
+      return pimpl_->domid_table_;
+    }
+
+    /*!
+     *  \brief  クラスIDテーブルの参照
+     *  \return 内部で保持しているクラスIDテーブルへの参照
+     */
+    std::vector< std::pair< std::string, long > > const& cfg1_out::get_clsid_table() const
+    {
+      return pimpl_->clsid_table_;
     }
 
     /*!
@@ -651,12 +834,18 @@ namespace toppers
           if ( ( api_iter->symbol[0] == '.' ) || ( api_iter->symbol[0] == '+' ) || ( api_iter->symbol[0] == '*' ) )
             // 整数定数式パラメータのみ値を取得
           {
-//            const char* debug_str = api_iter->symbol.c_str();
-            std::string symbol = boost::str( boost::format( "TOPPERS_cfg_valueof_%s_%d" ) % ( api_iter->symbol.c_str() + 1 ) % serial );
+            std::string parameter_name( api_iter->symbol.c_str() + 1 );
+
+            // 省略可能パラメータ情報の末尾にある ? を除去
+            if ( *parameter_name.rbegin() == '\?' )
+            {
+              parameter_name.resize( parameter_name.size() - 1 );
+            }
+
+            std::string symbol = boost::str( boost::format( "TOPPERS_cfg_valueof_%s_%d" ) % parameter_name % serial );
             nm_symbol::entry nm_entry = syms_->find( symbol );
             if ( nm_entry.type == -1 )
             {
-              // TODO エラーメッセージ
               continue;
             }
             const std::size_t size = sizeof_signed_t;
@@ -668,10 +857,88 @@ namespace toppers
             }
             api_iter->value = value;
           }
+          else if ( api_iter->symbol[0] == '$' )  // 文字列定数式パラメータ
+          {
+            std::string parameter_name( api_iter->symbol.c_str() + 1 );
+
+            // 省略可能パラメータ情報の末尾にある ? を除去
+            if ( *parameter_name.rbegin() == '\?' )
+            {
+              parameter_name.resize( parameter_name.size() - 1 );
+            }
+
+            std::string symbol = boost::str( boost::format( "TOPPERS_cfg_valueof_%s_%d" ) % parameter_name % serial );
+            nm_symbol::entry nm_entry = syms_->find( symbol );
+            if ( nm_entry.type == -1 )
+            {
+              continue;
+            }
+            std::string string;
+            string.reserve( 256 );
+            char c;
+            for ( long i = 0; ( c = static_cast< char >( srec_->get_value( nm_entry.address + i, 1, little_endian_ ) ) ) != '\0'; i++ )
+            {
+              string.push_back( c );
+            }
+
+            api_iter->string = string;
+          }
         }
         temp_array.push_back( api );
       }
       static_api_array_.swap( temp_array );
+    }
+
+    /*!
+     *  \brief  --id-input-fileオプションで指定したファイルの読み込み
+     *  \id_map 読み込んだデータの格納先
+     */
+    void cfg1_out::load_id_input_file( std::map< std::string, std::pair< long, bool > >& id_map )
+    {
+      std::string id_input_file( get_global< std::string >( "id-input-file" ) );
+      if ( id_input_file.empty() )
+      {
+        return;
+      }
+
+      std::ifstream ifs( id_input_file.c_str() );
+      while ( ifs )
+      {
+        std::string linebuf;
+        std::getline( ifs, linebuf );
+        if ( ifs.bad() )
+        {
+          fatal( _( "I/O error" ) );
+        }
+        if ( linebuf.empty() || linebuf == "\r" )
+        {
+          break;
+        }
+
+        std::istringstream iss( linebuf );
+        std::string name;
+        iss >> name;
+        if ( iss.fail() )
+        {
+          fatal( _( "id file `%1%\' is invalid" ), id_input_file );
+        }
+
+        long value;
+        iss >> value;
+        if ( iss.fail() )
+        {
+          fatal( _( "id file `%1%\' is invalid" ), id_input_file );
+        }
+
+        if ( id_map.find( name ) != id_map.end() )
+        {
+          fatal( _( "`%1%\' is duplicated" ), name );
+        }
+        else
+        {
+          id_map[ name ] = std::make_pair( value, false );
+        }
+      }
     }
 
   }

@@ -203,7 +203,7 @@ namespace toppers
    */
   std::string const& gettext( std::string const& message )
   {
-    static bool f = load_msgcat( boost::any_cast< std::string const& >( global( "cfg-directory" ) ) );
+    static bool f = load_msgcat( get_global< std::string >( "cfg-directory" ) );
     if ( !msgcat_loaded )
     {
       return message;

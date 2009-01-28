@@ -36,19 +36,23 @@
  */
 #include <cctype>
 #include <cstring>
+#include <cstdio>
 #include <stdexcept>
 #include "toppers/cpp.hpp"
 
 namespace toppers
 {
 
+  /*!
+   *  \brief  二重引用符で囲まれた文字列を展開する。
+   */
   std::string expand_quote( std::string const& str )
   {
-    // boost-1.35.x対策
+    // boost-1.35.x以上対策
     std::string::size_type n = str.find_first_not_of( " \t\r\n" );
     std::string quoted( str, n );
 
-    if ( quoted.empty() || quoted[0] != quoted[quoted.size() - 1] )
+    if ( quoted.empty() || quoted[0] != '"' || quoted[quoted.size() - 1] != '"' )
     {
       throw std::invalid_argument( "argument is not quoted" );
     }
@@ -125,6 +129,68 @@ namespace toppers
         result.push_back( *iter );
       }
     }
+    return result;
+  }
+
+  /*!
+   *  \brief  文字列で二重引用符で囲む
+   */
+  std::string quote_string( std::string const& str )
+  {
+    std::string result;
+    result.reserve( str.size() + 2 );
+
+    result.push_back( '"' );  // open
+
+    for ( std::string::const_iterator iter( str.begin() ), last( str.end() );
+          iter != last;
+          ++iter )
+    {
+      switch ( char c = *iter )
+      {
+      case '\'':
+        result += "\\\'";
+        break;
+      case '\"':
+        result += "\\\"";
+        break;
+      case '\0':
+        result += "\\0";
+        break;
+      case '\a':
+        result += "\\a";
+        break;
+      case '\b':
+        result += "\\b";
+        break;
+      case '\f':
+        result += "\\f";
+        break;
+      case '\n':
+        result += "\\n";
+        break;
+      case '\r':
+        result += "\\r";
+        break;
+      case '\t':
+        result += "\\t";
+        break;
+      case '\v':
+        result += "\\v";
+        break;
+      case '\\':
+        // SJIS未対応
+        result.push_back( c );
+        result.push_back( c );
+        break;
+      default:
+        result.push_back( c );
+        break;
+      }
+    }
+
+    result.push_back( '"' );  // close
+
     return result;
   }
 

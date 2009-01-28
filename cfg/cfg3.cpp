@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2008 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2009 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -59,7 +59,7 @@ namespace
    *  \param[in]  p_ctx     マクロコンテキスト
    *  \retval     マクロ返却値
    */
-  var_t bf_symbol( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_symbol( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     using namespace toppers;
     using namespace toppers::itronx;
@@ -67,7 +67,7 @@ namespace
     if ( macro_processor::check_arity( line, arg_list.size(), 1, "SYMBOL" ) )
     {
       std::string symbol( macro_processor::to_string( arg_list[0], p_ctx ) );
-      std::tr1::shared_ptr< checker > chk = boost::any_cast< std::tr1::shared_ptr< checker > >( toppers::global( "checker" ) );
+      std::tr1::shared_ptr< checker > chk = get_global< std::tr1::shared_ptr< checker > >( "checker" );
       nm_symbol::entry entry = chk->find( symbol );
       if ( entry.type >= 0 )
       {
@@ -79,6 +79,9 @@ namespace
     return var_t();
   }
 
+  // VMA アドレス解決用テーブル
+  std::vector< std::pair< std::tr1::int64_t, std::vector< unsigned char > > > vma_table;
+
   /*!
    *  \brief  指定したアドレスに格納されている値の取得
    *  \param[in]  line      行番号
@@ -88,7 +91,7 @@ namespace
    *
    *  第1引数にアドレスを、第2引数に読み込むバイト数を指定します。
    */
-  var_t bf_peek( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_peek( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     using namespace toppers;
     using namespace toppers::itronx;
@@ -97,16 +100,97 @@ namespace
     {
       std::size_t address = static_cast< std::size_t >( macro_processor::to_integer( arg_list[0], p_ctx ) );
       std::size_t size = static_cast< std::size_t >( macro_processor::to_integer( arg_list[1], p_ctx ) );
-      std::tr1::shared_ptr< checker > chk = boost::any_cast< std::tr1::shared_ptr< checker > >( toppers::global( "checker" ) );
+      std::tr1::shared_ptr< checker > chk = get_global< std::tr1::shared_ptr< checker > >( "checker" );
 
       std::map< std::string, var_t >::const_iterator le_iter( p_ctx->var_map.find( "LITTLE_ENDIAN" ) );
       if ( le_iter != p_ctx->var_map.end() )
       {
         bool little_endian = !!( *le_iter->second.front().i );
+        long pos = -1;
+        long base = 0;
         element e;
-        e.i = chk->get( address, size, !!little_endian );
+
+        for ( std::size_t i = 0, n = vma_table.size(); i < n; i++ )
+        {
+          if ( vma_table[i].first <= address && address < vma_table[i].first + vma_table[i].second.size() )
+          {
+            pos = i;
+            base = static_cast< long >( address - vma_table[i].first );
+          }
+        }
+        if ( pos >= 0 )  // VMA から読み取る
+        {
+          std::tr1::uint64_t value = 0;
+          if ( little_endian )
+          {
+            for ( long j = static_cast< long >( size-1 ); j >= 0; j-- )
+            {
+              int t = vma_table[ pos ].second[ base + j ];
+              if ( t < 0 )
+              {
+                return var_t();
+              }
+              value = ( value << 8 ) | ( t & 0xff );
+            }
+          }
+          else
+          {
+            for ( std::size_t j = 0; j < size; j++ )
+            {
+              int t = vma_table[ pos ].second[ base + j ];
+              if ( t < 0 )
+              {
+                return var_t();
+              }
+              value = ( value << 8 ) | ( t & 0xff );
+            }
+          }
+          e.i = value;
+        }
+        else  // VMA ではないので、Sレコードから読み取る
+        {
+          e.i = chk->get( address, size, !!little_endian );
+        }
         return var_t( 1, e );
       }
+    }
+    return var_t();
+  }
+
+  /*!
+   *  \brief  メモリブロックの転送
+   *  \param[in]  line      行番号
+   *  \param[in]  arg_list  マクロ実引数リスト
+   *  \param[in]  p_ctx     マクロコンテキスト
+   *  \retval     マクロ返却値
+   *
+   *  第1引数に転送元アドレス、第2引数に転送先アドレス、第3引数に転送するバイト数を指定します。
+   *  指定したコピー元アドレスからコピー先アドレスへ、指定バイト数のメモリブロックを転送します。
+   *  この関数は、LMAからVMAへのアドレス変換を目的として使用することを想定しています。
+   *
+   *  \attention  この組み込み関数は、LMAからVMAへのアドレス変換を想定しているため、頻繁に転送を
+   *              繰り返すような状況には対応していません（メモリ不足が発生します）。
+   */
+  var_t bf_bcopy( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
+  {
+    using namespace toppers;
+    using namespace toppers::itronx;
+
+    if ( macro_processor::check_arity( line, arg_list.size(), 3, "BCOPY" ) )
+    {
+      std::size_t src = static_cast< std::size_t >( macro_processor::to_integer( arg_list[0], p_ctx ) );
+      std::size_t dst = static_cast< std::size_t >( macro_processor::to_integer( arg_list[1], p_ctx ) );
+      std::size_t size = static_cast< std::size_t >( macro_processor::to_integer( arg_list[2], p_ctx ) );
+      std::tr1::shared_ptr< checker > chk = get_global< std::tr1::shared_ptr< checker > >( "checker" );
+
+      std::pair< std::tr1::int64_t, std::vector< unsigned char > > block;
+      block.first = dst;
+      block.second.reserve( size );
+      for ( std::tr1::int64_t i = 0; i < size; i++ )
+      {
+        block.second.push_back( static_cast< unsigned char >( chk->get( static_cast< std::size_t >( src + i ), 1, true ) ) );
+      }
+      vma_table.push_back( block );
     }
     return var_t();
   }
@@ -118,23 +202,23 @@ bool cfg3_main()
   using namespace toppers;
   using namespace toppers::itronx;
 
-  std::string kernel( boost::any_cast< std::string& >( global( "kernel" ) ) );
+  std::string kernel( get_global< std::string >( "kernel" ) );
   itronx::factory factory( kernel );
 
   // *.cfgとcfg1_out.srecの読み込み
   std::string input_file;
   try
   {
-    input_file = boost::any_cast< std::string const& >( toppers::global( "input-file" ) );
+    input_file = get_global< std::string >( "input-file" );
   }
   catch ( boost::bad_any_cast& )
   {
     fatal( _( "no input files" ) );
   }
-  std::string cfg1_out_name( boost::any_cast< std::string& >( global( "cfg1_out" ) ) );
+  std::string cfg1_out_name( get_global< std::string >( "cfg1_out" ) );
   std::auto_ptr< cfg1_out > cfg1_out( factory.create_cfg1_out( cfg1_out_name ) );
 
-  codeset_t codeset = boost::any_cast< codeset_t >( global( "codeset" ) );
+  codeset_t codeset = get_global< codeset_t >( "codeset" );
   cfg1_out->load_cfg( input_file, codeset, *factory.get_static_api_info_map() );
   cfg1_out->load_srec();
   cfg1_out::static_api_map api_map( cfg1_out->merge() );
@@ -145,8 +229,8 @@ bool cfg3_main()
   std::auto_ptr< checker > p_checker( factory.create_checker() );
   std::tr1::shared_ptr< checker > chk( p_checker );
   toppers::global( "checker" ) = chk;
-  std::string rom_image( boost::any_cast< std::string& >( toppers::global( "rom-image" ) ) );
-  std::string symbol_table( boost::any_cast< std::string& >( toppers::global( "symbol-table" ) ) );
+  std::string rom_image( get_global< std::string >( "rom-image" ) );
+  std::string symbol_table( get_global< std::string >( "symbol-table" ) );
   chk->load_rom_image( rom_image, symbol_table );
 
   // テンプレートファイル
@@ -167,7 +251,8 @@ bool cfg3_main()
     // テンプレート処理
     std::auto_ptr< macro_processor > mproc( factory.create_macro_processor( factory.get_hook_on_assign(), *cfg1_out, api_map ) );
 
-    toppers::macro_processor::func_t func_info;
+    // ↓ 追加組み込み関数の登録
+    toppers::macro_processor::func_t func_info = { "" };
     func_info.name = "SYMBOL";
     func_info.f = &bf_symbol;
     mproc->add_builtin_function( func_info );
@@ -176,8 +261,13 @@ bool cfg3_main()
     func_info.f = &bf_peek;
     mproc->add_builtin_function( func_info );
 
-    fs::path cfg_dir( boost::any_cast< std::string& >( global( "cfg-directory" ) ), fs::native );
-    std::vector< std::string > include_paths = boost::any_cast< std::vector< std::string > >( global( "include-path" ) );
+    func_info.name = "BCOPY";
+    func_info.f = &bf_bcopy;
+    mproc->add_builtin_function( func_info );
+    // ↑ 追加組み込み関数の登録
+
+    fs::path cfg_dir( get_global< std::string >( "cfg-directory" ), fs::native );
+    std::vector< std::string > include_paths = get_global< std::vector< std::string > >( "include-path" );
     include_paths.push_back( cfg_dir.empty() ? "." : cfg_dir.native_file_string() );
 
     toppers::text in_text;
@@ -201,7 +291,13 @@ bool cfg3_main()
     output_file::save();
   }
 
-  std::cerr << _( "check complete" ) << std::endl;
+  // パス4以降からも流用されるため、現在処理中のパスを調べる。
+  int pass = get_global< int >( "pass" );
+  int max_pass = get_global< int >( "max-pass" );
+  if ( max_pass == pass ) // 最終段階のパスが成功したときに"check complete"メッセージを出す。
+  {
+    std::cerr << _( "check complete" ) << std::endl;
+  }
 
   return true;
 }

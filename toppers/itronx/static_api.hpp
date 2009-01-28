@@ -80,6 +80,7 @@ namespace toppers
        *  - %: オブジェクト識別子で、かつ自動割付けの対象とならないもの
        *  - .: 符号無し整数定数式パラメータ
        *  - +: 符号付き整数定数式パラメータ
+       *  - $: 文字列定数式パラメータ
        *  - &: 一般定数式パラメータ
        *
        *  なお、{ および } も便宜的にパラメータの一種として扱っている（構文解析に必要なため）。
@@ -101,6 +102,7 @@ namespace toppers
         std::string symbol;   //!< 仮引数名
         std::string text;     //!< 実引数の字面
         boost::optional< std::tr1::intmax_t > value;  //!< 実引数の値
+        std::string string;
       };
       typedef std::vector< parameter > parameter_container;
       typedef parameter_container::iterator iterator;
@@ -186,7 +188,7 @@ namespace toppers
         static void assign_id( ForwardIterator first, ForwardIterator last )
       {
         std::map< std::string, long > id_map;
-        std::set< std::string > slave_id_set;
+        std::map< std::string, std::set< std::string > > slave_id_set;
         std::vector< std::string > id_res;
         typedef std::vector< std::string >::size_type size_type;
 
@@ -276,11 +278,12 @@ namespace toppers
               {
                 fatal( iter->line(), _( "`%1%\' is undefined" ), iter->at( info->id_pos ).text );
               }
-              if ( slave_id_set.find( name ) != slave_id_set.end() )  // DEF_TEX重複定義の判定
+              std::set< std::string >& set = slave_id_set[ info->api_name ];
+              if ( set.find( name ) != set.end() )  // DEF_TEX重複定義の判定
               {
                 fatal( iter->line(), _( "E_OBJ: `%1%\' is duplicated" ), iter->at( info->id_pos ).text );
               }
-              slave_id_set.insert( name );
+              set.insert( name );
             }
           }
         }

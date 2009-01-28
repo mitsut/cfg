@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2008 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2009 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -45,6 +45,7 @@
 #include "toppers/macro_processor.hpp"
 #include "toppers/diagnostics.hpp"
 #include "toppers/gettext.hpp"
+#include "toppers/cpp.hpp"
 #include <boost/format.hpp>
 #include <boost/utility.hpp>
 #include <boost/lexical_cast.hpp>
@@ -129,7 +130,7 @@ namespace toppers
    *  第1マクロ実引数として指定した順序付きリストの要素数を返す。
    *  第1マクロ実引数が順序付きリストでない場合は1を返す。また、第1マクロ実引数が無効な変数の場合は0を返す。
    */
-  var_t bf_length( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_length( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     element e;
     if ( macro_processor::check_arity( line, arg_list.size(), 1, "LENGTH" ) )
@@ -148,12 +149,12 @@ namespace toppers
    *  \retval     マクロ返却値
    *  第1マクロ実引数と第2マクロ実引数を文字列として比較し、一致する場合は真を、そうでなければ偽を返す。
    */
-  var_t bf_eq( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_eq( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     element e;
     if ( macro_processor::check_arity( line, arg_list.size(), 2, "EQ" ) )
     {
-      e.i = get_s( arg_list[0], p_ctx ) == get_s( arg_list[1], p_ctx );
+      e.i = get_s( arg_list[ 0 ], p_ctx ) == get_s( arg_list[ 1 ], p_ctx );
     }
     return var_t( 1, e );
   }
@@ -166,18 +167,18 @@ namespace toppers
    *  \retval     マクロ返却値
    *  第1マクロ実引数が無効な変数の場合は第2実引数を返す。その他は第1実引数を返す。
    */
-  var_t bf_alt( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_alt( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     element e;
     if ( macro_processor::check_arity( line, arg_list.size(), 2, "ALT" ) )
     {
       if ( !arg_list[0].empty() )
       {
-        return arg_list[0];
+        return arg_list[ 0 ];
       }
       else
       {
-        return arg_list[1];                
+        return arg_list[ 1 ];                
       }
     }
     return var_t( 1, e );
@@ -200,13 +201,13 @@ namespace toppers
    *  → { 2,1,3 }
    *  \endexample
    */
-  var_t bf_sort( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_sort( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     var_t result;
     if ( macro_processor::check_arity( line, arg_list.size(), 2, "SORT" ) )
     {
-      var_t list( arg_list[0] );
-      std::string field( get_s( arg_list[1], p_ctx ) );
+      var_t list( arg_list[ 0 ] );
+      std::string field( get_s( arg_list[ 1 ], p_ctx ) );
       std::vector< std::pair< element, std::tr1::int64_t > > temp;
 
       for ( var_t::const_iterator iter( list.begin() ), last( list.end() ); iter != last; ++iter )
@@ -246,12 +247,12 @@ namespace toppers
    *  \retval     マクロ返却値
    *  第1マクロ実引数で指定した環境変数の値を返す。
    */
-  var_t bf_environ( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_environ( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     element e;
     if ( macro_processor::check_arity( line, arg_list.size(), 1, "ENVIRON" ) )
     {
-      std::string name = get_s( arg_list[0], p_ctx );
+      std::string name = get_s( arg_list[ 0 ], p_ctx );
       char const* env = std::getenv( name.c_str() );
       if ( env == 0 )
       {
@@ -279,18 +280,18 @@ namespace toppers
    *  \retval     マクロ返却値
    *  第1マクロ実引数をテキスト、第2マクロ実引数を数値として、値を生成する。
    */
-  var_t bf_value( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_value( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     element e;
     if ( macro_processor::check_arity( line, arg_list.size(), 2, "VALUE" ) )
     {
       if ( !arg_list[0].empty() )
       {
-        e.s = get_s( arg_list[0], p_ctx );
+        e.s = get_s( arg_list[ 0 ], p_ctx );
       }
       if ( !arg_list[1].empty() )
       {
-        e.i = get_i( arg_list[1], p_ctx );
+        e.i = get_i( arg_list[ 1 ], p_ctx );
       }
     }
     return var_t( 1, e );
@@ -304,12 +305,12 @@ namespace toppers
    *  \retval     マクロ返却値
    *  第1マクロ実引数と第2マクロ実引数を連結して新しい文字列を生成する。
    */
-  var_t bf_concat( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_concat( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     element e;
     if ( macro_processor::check_arity( line, arg_list.size(), 2, "CAT" ) )
     {
-      e.s = get_s( arg_list[0], p_ctx ) + get_s( arg_list[1], p_ctx );
+      e.s = get_s( arg_list[ 0 ], p_ctx ) + get_s( arg_list[ 1 ], p_ctx );
     }
     return var_t( 1, e );
   }
@@ -322,13 +323,13 @@ namespace toppers
    *  \retval     マクロ返却値
    *  第1マクロ実引数と第2マクロ実引数を連結して新しい順序付きリストを生成する。
    */
-  var_t bf_append( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_append( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     var_t result;
     if ( macro_processor::check_arity( line, arg_list.size(), 2, "APPEND" ) )
     {
-      result = arg_list[0];
-      result.insert( result.end(), arg_list[1].begin(), arg_list[1].end() );
+      result = arg_list[ 0 ];
+      result.insert( result.end(), arg_list[ 1 ].begin(), arg_list[1].end() );
     }
     return result;
   }
@@ -341,14 +342,14 @@ namespace toppers
    *  \retval     マクロ返却値
    *  第1マクロ実引数で指定した順序リストの、第2マクロ実引数で指定した要素を返す。
    */
-  var_t bf_at( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_at( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     element e;
     if ( macro_processor::check_arity( line, arg_list.size(), 2, "CAT" ) )
     {
       try
       {
-        e = arg_list[0].at( static_cast< std::vector< var_t >::size_type >( get_i( arg_list[1], p_ctx ) ) );
+        e = arg_list[ 0 ].at( static_cast< std::vector< var_t >::size_type >( get_i( arg_list[1], p_ctx ) ) );
       }
       catch ( std::out_of_range& )
       {
@@ -367,12 +368,12 @@ namespace toppers
    *  \retval     マクロ返却値
    *  第1マクロ実引数で指定した文字列を翻訳する。
    */
-  var_t bf_gettext( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_gettext( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     element e;
     if ( macro_processor::check_arity( line, arg_list.size(), 1, "GETTEXT" ) )
     {
-      std::string message = get_s( arg_list[0], p_ctx );
+      std::string message = get_s( arg_list[ 0 ], p_ctx );
       e.s = gettext( message );
     }
     return var_t( 1, e );
@@ -388,7 +389,7 @@ namespace toppers
    *  書式化文字列は、%nが使えないことを除き、printf関数のスーパーセットである。
    *  正確な仕様は、boost::formatを参照のこと。
    */
-  var_t bf_format( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_format( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     element e;
     std::size_t arity = arg_list.size();
@@ -396,7 +397,7 @@ namespace toppers
     {
       error( line, _( "too few arguments for `%1%\'" ), "FORMAT" );
     }
-    boost::format fmt( get_s( arg_list[0], p_ctx ) );
+    boost::format fmt( get_s( arg_list[ 0 ], p_ctx ) );
     for ( std::size_t i = 1; i < arity; i++ )
     {
       std::pair< var_t const*, context const* > arg( &arg_list[i], p_ctx );
@@ -416,13 +417,13 @@ namespace toppers
    *  先頭から順に探索する。
    *  等しい要素が見つかればその要素へのインデックスを、そうでなければ空値を返す。
    */
-  var_t bf_find( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_find( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     element e;
     if ( macro_processor::check_arity( line, arg_list.size(), 2, "FIND" ) )
     {
-      var_t list( arg_list[0] );
-      std::tr1::int64_t value( get_i( arg_list[1], p_ctx ) );
+      var_t list( arg_list[ 0 ] );
+      std::tr1::int64_t value( get_i( arg_list[ 1 ], p_ctx ) );
 
       for ( var_t::const_iterator iter( list.begin() ), last( list.end() ); iter != last; ++iter )
       {
@@ -447,13 +448,13 @@ namespace toppers
    *  となる順序付きリストを生成する。
    *  引数が正しくない場合は空値を返す。
    */
-  var_t bf_range( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_range( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     var_t result;
     if ( macro_processor::check_arity( line, arg_list.size(), 2, "RANGE" ) )
     {
-      std::tr1::int64_t arg1( get_i( arg_list[0], p_ctx ) );
-      std::tr1::int64_t arg2( get_i( arg_list[1], p_ctx ) );
+      std::tr1::int64_t arg1( get_i( arg_list[ 0 ], p_ctx ) );
+      std::tr1::int64_t arg2( get_i( arg_list[ 1 ], p_ctx ) );
 
       for ( ; arg1 <= arg2; ++arg1 )
       {
@@ -475,7 +476,7 @@ namespace toppers
    *  ファイル名として、"stdout"を指定した場合は標準出力、"stderr"を指定した場合は標準エラーに出力する。
    *  ファイル名を省略した場合は"stderr"を指定したものとして振舞う。
    */
-  var_t bf_dump( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_dump( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     std::size_t arity = arg_list.size();
 
@@ -513,7 +514,7 @@ namespace toppers
     std::string filename( "stderr" );
     if ( arity == 1 )
     {
-      filename = get_s( arg_list[0], p_ctx );
+      filename = get_s( arg_list[ 0 ], p_ctx );
     }
     if ( filename == "stdout" )
     {
@@ -547,7 +548,7 @@ namespace toppers
    *  ファイル名として、"stdout"を指定した場合は標準出力、"stderr"を指定した場合は標準エラーに出力する。
    *  ファイル名を省略した場合は"stderr"を指定したものとして振舞う。
    */
-  var_t bf_trace( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_trace( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     std::size_t arity = arg_list.size();
 
@@ -570,7 +571,11 @@ namespace toppers
       trace_str += "\"" + iter->s + "\"(";
       if ( iter->i ) // 値属性があれば...
       {
-        trace_str += boost::lexical_cast< std::string >( *iter->i );
+        trace_str += boost::lexical_cast< std::string >( *iter->i ) + " as integer";
+      }
+      else if ( !iter->v.empty() )
+      {
+        trace_str += "\"" + boost::lexical_cast< std::string >( iter->v ) + "\" as string";
       }
       trace_str += "), ";
     }
@@ -604,6 +609,136 @@ namespace toppers
   }
 
   /*!
+   *  \brief  文字列のエスケープ
+   *  \param[in]  line      行番号
+   *  \param[in]  arg_list  マクロ実引数リスト
+   *  \param[in]  p_ctx     マクロコンテキスト
+   *  \retval     マクロ返却値
+   */
+  var_t bf_escstr( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
+  {
+    element e;
+    if ( macro_processor::check_arity( line, arg_list.size(), 1, "ESCSTR" ) )
+    {
+      std::string str( get_s( arg_list[ 0 ], p_ctx ) );
+      e.s = quote_string( str );
+    }
+    return var_t( 1, e );
+  }
+
+  /*!
+   *  \brief  文字列のエスケープ解除
+   *  \param[in]  line      行番号
+   *  \param[in]  arg_list  マクロ実引数リスト
+   *  \param[in]  p_ctx     マクロコンテキスト
+   *  \retval     マクロ返却値
+   */
+  var_t bf_unescstr( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
+  {
+    element e;
+    if ( macro_processor::check_arity( line, arg_list.size(), 1, "UNESCSTR" ) )
+    {
+      std::string str( get_s( arg_list[ 0 ], p_ctx ) );
+      e.s = expand_quote( str );
+    }
+    return var_t( 1, e );
+  }
+
+  /*!
+   *  \brief  関数の呼び出し
+   *  \param[in]  line      行番号
+   *  \param[in]  arg_list  マクロ実引数リスト
+   *  \param[in]  p_ctx     マクロコンテキスト
+   *  \retval     マクロ返却値
+   */
+  var_t bf_call( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
+  {
+    return macro_processor::call_user_function( line, arg_list, p_ctx );
+  }
+
+  namespace
+  {
+    struct bf_functor : std::binary_function< element const&, element const&, bool >
+    {
+    public:
+      bf_functor( text_line const& line, std::string const& func_name, context* p_ctx )
+        : line_( line ), func_name_( func_name ), p_ctx_( p_ctx )
+      {
+      }
+      bool operator()( element const& lhs, element const& rhs )
+      {
+        std::vector< var_t > arg_list;
+        arg_list.reserve( 3 );
+
+        element e;
+        e.s = func_name_;
+        arg_list.push_back( var_t( 1, e ) );
+        arg_list.push_back( var_t( 1, lhs ) );
+        arg_list.push_back( var_t( 1, rhs ) );
+        int arg1 = *lhs.i, arg2 = *rhs.i;
+
+        var_t r = bf_call( line_, arg_list, p_ctx_ );
+        bool result = 0;
+        if ( !r.empty() )
+        {
+          int retval = *r.front().i;
+          result = ( *r.front().i < 0 );
+        }
+        return result;
+      }
+    private:
+      std::string func_name_;
+      context* p_ctx_;
+      text_line line_;
+    };
+  }
+
+  /*!
+   *  \brief  ソート
+   *  \param[in]  line      行番号
+   *  \param[in]  arg_list  マクロ実引数リスト
+   *  \param[in]  p_ctx     マクロコンテキスト
+   *  \retval     マクロ返却値
+   */
+  var_t bf_lsort( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
+  {
+    if ( macro_processor::check_arity( line, arg_list.size(), 2, "LSORT" ) )
+    {
+      var_t temp( arg_list[ 0 ] );
+      std::string compare( arg_list[ 1 ].front().s );
+      std::stable_sort( temp.begin(), temp.end(), bf_functor( line, compare, p_ctx ) );
+      return temp;
+    }
+    element e;
+    return var_t( 1, e );
+  }
+
+  /*!
+   *  \brief  関数かどうかの判別
+   *  \param[in]  line      行番号
+   *  \param[in]  arg_list  マクロ実引数リスト
+   *  \param[in]  p_ctx     マクロコンテキスト
+   *  \retval     マクロ返却値
+   */
+  var_t bf_isfunction( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
+  {
+    element e;
+    if ( macro_processor::check_arity( line, arg_list.size(), 1, "ISFUNCTION" ) )
+    {
+      std::string func_name( get_s( arg_list[ 0 ], p_ctx ) );
+      if ( p_ctx->func_map.find( func_name ) != p_ctx->func_map.end() )
+      {
+        e.i = 1;
+      }
+      else
+      {
+        e.i = 0;
+      }
+    }
+    return var_t( 1, e );
+  }
+
+  /*!
    *  \brief  何もしない組み込み関数
    *  \param[in]  line      行番号
    *  \param[in]  arg_list  マクロ実引数リスト
@@ -613,7 +748,7 @@ namespace toppers
    *  NOOP関数は常に "" を返す。
    *  \note       空値を返さないのは、$NOOP()$のような使い方をしたときでも不正な参照が起こらないようにするため。
    */
-  var_t bf_noop( text_line const& line, std::vector< var_t > const& arg_list, context const* p_ctx )
+  var_t bf_noop( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     element e;
     return var_t( 1, e );
@@ -637,8 +772,13 @@ namespace toppers
     { "RANGE", bf_range },
     { "DUMP", bf_dump },
     { "TRACE", bf_trace },
+    { "ESCSTR", bf_escstr },
+    { "UNESCSTR", bf_unescstr },
+    { "CALL", bf_call },
+    { "LSORT", bf_lsort },
+    { "ISFUNCTION", bf_isfunction },
     { "NOOP", bf_noop },
-    { 0, 0 },
+    { "", 0 },
   };
 
 }

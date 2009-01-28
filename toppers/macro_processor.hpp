@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2008 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2009 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -71,6 +71,7 @@ namespace toppers
     struct element
     {
       boost::optional< std::tr1::int64_t > i;
+      std::string v;
       std::string s;
     };
     /*!
@@ -81,11 +82,14 @@ namespace toppers
     /*!
      *  \struct func_t macro_processor.hpp "toppers/macro_processor.hpp"
      *  \brief  マクロ内で扱う関数を表現する型
+     *  \note   元々単純な構造体であったため、互換性のため、集成体と特性を維持させている。
+     *  \attention  node の初期化忘れに要注意
      */
     struct func_t
     {
-      char const* name;   //!< 関数名
-      var_t ( * f )( text_line const& line, std::vector< var_t > const&, context const* );  //!< 処理内容
+      std::string name;   //!< 関数名
+      var_t ( * f )( text_line const& line, std::vector< var_t > const&, context* );  //!< 処理内容
+      void const* node;
     };
 
     typedef void ( * hook_t )( text_line const&, std::string const&, var_t const&, var_t const&, context* );
@@ -95,10 +99,11 @@ namespace toppers
       std::stack< var_t > stack;
       std::map< std::string, var_t > var_map;
       std::map< std::string, func_t > func_map;
+      bool in_function;
       output_file target_file;
       hook_t hook_on_assign;
       text_line line;
-      explicit context( hook_t hoa = 0 ) : hook_on_assign( hoa ) {}
+      explicit context( hook_t hoa = 0 ) : hook_on_assign( hoa ), in_function( false ) {}
     };
 
     explicit macro_processor( hook_t hook_on_assign = 0 );
@@ -120,6 +125,7 @@ namespace toppers
     static std::tr1::int64_t to_integer( var_t const& var, context const* p_ctx );
     static std::string to_string( var_t const& var, context const* p_ctx );
     static bool check_arity( text_line const& line, std::size_t arity, std::size_t valid, char const* function_name );
+    static var_t call_user_function( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx );
   private:
     context* p_ctx_;
     static func_t const builtin_function_table[];

@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2008 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2009 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -123,7 +123,12 @@ namespace
       {
         has_class = true;
       }
+      if ( kernel == "hrp2" )
+      {
+        has_domain = true;
+      }
 
+      toppers::global( "max-pass" ) = ( has_domain ? 4 : 3 );
       toppers::global( "has-class" ) = has_class;
       toppers::global( "has-domain" ) = has_domain;
     }
@@ -199,7 +204,7 @@ namespace
       {
         include_path = boost::any_cast< std::vector< std::string > >( t );
       }
-      include_path.push_back( boost::any_cast< std::string >( toppers::global( "cfg-directory" ) ) );
+      include_path.push_back( toppers::get_global< std::string >( "cfg-directory" ) );
       toppers::global( "include-path" ) = include_path;
     }
     if ( vm.count( "output-directory" ) )
@@ -216,7 +221,7 @@ namespace
     }
     else
     {
-      toppers::global( "symbol-table" ) = boost::any_cast< std::string& >( toppers::global( "kernel" ) ) + ".syms";
+      toppers::global( "symbol-table" ) = toppers::get_global< std::string >( "kernel" ) + ".syms";
     }
     if ( vm.count( "id-output-file" ) )
     {
@@ -232,12 +237,11 @@ namespace
     }
     toppers::global( "external-id" ) = vm.count( "external-id" ) ? true : false;
 
+    toppers::global( "version" ) = std::string( CFG_VERSION );
+
     if ( vm.count( "version" ) )
     {
-      toppers::global( "version" ) = CFG_VERSION;
-      std::cout << "TOPPERS Kernel Configurator version "
-                << ( CFG_VERSION / 10000 ) << '-' << ( CFG_VERSION / 100 % 100 ) << '-' << ( CFG_VERSION % 100 )
-                << std::endl;
+      std::cout << "TOPPERS Kernel Configurator version " << CFG_VERSION << std::endl;
       toppers::global( "pass0" ) = true;
     }
     if ( vm.count( "help" ) )
@@ -266,17 +270,19 @@ int cfg_main( int argc, char* argv[] )
     cfg_dir.resize( cfg_dir.size() - 1 );
   }
   toppers::global( "cfg-directory" ) = cfg_dir;
+  toppers::global( "argv0" ) = std::string( argv[ 0 ] );  // プログラム名
+  toppers::global( "timestamp" ) = cfg_timestamp();       // タイムスタンプ
 
   int pass = parse_program_options( argc, argv );
-  bool ( * pfn_cfg[] )() = { &cfg0_main, &cfg1_main, &cfg2_main, &cfg3_main };
-  int max_pass = static_cast< int >( sizeof( pfn_cfg ) / sizeof( pfn_cfg[0] ) );
+  bool ( * pfn_cfg[] )() = { &cfg0_main, &cfg1_main, &cfg2_main, &cfg3_main, &cfg4_main };
+  int max_pass = toppers::get_global< int >( "max-pass" );
 
-  if ( pass < 0 || max_pass <= pass )
+  if ( pass < 0 || max_pass < pass )
   {
     fatal( _( "illegal cfg pass #%d" ), pass );
   }
 
-  if ( !( *pfn_cfg[pass] )() )
+  if ( !( *pfn_cfg[ pass ] )() )
   {
     return EXIT_FAILURE;
   }

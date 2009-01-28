@@ -51,7 +51,7 @@
 #include <cwchar>
 #include <cwctype>
 #include <cstdlib>
-#include "toppers/config.hpp"
+#include "toppers/codeset.hpp"
 #include <boost/scoped_array.hpp>
 
 // workaround
