@@ -186,12 +186,40 @@ namespace toppers
       }
 
       // クラスIDリストをマクロプロセッサの変数として設定する。
-      void set_clsid_vars( std::vector< std::pair< std::string, long > > const& table, macro_processor& mproc )
+      void set_clsid_vars( std::vector< std::pair< std::string, long > > const& table, cfg1_out const& cfg1out, macro_processor& mproc )
       {
         typedef macro_processor::element element;
-        typedef macro_processor::var_t var_t;
+        macro_processor::var_t var;
 
-        // TODO
+        bool little_endian = cfg1out.is_little_endian();
+        nm_symbol::entry nm_entry = cfg1out.get_syms()->find( "TOPPERS_cfg_sizeof_signed_t" );
+        std::size_t sizeof_signed_t = static_cast< std::size_t >( cfg1out.get_srec()->get_value( nm_entry.address, 4, little_endian ) );
+
+        for ( std::vector< std::pair< std::string, long > >::const_iterator iter( table.begin() ), last( table.end() );
+              iter != last;
+              ++iter )
+        {
+          if ( !iter->first.empty() )
+          {
+            element e;
+            e.s = iter->first;
+
+            std::string symbol = "TOPPERS_cfg_valueof_" + iter->first;
+            nm_symbol::entry nm_entry = cfg1out.get_syms()->find( symbol );
+            if ( nm_entry.type == -1 )
+            {
+              continue;
+            }
+            const std::size_t size = sizeof_signed_t;
+            std::tr1::intmax_t value = cfg1out.get_srec()->get_value( nm_entry.address, size, little_endian );
+
+            e.i = value;
+
+            var.push_back( e );
+          }
+        }
+        // クラスIDの値でソートしていない
+        mproc.set_var( "CLS.ID_LIST", var );
       }
 
       // ドメインIDリストをマクロプロセッサの変数として設定する。
@@ -478,7 +506,7 @@ namespace toppers
 
       // その他の組み込み変数の設定
       set_object_vars( api_map, *mproc );
-      set_clsid_vars( cfg1out.get_clsid_table(), *mproc );
+      set_clsid_vars( cfg1out.get_clsid_table(), cfg1out, *mproc );
       set_domid_vars( cfg1out.get_domid_table(), *mproc );
       set_platform_vars( cfg1out, *mproc );
       e.s = cfg1out.get_includes();
