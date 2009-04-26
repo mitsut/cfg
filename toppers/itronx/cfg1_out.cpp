@@ -44,7 +44,7 @@
 #include <stack>
 #include "toppers/text.hpp"
 #include "toppers/diagnostics.hpp"
-#include "toppers/c_parser.hpp"
+#include "toppers/c_expr.hpp"
 #include "toppers/global.hpp"
 #include "toppers/macro_processor.hpp"
 #include "toppers/s_record.hpp"
@@ -296,10 +296,16 @@ namespace toppers
 
           std::string block_type;
           std::string id;
+          std::string idexp;
+          c_const_expr_parser const c_const_expr_p;
           info = parse( iter, last,
                         (
-                          ( str_p( "CLASS" ) | "DOMAIN" )[ assign_a( block_type ) ]
+                          str_p( "DOMAIN" )[ assign_a( block_type ) ]
                           >> '(' >> c_ident_p[ assign_a( id ) ] >> ')' >> '{'
+                        )
+                      | (
+                          str_p( "CLASS" )[ assign_a( block_type ) ]
+                          >> '(' >> c_const_expr_p[ assign_a( id ) ] >> ')' >> '{'
                         )
                       | (
                           str_p( "KERNEL_DOMAIN" )[ assign_a( block_type ) ] >> '{'
@@ -311,6 +317,7 @@ namespace toppers
             b.type = block_type;
             b.id = id;
             b.line = iter.line();
+            idexp = id; // 字面としてのIDを保存
 
             if ( block_type == "CLASS" )
             {
@@ -354,6 +361,15 @@ namespace toppers
             }
             else if ( block_type == "CLASS" ) // クラスIDの登録
             {
+              // クラスIDに式を使えるようにしたため、識別子に使える形式に変換する必要がある
+              std::tr1::uint64_t hash = 0;
+              for ( const char* s = id.c_str(); *s != '\0'; ++s )
+              {
+                hash = ( ( hash << 1 ) | ( hash >> 63 ) ) ^ static_cast< unsigned char >( *s );
+              }
+              id = boost::str( boost::format( "%02x_%016x_%u" ) % *id.c_str() % hash % id.size() );
+              b.id = id;
+
               bool hit = false;
               for ( std::vector< std::pair< std::string, long > >::const_iterator iter( clsid_table.begin() ), last( clsid_table.end() );
                     iter != last;
@@ -381,16 +397,21 @@ namespace toppers
             block_stack.push( b );
             block_table.push_back( b );
 
-            oss << "\n#ifndef TOPPERS_cfg_valueof_" << id << "_DEFINED\n"
-                   "#define TOPPERS_cfg_valueof_" << id << "_DEFINED 1\n";
-            oss << boost::format( "\n#line %1% \"%2%\"\n" ) % ( iter.line().line ) % iter.line().file;
             if ( block_type == "CLASS" )
             {
-              current_class = id;
-              oss << "const unsigned_t TOPPERS_cfg_valueof_" << id << " = " << id << ";\n";
+              oss << "\n#ifndef TOPPERS_cfg_valueof_" << id << "_DEFINED\n"
+                    "#define TOPPERS_cfg_valueof_" << id << "_DEFINED 1\n";
+              oss << boost::format( "\n#line %1% \"%2%\"\n" ) % ( iter.line().line ) % iter.line().file;
+
+              current_class = idexp;
+              oss << "const unsigned_t TOPPERS_cfg_valueof_" << id << " = " << idexp << ";\n";
             }
             if ( block_type == "DOMAIN" )
             {
+              oss << "\n#ifndef TOPPERS_cfg_valueof_" << id << "_DEFINED\n"
+                    "#define TOPPERS_cfg_valueof_" << id << "_DEFINED 1\n";
+              oss << boost::format( "\n#line %1% \"%2%\"\n" ) % ( iter.line().line ) % iter.line().file;
+
               current_domain = id;
               oss << "const unsigned_t TOPPERS_cfg_valueof_" << id << " = ";
               if ( id == "TDOM_KERNEL" )

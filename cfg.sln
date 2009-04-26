@@ -32,9 +32,6 @@ Global
 		{994810C2-F530-4679-9DF8-AF39A3AC61C9}.Release.ActiveCfg = Release|Win32
 		{994810C2-F530-4679-9DF8-AF39A3AC61C9}.Release.Build.0 = Release|Win32
 	EndGlobalSection
-	GlobalSection(SolutionItems) = postSolution
-		memo.txt = memo.txt
-	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
 	GlobalSection(ExtensibilityAddIns) = postSolution

@@ -41,6 +41,18 @@
 namespace
 {
 
+  //! 連続したスラッシュ / を単一のスラッシュに置換する
+  std::string slashes_to_single_slash( std::string const& str )
+  {
+    std::string result( str );
+    std::string::size_type pos = 0; 
+    while ( ( pos = result.find( "//", pos ) ) != std::string::npos )
+    {
+      result.erase( pos, 1 );
+    }
+    return result;
+  }
+
   //! 起動オプションの解析
   int parse_program_options( int argc, char* argv[] )
   {
@@ -134,15 +146,19 @@ namespace
     }
     if ( vm.count( "include-path" ) )
     {
-      toppers::global( "include-path" ) = vm["include-path"].as< std::vector< std::string > >();
+      std::vector< std::string > v( vm["include-path"].as< std::vector< std::string > >() );
+      std::transform( v.begin(), v.end(), v.begin(), &slashes_to_single_slash );
+      toppers::global( "include-path" ) = v;
     }
     if ( vm.count( "template-file" ) )
     {
-      toppers::global( "template-file" ) = vm["template-file"].as< std::string >();
+      toppers::global( "template-file" )
+        = slashes_to_single_slash( vm["template-file"].as< std::string >() );
     }
     if ( vm.count( "input-file" ) )
     {
-      toppers::global( "input-file" ) = vm["input-file"].as< std::string >();
+      toppers::global( "input-file" )
+        = slashes_to_single_slash( vm["input-file"].as< std::string >() );
     }
     if ( vm.count( "input-charset" ) )
     {
@@ -171,11 +187,15 @@ namespace
     }
     if ( vm.count( "api-table" ) )
     {
-      toppers::global( "api-table" ) = vm["api-table"].as< std::vector< std::string > >();
+      std::vector< std::string > v( vm["api-table"].as< std::vector< std::string > >() );
+      std::transform( v.begin(), v.end(), v.begin(), &slashes_to_single_slash );
+      toppers::global( "api-table" ) = v;
     }
     if ( vm.count( "cfg1-def-table" ) )
     {
-      toppers::global( "cfg1-def-table" ) = vm["cfg1-def-table"].as< std::vector< std::string > >();
+      std::vector< std::string > v( vm["cfg1-def-table"].as< std::vector< std::string > >() );
+      std::transform( v.begin(), v.end(), v.begin(), &slashes_to_single_slash );
+      toppers::global( "cfg1-def-table" ) = v;
     }
     if ( vm.count( "cfg1_out" ) )
     {
@@ -188,12 +208,13 @@ namespace
     if ( vm.count( "cfg-directory" ) )
     {
       std::string cfg_directory( vm["cfg-directory"].as< std::string >() );
-      toppers::global( "cfg-directory" ) = cfg_directory;
+      toppers::global( "cfg-directory" ) = slashes_to_single_slash( cfg_directory );
       toppers::load_msgcat( cfg_directory );
     }
     if ( vm.count( "msgcat-directory" ) )
     {
       std::vector< std::string > msgcat_dirs( vm["msgcat-directory"].as< std::vector< std::string > >() );
+      std::transform( msgcat_dirs.begin(), msgcat_dirs.end(), msgcat_dirs.begin(), &slashes_to_single_slash );
       std::for_each( msgcat_dirs.begin(), msgcat_dirs.end(), &toppers::load_msgcat );
     }
     if ( true ) // include-path を空にしてはならない
@@ -209,15 +230,15 @@ namespace
     }
     if ( vm.count( "output-directory" ) )
     {
-      toppers::global( "output-directory" ) = vm["output-directory"].as< std::string >();
+      toppers::global( "output-directory" ) = slashes_to_single_slash( vm["output-directory"].as< std::string >() );
     }
     if ( vm.count( "rom-image" ) )
     {
-      toppers::global( "rom-image" ) = vm["rom-image"].as< std::string >();
+      toppers::global( "rom-image" ) = slashes_to_single_slash( vm["rom-image"].as< std::string >() );
     }
     if ( vm.count( "symbol-table" ) )
     {
-      toppers::global( "symbol-table" ) = vm["symbol-table"].as< std::string >();
+      toppers::global( "symbol-table" ) = slashes_to_single_slash( vm["symbol-table"].as< std::string >() );
     }
     else
     {
@@ -225,11 +246,11 @@ namespace
     }
     if ( vm.count( "id-output-file" ) )
     {
-      toppers::global( "id-output-file" ) = vm["id-output-file"].as< std::string >();
+      toppers::global( "id-output-file" ) = slashes_to_single_slash( vm["id-output-file"].as< std::string >() );
     }
     if ( vm.count( "id-input-file" ) )
     {
-      toppers::global( "id-input-file" ) = vm["id-input-file"].as< std::string >();
+      toppers::global( "id-input-file" ) = slashes_to_single_slash( vm["id-input-file"].as< std::string >() );
     }
     if ( vm.count( "alignof-fp" ) )
     {
