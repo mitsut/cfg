@@ -1,103 +1,103 @@
 
-	TOPPERS怴悽戙僇乕僱儖梡僐儞僼傿僊儏儗乕僞乮Release 1.5.0乯
+	TOPPERS糠坤洛カ〖ネル脱コンフィギュレ〖タ∈Release 1.5.0∷
 
 
-TOPPERS怴悽戙僇乕僱儖梡僐儞僼傿僊儏儗乕僞偼丄僇乕僱儖傗僜僼僩僂僃傾晹昳
-偺峔惉傗弶婜忬懺傪掕媊偟偨僔僗僥儉僐儞僼傿僊儏儗乕僔儑儞僼傽僀儖傪夝庍偟丄
-僔僗僥儉傪峔抸偡傞忋偱昁梫側僼傽僀儖椶傪惗惉偡傞TOPPERS怴悽戙僇乕僱儖梡
-偺僣乕儖偱偡丅
+TOPPERS糠坤洛カ〖ネル脱コンフィギュレ〖タは、カ〖ネルやソフトウェア婶墒
+の菇喇や介袋觉轮を年盗したシステムコンフィギュレ〖ションファイルを豺坚し、
+システムを菇蜜する惧で涩妥なファイル梧を栏喇するTOPPERS糠坤洛カ〖ネル脱
+のツ〖ルです。
 
-僐儞僼傿僊儏儗乕僞偼丄僐儞僷僀儔傗傾僙儞僽儔傪弶傔偲偡傞奐敪僣乕儖偲摨條丄
-PC摍偺奐敪梡僐儞僺儏乕僞忋偱摦嶌偡傞僐儅儞僪儔僀儞僾儘僌儔儉偱偡丅偟偨偑
-偭偰丄僐儞僼傿僊儏儗乕僞偦偺傕偺偑嵟廔揑側惢昳偵慻傒崬傑傟傞偙偲偼丄尨懃
-偲偟偰偁傝傑偣傫丅僐儞僼傿僊儏儗乕僞偼僐儅儞僪儔僀儞僣乕儖側偺偱丄僐儞僷
-僀儔傪弶傔偲偟偨懠偺僐儅儞僪儔僀儞僣乕儖偲慻傒崌傢偣偰巊梡偡傞偙偲傪慜採
-偲偟偰偄傑偡丅偟偐偟丄儐乕僓乕偑揔愗偵愝掕傪峴偆偙偲偱丄懡偔偺摑崌奐敪娐
-嫬偐傜屇傃弌偣傑偡丅 
+コンフィギュレ〖タは、コンパイラやアセンブラを介めとする倡券ツ〖ルと票屯、
+PC霹の倡券脱コンピュ〖タ惧で瓢侯するコマンドラインプログラムです。したが
+って、コンフィギュレ〖タそのものが呵姜弄な澜墒に寥み哈まれることは、付搂
+としてありません。コンフィギュレ〖タはコマンドラインツ〖ルなので、コンパ
+イラを介めとした戮のコマンドラインツ〖ルと寥み圭わせて蝗脱することを涟捏
+としています。しかし、ユ〖ザ〖が努磊に肋年を乖うことで、驴くの琵圭倡券茨
+董から钙び叫せます。 
 
 
-亂僐儞僼傿僊儏儗乕僞偺峔抸曽朄亃
+≮コンフィギュレ〖タの菇蜜数恕≯
 
-僇乕僱儖傪峔抸偡傞慜偵丄傑偢丄僐儞僼傿僊儏儗乕僞傪僐儞僷僀儖偡傞昁梫偑
-偁傝傑偡乮僐儞僼傿僊儏儗乕僞傪僶僀僫儕偱擖庤偟偨応崌偵偼丄偙偺僗僥僢僾
-偼昁梫偼偁傝傑偣傫乯丅
+カ〖ネルを菇蜜する涟に、まず、コンフィギュレ〖タをコンパイルする涩妥が
+あります∈コンフィギュレ〖タをバイナリで掐缄した眷圭には、このステップ
+は涩妥はありません∷。
 
-僐儞僼傿僊儏儗乕僞乮cfg僾儘僌儔儉乯偼丄cfg僨傿儗僋僩儕偵堏摦偟丄make
-depend偱埶懚娭學僼傽僀儖乮Makefile.depend乯傪惗惉偟偨屻丄make僐儅儞僪偵
-傛傝峔抸偝傟傑偡丅
+コンフィギュレ〖タ∈cfgプログラム∷は、cfgディレクトリに败瓢し、make
+dependで巴赂簇犯ファイル∈Makefile.depend∷を栏喇した稿、makeコマンドに
+より菇蜜されます。
 
 	% cd cfg
 	% make depend
 	% make
 
-偨偩偟丄Boost傪僀儞僗僩乕儖偟偨僨傿儗僋僩儕偍傛傃柤徧偑丄昗弨偱憐掕偟偰
-偄傞傕偺偲偼堘偆応崌偵偼丄Makefile拞偺BOOST_DIR偍傛傃LIBBOOST_SUFFIX傪
-廋惓偡傞昁梫偑偁傝傑偡乮偙傟傜偺曄悢傪娐嫬曄悢偲偟偰掕媊偡傞曽朄傗丄make
-偺僐儅儞僪儔僀儞偱掕媊偡傞曽朄傕偁傝傑偡乯丅傑偨丄儂僗僩僔僗僥儉偵傛偭偰
-偼丄嵟揔壔儗儀儖傪忋偘傞偲惓偟偔僐儞僷僀儖偱偒側偄偙偲偑抦傜傟偰偄傑偡丅
-偦偺傛偆側応崌偵偼丄嵟揔壔儗儀儖傪壓偘傞偐丄嵟揔壔傪梷巭偡傞傛偆偵丄
-Makefile傪廋惓偡傞昁梫偑偁傝傑偡丅
+ただし、Boostをインスト〖ルしたディレクトリおよび叹疚が、筛洁で鳞年して
+いるものとは般う眷圭には、Makefile面のBOOST_DIRおよびLIBBOOST_SUFFIXを
+饯赖する涩妥があります∈これらの恃眶を茨董恃眶として年盗する数恕や、make
+のコマンドラインで年盗する数恕もあります∷。また、ホストシステムによって
+は、呵努步レベルを惧げると赖しくコンパイルできないことが梦られています。
+そのような眷圭には、呵努步レベルを布げるか、呵努步を娃贿するように、
+Makefileを饯赖する涩妥があります。
 
 
-亂僐儞僼傿僊儏儗乕僞偺巊偄曽亃
+≮コンフィギュレ〖タの蝗い数≯
 
-僐儞僼傿僊儏儗乕僞乮cfg乯偼丄TOPPERS怴悽戙僇乕僱儖摑崌巇條彂偺2.12.5愡
-偺婰弎偺捠傝丄3偮偺僷僗偱峔惉偝傟傑偡丅
+コンフィギュレ〖タ∈cfg∷は、TOPPERS糠坤洛カ〖ネル琵圭慌屯今の2.12.5泪
+の淡揭の奶り、3つのパスで菇喇されます。
 
-僐儞僼傿僊儏儗乕僞偼丄僔僗僥儉僐儞僼傿僊儏儗乕僔儑儞僼傽僀儖柤傪僷儔儊乕
-僞偵庢傝丄埲壓偺僆僾僔儑儞傪帩偪傑偡乮廳梫側傕偺偺傒乯丅
+コンフィギュレ〖タは、システムコンフィギュレ〖ションファイル叹をパラメ〖
+タに艰り、笆布のオプションを积ちます∈脚妥なもののみ∷。
 
 	--help
-		僆僾僔儑儞偺儕僗僩偲愢柧傪昞帵偡傞丅
+		オプションのリストと棱汤を山绩する。
 
-	-v乵--version乶
-		僐儞僼傿僊儏儗乕僞偺僶乕僕儑儞傪昞帵偡傞丅
+	-v∥--version∠
+		コンフィギュレ〖タのバ〖ジョンを山绩する。
 
-	-k乵--kernel乶<僇乕僱儖柤>
-		僇乕僱儖偺柤徧傪巜掕偡傞丅僨僼僅儖僩偼asp丅
+	-k∥--kernel∠<カ〖ネル叹>
+		カ〖ネルの叹疚を回年する。デフォルトはasp。
 
-	-p乵--pass乶<僷僗斣崋>
-		僷僗斣崋傪巜掕偡傞丅1乣3偺偄偢傟偐丅
+	-p∥--pass∠<パス戎规>
+		パス戎规を回年する。1×3のいずれか。
 
-	-I乵--include-path乶<僀儞僋儖乕僪僷僗柤>
-		INCLUDE僨傿儗僋僥傿僽偵偍偄偰丄僀儞僋儖乕僪偡傞僐儞僼傿僊儏儗乕
-		僔儑儞僼傽僀儖傪扵偡僷僗柤傪巜掕偡傞丅
+	-I∥--include-path∠<インクル〖ドパス叹>
+		INCLUDEディレクティブにおいて、インクル〖ドするコンフィギュレ〖
+		ションファイルを玫すパス叹を回年する。
 
-	-T乵--template-file乶<僥儞僾儗乕僩僼傽僀儖柤>
-		僥儞僾儗乕僩僼傽僀儖偺柤徧傪巜掕偡傞丅僷僗2偲僷僗3偱桳岠丅
+	-T∥--template-file∠<テンプレ〖トファイル叹>
+		テンプレ〖トファイルの叹疚を回年する。パス2とパス3で铜跟。
 
-	--api-table <惷揑API僥乕僽儖僼傽僀儖柤>
-		惷揑API僥乕僽儖偺僼傽僀儖柤傪巜掕偡傞丅
+	--api-table <琅弄APIテ〖ブルファイル叹>
+		琅弄APIテ〖ブルのファイル叹を回年する。
 
-	--cfg1-def-table <抣庢摼僔儞儃儖僥乕僽儖僼傽僀儖柤>
-		抣庢摼僔儞儃儖僥乕僽儖偺僼傽僀儖柤傪巜掕偡傞丅
+	--cfg1-def-table <猛艰评シンボルテ〖ブルファイル叹>
+		猛艰评シンボルテ〖ブルのファイル叹を回年する。
 
-	-r乵--rom-image乶<儘乕僪儌僕儏乕儖柤>
-		儘乕僪儌僕儏乕儖傪S儗僐乕僪僼僅乕儅僢僩偺宍偵曄姺偟偨僼傽僀儖偺
-		柤徧傪巜掕偡傞丅僷僗3偱偺傒桳岠丅
+	-r∥--rom-image∠<ロ〖ドモジュ〖ル叹>
+		ロ〖ドモジュ〖ルをSレコ〖ドフォ〖マットの妨に恃垂したファイルの
+		叹疚を回年する。パス3でのみ铜跟。
 
-	-s [--symbol-table] <僔儞儃儖僼傽僀儖柤>
-		儘乕僪儌僕儏乕儖拞偺奺僔儞儃儖偲傾僪儗僗偺懳墳昞傪娷傓僔儞儃儖
-		僼傽僀儖偺柤徧傪巜掕偡傞丅僷僗3偱偺傒桳岠丅
+	-s [--symbol-table] <シンボルファイル叹>
+		ロ〖ドモジュ〖ル面の称シンボルとアドレスの滦炳山を崔むシンボル
+		ファイルの叹疚を回年する。パス3でのみ铜跟。
 
-	--id-output-file <ID斣崋弌椡僼傽僀儖柤>
-		僆僽僕僃僋僩偺ID斣崋偺妱晅偗寢壥傪丄巜掕偟偨柤慜偺僼傽僀儖偵彂
-		偒弌偡丅僷僗2偱偺傒桳岠丅
+	--id-output-file <ID戎规叫蜗ファイル叹>
+		オブジェクトのID戎规の充烧け冯蔡を、回年した叹涟のファイルに今
+		き叫す。パス2でのみ铜跟。
 
-	--id-input-file <ID斣崋擖椡僼傽僀儖柤>
-		僆僽僕僃僋僩偺ID斣崋偺妱晅偗傪丄巜掕偟偨柤慜偺僼傽僀儖偐傜庢傝
-		崬傓丅僷僗2偱偺傒桳岠丅
+	--id-input-file <ID戎规掐蜗ファイル叹>
+		オブジェクトのID戎规の充烧けを、回年した叹涟のファイルから艰り
+		哈む。パス2でのみ铜跟。
 
 	--external-id
-		僆僽僕僃僋僩偺ID斣崋傪曐帩偡傞曄悢偺掕媊傪惗惉偡傞丅僷僗2偱偺傒
-		桳岠丅
+		オブジェクトのID戎规を瘦积する恃眶の年盗を栏喇する。パス2でのみ
+		铜跟。
 
-	-M乵--print-dependencies乶<僞乕僎僢僩僔儞儃儖>
-		僔僗僥儉僐儞僼傿僊儏儗乕僔儑儞僼傽僀儖偺埶懚娭學傪弌椡偡傞丅
-		Makefile拞偺埶懚娭學傪惗惉偡傞嵺偵梡偄傞丅
+	-M∥--print-dependencies∠<タ〖ゲットシンボル>
+		システムコンフィギュレ〖ションファイルの巴赂簇犯を叫蜗する。
+		Makefile面の巴赂簇犯を栏喇する狠に脱いる。
 
-僐儞僼傿僊儏儗乕僞偺徻嵶巇條偵偮偄偰偼丄暿搑PDF僼傽僀儖偺宍偱攝晍偟偰偄
-傞乽TOPPERS怴悽戙僇乕僱儖梡僐儞僼傿僊儏儗乕僞巇條乿傪嶲徠偟偰偔偩偝偄丅
-僥儞僾儗乕僩僼傽僀儖偺嶌惉偵偁偨偭偰偼丄乽TOPPERS怴悽戙僇乕僱儖梡僐儞僼
-傿僊儏儗乕僞撪憼儅僋儘僾儘僙僢僒巇條彂乿傪嶲徠偟偰偔偩偝偄丅
+コンフィギュレ〖タの拒嘿慌屯については、侍庞PDFファイルの妨で芹邵してい
+る≈TOPPERS糠坤洛カ〖ネル脱コンフィギュレ〖タ慌屯∽を徊救してください。
+テンプレ〖トファイルの侯喇にあたっては、≈TOPPERS糠坤洛カ〖ネル脱コンフ
+ィギュレ〖タ柒垄マクロプロセッサ慌屯今∽を徊救してください。
 
