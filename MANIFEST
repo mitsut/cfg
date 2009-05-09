@@ -2,6 +2,7 @@ PACKAGE cfg
 VERSION 1.5.0
 
 cfg.sln
+configure
 Makefile
 MANIFEST
 README.txt
