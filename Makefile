@@ -1,3 +1,5 @@
+-include Makefile.config
+
 ifndef BOOST_DIR
 	ifndef BOOST_VERSION
 		BOOST_VERSION = 1_33_1
@@ -49,5 +51,6 @@ realclean: clean
 		if test -d $$subdir ; then \
 			rm -f $$subdir/Makefile.depend ; \
 		fi ; \
-	done \
+	done
+	rm -f Makefile.config
 

@@ -1,3 +1,5 @@
+-include ../Makefile.config
+
 PROJDIR = ..
 WORKDIR = $(PROJDIR)/cfg
 
@@ -16,9 +18,9 @@ CXXFILES = \
 OBJFILES := $(CXXFILES:%.cpp=%.o)
 
 ifeq ($(OSTYPE),msys)
-BOOST_LIBFILES = /mingw/lib/libboost_filesystem-mgw-mt-s.lib /mingw/lib/libboost_program_options-mgw-mt-s.lib
+BOOST_LIBFILES = /mingw/lib/libboost_system-mgw-mt-s.lib /mingw/lib/libboost_filesystem-mgw-mt-s.lib /mingw/lib/libboost_program_options-mgw-mt-s.lib
 else
-BOOST_LIBFILES = -lboost_filesystem$(LIBBOOST_SUFFIX) -lboost_program_options$(LIBBOOST_SUFFIX)
+BOOST_LIBFILES := $(BOOST_LIBFILES) -lboost_filesystem$(LIBBOOST_SUFFIX) -lboost_program_options$(LIBBOOST_SUFFIX)
 endif
 
 LIBFILES = $(PROJDIR)/toppers/itronx/libitronx.a \
@@ -27,7 +29,7 @@ LIBFILES = $(PROJDIR)/toppers/itronx/libitronx.a \
 all: cfg
 
 cfg: $(OBJFILES) $(LIBFILES)
-	$(CXX) -o cfg $(OBJFILES) $(LIBFILES) $(BOOST_LIBFILES)
+	$(CXX) -o cfg $(OBJFILES) -L$(LIBBOOST_DIR) $(LIBFILES) $(BOOST_LIBFILES)
 
 depend:
 	$(CXX) $(CPPFLAGS) -M $(CXXFILES) > Makefile.depend

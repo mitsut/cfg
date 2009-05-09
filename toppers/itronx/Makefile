@@ -1,3 +1,5 @@
+-include ../Makefile.config
+
 PROJDIR = ../..
 WORKDIR = $(PROJDIR)/toppers/itronx
 
