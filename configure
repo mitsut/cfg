@@ -28,8 +28,8 @@ do
 	ls $dir/boost* 2> /dev/null > /dev/null
 	if test $? -eq 0
 	then
-		boost_dir=`ls -d $dir/boost* | sort -r | tr "\n" "\t" | cut -f 1`
-		if test $boost_dir == $dir/boost
+		boost_dir=`ls -d $dir/boost* | sort -r | head -1`
+		if test '$boost_dir' == '$dir/boost'
 		then
 			include_path=$dir
 		else
@@ -63,10 +63,10 @@ echo BOOST_LIB_VERSION" | g++ -E -I$include_path -L$library_path - | sh`
 
 # ライブラリファイルの添字を調べる
 # 環境によって、-gcc-mt-s, -mt-s, -gcc42-mt-sなど、添字が異なるため
-libboost_regex_filename=`ls $library_path/libboost_regex*-s.* | tr "\n" "\t" | cut -f 1`
+libboost_regex_filename=`ls $library_path/libboost_regex*-s.* 2> /dev/null | head -1`
 if test -z $libboost_regex_filename
 then
-	libboost_regex_filename=`ls $library_path/libboost_regex*.* | tr "\n" "\t" | cut -f 1`
+	libboost_regex_filename=`ls $library_path/libboost_regex*.* | head -1`
 fi
 libboost_suffix=`echo $libboost_regex_filename | sed -e s/.*libboost_regex//g -e s/\.[a-z]*$//g`
 echo "LIBBOOST_SUFFIX = $libboost_suffix" >> $makefile_config
