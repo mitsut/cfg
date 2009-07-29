@@ -739,6 +739,24 @@ namespace toppers
   }
 
   /*!
+   *  \brief  順序付きリストの並びを逆にする
+   *  \param[in]  line      行番号
+   *  \param[in]  arg_list  マクロ実引数リスト
+   *  \param[in]  p_ctx     マクロコンテキスト
+   *  \retval     マクロ返却値
+   */
+  var_t bf_reverse( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
+  {
+    var_t result;
+    if ( macro_processor::check_arity( line, arg_list.size(), 1, "REVERSE" ) )
+    {
+      result = arg_list[ 0 ];
+      std::reverse(result.begin(), result.end());
+    }
+    return result;
+  }
+
+  /*!
    *  \brief  何もしない組み込み関数
    *  \param[in]  line      行番号
    *  \param[in]  arg_list  マクロ実引数リスト
@@ -777,6 +795,7 @@ namespace toppers
     { "CALL", bf_call },
     { "LSORT", bf_lsort },
     { "ISFUNCTION", bf_isfunction },
+    { "REVERSE", bf_reverse },
     { "NOOP", bf_noop },
     { "", 0 },
   };
