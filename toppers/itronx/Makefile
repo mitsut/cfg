@@ -24,7 +24,7 @@ depend:
 	$(CXX) $(CPPFLAGS) -M $(CXXFILES) > Makefile.depend
 
 clean:
-	-rm *.o *.a
+	-rm -f *.o *.a
 
 -include Makefile.depend
 
