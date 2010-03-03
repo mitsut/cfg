@@ -71,7 +71,6 @@ namespace toppers
       virtual ~factory();
       std::map< std::string, static_api::info > const* get_static_api_info_map() const;
       cfg1_out::cfg1_def_table const* get_cfg1_def_table() const;
-      macro_processor::hook_t get_hook_on_assign() const { return do_get_hook_on_assign(); }
       std::auto_ptr< cfg1_out > create_cfg1_out( std::string const& filename ) const
       {
         return do_create_cfg1_out( filename );
@@ -80,15 +79,19 @@ namespace toppers
       {
         return do_create_checker();
       }
-      std::auto_ptr< macro_processor > create_macro_processor( macro_processor::hook_t hook, cfg1_out const& cfg1out, cfg1_out::static_api_map const& api_map ) const
+      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, cfg1_out::static_api_map const& api_map ) const
       {
-        return do_create_macro_processor( hook, cfg1out, api_map );
+        return do_create_macro_processor( cfg1out, api_map );
+      }
+      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, std::vector< static_api > const& api_array ) const
+      {
+        return do_create_macro_processor( cfg1out, api_array );
       }
       void swap( factory& other ) { do_swap( other ); }
     protected:
       virtual void do_swap( factory& other );
-      virtual macro_processor::hook_t do_get_hook_on_assign() const;
-      virtual std::auto_ptr< macro_processor > do_create_macro_processor( macro_processor::hook_t hook, cfg1_out const& cfg1out, cfg1_out::static_api_map const& api_map ) const;
+      virtual std::auto_ptr< macro_processor > do_create_macro_processor( cfg1_out const& cfg1out, cfg1_out::static_api_map const& api_map ) const;
+      virtual std::auto_ptr< macro_processor > do_create_macro_processor( cfg1_out const& cfg1out, std::vector< static_api > const& api_array ) const;
     private:
       virtual std::auto_ptr< cfg1_out > do_create_cfg1_out( std::string const& filename ) const;
       virtual std::auto_ptr< checker > do_create_checker() const;

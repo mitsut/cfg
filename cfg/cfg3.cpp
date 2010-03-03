@@ -39,9 +39,10 @@
 #include "toppers/diagnostics.hpp"
 #include "toppers/s_record.hpp"
 #include "toppers/macro_processor.hpp"
-#include "toppers/itronx/checker.hpp"
+#include "toppers/itronx/component.hpp"
+#include "toppers/itronx/component.hpp"
 #include "cfg.hpp"
-#include <boost/spirit.hpp>
+#include <boost/spirit/include/classic.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 
@@ -204,6 +205,7 @@ bool cfg3_main()
 
   std::string kernel( get_global< std::string >( "kernel" ) );
   itronx::factory factory( kernel );
+  global( "factory" ) = &factory;
 
   // *.cfgとcfg1_out.srecの読み込み
   std::string input_file;
@@ -221,14 +223,10 @@ bool cfg3_main()
   codeset_t codeset = get_global< codeset_t >( "codeset" );
   cfg1_out->load_cfg( input_file, codeset, *factory.get_static_api_info_map() );
   cfg1_out->load_srec();
-  cfg1_out::static_api_map api_map( cfg1_out->merge() );
-
-  // ID番号の割付け
-  assign_id( api_map );
 
   std::auto_ptr< checker > p_checker( factory.create_checker() );
   std::tr1::shared_ptr< checker > chk( p_checker );
-  toppers::global( "checker" ) = chk;
+  global( "checker" ) = chk;
   std::string rom_image( get_global< std::string >( "rom-image" ) );
   std::string symbol_table( get_global< std::string >( "symbol-table" ) );
   chk->load_rom_image( rom_image, symbol_table );
@@ -249,10 +247,23 @@ bool cfg3_main()
     namespace fs = boost::filesystem;
 
     // テンプレート処理
-    std::auto_ptr< macro_processor > mproc( factory.create_macro_processor( factory.get_hook_on_assign(), *cfg1_out, api_map ) );
+    std::auto_ptr< macro_processor > mproc;
+    std::auto_ptr< component > component_ptr;
+
+    if ( get_global< bool >( "with-software-components" ) )
+    {
+      mproc = factory.create_macro_processor( *cfg1_out, cfg1_out->get_static_api_array() );
+      component_ptr.reset( new component( mproc.get() ) );
+    }
+    else
+    {
+      cfg1_out::static_api_map api_map( cfg1_out->merge() );
+      assign_id( api_map ); // ID番号の割付け
+      mproc = factory.create_macro_processor( *cfg1_out, api_map );
+    }
 
     // ↓ 追加組み込み関数の登録
-    toppers::macro_processor::func_t func_info = { "" };
+    toppers::macro_processor::func_t func_info = {};
     func_info.name = "SYMBOL";
     func_info.f = &bf_symbol;
     mproc->add_builtin_function( func_info );

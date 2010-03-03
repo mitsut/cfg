@@ -1,5 +1,5 @@
 PACKAGE cfg
-VERSION 1.5.0
+VERSION 1.6.0
 
 cfg.sln
 configure
@@ -17,6 +17,8 @@ cfg/cfg3.cpp
 cfg/cfg4.cpp
 cfg/cfg_init.cpp
 cfg/cfg_version.cpp
+cfg/component.cpp
+cfg/component.hpp
 cfg/ja.po
 cfg/Makefile
 cfg/require_modules.hpp

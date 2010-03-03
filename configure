@@ -2,7 +2,7 @@
 
 makefile_config="Makefile.config"
 
-# ¥³¥Ş¥ó¥É¥é¥¤¥ó°ú¿ô¤Î½èÍı
+# ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ˆø”‚Ìˆ—
 for arg in "$@"
 do
 	name=`echo $arg | cut -d "=" -f 1`
@@ -22,14 +22,14 @@ do
 	esac
 done
 
-# Boost C++ Libraries¤Î¥Ø¥Ã¥À¥Õ¥¡¥¤¥ë¤¬¤¢¤ë¥Ç¥£¥ì¥¯¥È¥ê¤ò¥µ¡¼¥Á
-for dir in $include_path "/usr/local/include" "/opt/local/include" "/opt/include" "/usr/include"
+# Boost C++ Libraries‚Ìƒwƒbƒ_ƒtƒ@ƒCƒ‹‚ª‚ ‚éƒfƒBƒŒƒNƒgƒŠ‚ğƒT[ƒ`
+for dir in $include_path "/usr/local/include" "/opt/local/include" "/opt/include" "/usr/include" "/mingw/include"
 do
 	ls $dir/boost* 2> /dev/null > /dev/null
 	if test $? -eq 0
 	then
 		boost_dir=`ls -d $dir/boost* | sort -r | head -1`
-		if test '$boost_dir' == '$dir/boost'
+		if test $boost_dir == $dir/boost
 		then
 			include_path=$dir
 		else
@@ -39,8 +39,8 @@ do
 	fi
 done
 
-# Boost C++ Libraries¤Î¥é¥¤¥Ö¥é¥ê¥Õ¥¡¥¤¥ë¤¬¤¢¤ë¥Ç¥£¥ì¥¯¥È¥ê¤ò¥µ¡¼¥Á
-for dir in $library_path "/usr/local/lib" "/opt/local/lib" "/opt/lib" "/usr/lib" "/lib"
+# Boost C++ Libraries‚Ìƒ‰ƒCƒuƒ‰ƒŠƒtƒ@ƒCƒ‹‚ª‚ ‚éƒfƒBƒŒƒNƒgƒŠ‚ğƒT[ƒ`
+for dir in $library_path "/usr/local/lib" "/opt/local/lib" "/opt/lib" "/usr/lib" "/lib" "/mingw/lib"
 do
 	ls $dir/libboost* 2> /dev/null > /dev/null
 	if test $? -eq 0
@@ -50,19 +50,19 @@ do
 	fi
 done
 
-##### °Ê²¼¡¢Makefile.config¤òÀ¸À®¤¹¤ë #####
+##### ˆÈ‰ºAMakefile.config‚ğ¶¬‚·‚é #####
 
 rm Makefile.config 2> /dev/null
 
-# Boost C++ Libraries¤Î¥Ğ¡¼¥¸¥ç¥ó¤òÄ´¤Ù¤ë
+# Boost C++ Libraries‚Ìƒo[ƒWƒ‡ƒ“‚ğ’²‚×‚é
 boost_version=`echo "#include <boost/version.hpp>
 echo BOOST_VERSION" | g++ -E -I$include_path -L$library_path - | sh`
 
 boost_lib_version=`echo "#include <boost/version.hpp>
 echo BOOST_LIB_VERSION" | g++ -E -I$include_path -L$library_path - | sh`
 
-# ¥é¥¤¥Ö¥é¥ê¥Õ¥¡¥¤¥ë¤ÎÅº»ú¤òÄ´¤Ù¤ë
-# ´Ä¶­¤Ë¤è¤Ã¤Æ¡¢-gcc-mt-s, -mt-s, -gcc42-mt-s¤Ê¤É¡¢Åº»ú¤¬°Û¤Ê¤ë¤¿¤á
+# ƒ‰ƒCƒuƒ‰ƒŠƒtƒ@ƒCƒ‹‚Ì“Yš‚ğ’²‚×‚é
+# ŠÂ‹«‚É‚æ‚Á‚ÄA-gcc-mt-s, -mt-s, -gcc42-mt-s‚È‚ÇA“Yš‚ªˆÙ‚È‚é‚½‚ß
 libboost_regex_filename=`ls $library_path/libboost_regex*-s.* 2> /dev/null | head -1`
 if test -z $libboost_regex_filename
 then
@@ -71,18 +71,14 @@ fi
 libboost_suffix=`echo $libboost_regex_filename | sed -e s/.*libboost_regex//g -e s/\.[a-z]*$//g`
 echo "LIBBOOST_SUFFIX = $libboost_suffix" >> $makefile_config
 
-# Boost C+ Libraries 1.34°Ê¾å¤Ê¤é¡¢libboost_system*¤ò¥ê¥ó¥¯¤¹¤ëÉ¬Í×¤¢¤ê
-if test $boost_version -ge 103400
-then
-	echo "BOOST_LIBFILES = -lboost_system\$(LIBBOOST_SUFFIX)" >> $makefile_config
-fi
+echo "BOOST_LIBFILES = -lboost_system\$(LIBBOOST_SUFFIX)" >> $makefile_config
 
-# ³Æ¼ïÊÑ¿ô¤ò½ĞÎÏ
+# Šeí•Ï”‚ğo—Í
 echo BOOST_VERSION=$boost_lib_version >> $makefile_config
 echo BOOST_DIR=$include_path >> $makefile_config
 echo LIBBOOST_DIR=$library_path >> $makefile_config
 
-# À¸À®·ë²Ì¤òÉ½¼¨
+# ¶¬Œ‹‰Ê‚ğ•\¦
 cat Makefile.config
 
-# ½ª¤ï¤ê
+# I‚í‚è

@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2005-2008 by TAKAGI Nobuhisa
+ *  Copyright (C) 2005-2010 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -44,6 +44,6 @@ namespace toppers
 {
 
   //! 国際文字名パーサー
-  boost::spirit::functor_parser< detail::ucn_parse_functor > const ucn_p;
+  boost::spirit::classic::functor_parser< detail::ucn_parse_functor > const ucn_p;
 
 }

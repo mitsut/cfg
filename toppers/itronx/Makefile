@@ -9,6 +9,7 @@ CXXFLAGS := $(CXXFLAGS) -O2 -g
 CXXFILES = \
 	cfg1_out.cpp \
 	checker.cpp \
+	component.cpp \
 	factory.cpp \
 	preprocess.cpp \
 	static_api.cpp

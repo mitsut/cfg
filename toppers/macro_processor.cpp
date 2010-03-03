@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2009 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2010 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -50,9 +50,9 @@
 #include "toppers/macro_processor.hpp"
 #include "toppers/diagnostics.hpp"
 #include "toppers/misc.hpp"
-#include <boost/spirit.hpp>
-#include <boost/spirit/dynamic.hpp>
-#include <boost/spirit/tree/parse_tree.hpp>
+#include <boost/spirit/include/classic.hpp>
+#include <boost/spirit/include/classic_dynamic.hpp>
+#include <boost/spirit/include/classic_parse_tree.hpp>
 #include <boost/lexical_cast.hpp>
 
 // 非標準マクロの定義を除去
@@ -77,7 +77,7 @@ namespace toppers
       *  \struct parser macro_processor.cpp "toppers/macro_processor.cpp"
       *  \brief  マクロ内に記述される式のパーサ
       */
-    struct parser : boost::spirit::grammar< parser >
+    struct parser : boost::spirit::classic::grammar< parser >
     {
       enum rule_id_t
       {
@@ -108,7 +108,7 @@ namespace toppers
       struct error_handler
       {
         template < class Scanner, class Error >
-          boost::spirit::error_status<> operator()( Scanner const& scan, Error const& error ) const
+          boost::spirit::classic::error_status<> operator()( Scanner const& scan, Error const& error ) const
         {
           typename Error::iterator_t iter( error.where );
           while ( iter != scan.last && *iter != '\0' && *iter != '\n' )
@@ -158,7 +158,7 @@ namespace toppers
             toppers::fatal( ln, _( "missing `%1%\' before %2%" ), "]", str );
             break;
           }
-          return  boost::spirit::error_status<>( boost::spirit::error_status<>::fail );
+          return  boost::spirit::classic::error_status<>( boost::spirit::classic::error_status<>::fail );
         }
       };
 
@@ -166,9 +166,9 @@ namespace toppers
       template < class Scanner >
         struct definition
       {
-        typedef boost::spirit::rule< Scanner, boost::spirit::dynamic_parser_tag > rule_t;
-        typedef boost::spirit::guard< expected_t > guard_t;
-        typedef boost::spirit::assertion< expected_t > assertion_t;
+        typedef boost::spirit::classic::rule< Scanner, boost::spirit::classic::dynamic_parser_tag > rule_t;
+        typedef boost::spirit::classic::guard< expected_t > guard_t;
+        typedef boost::spirit::classic::assertion< expected_t > assertion_t;
 
         rule_t  expression,
                 assignment_expr,
@@ -228,7 +228,7 @@ namespace toppers
             expect_close_brace( close_brace_expected ),
             expect_close_bracket( close_bracket_expected )
         {
-          using namespace boost::spirit;
+          using namespace boost::spirit::classic;
 
           set_id();
 
@@ -465,7 +465,7 @@ namespace toppers
       return result;
     }
 
-    typedef boost::spirit::tree_node< boost::spirit::node_iter_data< text::const_iterator > > tree_node_t;
+    typedef boost::spirit::classic::tree_node< boost::spirit::classic::node_iter_data< text::const_iterator > > tree_node_t;
     bool eval_node( tree_node_t const& node, context* p_ctx );
 
     //! 代入式
@@ -473,19 +473,15 @@ namespace toppers
     {
       //   0 1   2
       // lhs = rhs
-      if ( eval_node( node.children[0], p_ctx ) )
+      if ( eval_node( node.children[ 0 ], p_ctx ) )
       {
         var_t lhs( p_ctx->stack.top() ); p_ctx->stack.pop();
         std::string name( get_s( lhs, p_ctx ) );
-        if ( eval_node( node.children[2], p_ctx ) )
+        if ( eval_node( node.children[ 2 ], p_ctx ) )
         {
           var_t rhs( p_ctx->stack.top() ); p_ctx->stack.pop();
           var_t old_var( p_ctx->var_map[ name ] );
           p_ctx->var_map[ name ] = rhs;
-          if ( p_ctx->hook_on_assign != 0 )
-          {
-            ( *p_ctx->hook_on_assign )( node.children[0].value.begin().line(), name, old_var, rhs, p_ctx );
-          }
         }
       }
       return true;
@@ -498,7 +494,7 @@ namespace toppers
       // lhs || rhs ...
       bool result = true;
 
-      if ( eval_node( node.children[0], p_ctx ) )
+      if ( eval_node( node.children[ 0 ], p_ctx ) )
       {
         std::size_t const n = node.children.size();
         if ( n == 1 )  // 左辺のみ
@@ -515,14 +511,14 @@ namespace toppers
           }
           catch ( expr_error& )
           {
-            error( node.children[0].value.begin().line(), _( "`%1%\' does not have a value" ), get_s( lhs, p_ctx ) );
+            error( node.children[ 0 ].value.begin().line(), _( "`%1%\' does not have a value" ), get_s( lhs, p_ctx ) );
             throw;
           }
           if ( value )
           {
             break;
           }
-          result = eval_node( node.children[i], p_ctx );
+          result = eval_node( node.children[ i ], p_ctx );
           var_t rhs( p_ctx->stack.top() ); p_ctx->stack.pop();
           element e;
           std::tr1::int64_t value2 = 0;
@@ -532,11 +528,11 @@ namespace toppers
           }
           catch ( expr_error& )
           {
-            error( node.children[i].value.begin().line(), _( "`%1%\' does not have a value" ), get_s( lhs, p_ctx ) );
+            error( node.children[ i ].value.begin().line(), _( "`%1%\' does not have a value" ), get_s( lhs, p_ctx ) );
             throw;
           }
           e.i = ( value || value2 );
-          lhs[0] = e;
+          lhs[ 0 ] = e;
         }
         p_ctx->stack.push( lhs );
       }
@@ -550,7 +546,7 @@ namespace toppers
       // lhs && rhs ...
       bool result = true;
 
-      if ( eval_node( node.children[0], p_ctx ) )
+      if ( eval_node( node.children[ 0 ], p_ctx ) )
       {
         std::size_t const n = node.children.size();
         if ( n == 1 )  // 左辺のみ
@@ -567,14 +563,14 @@ namespace toppers
           }
           catch ( expr_error& )
           {
-            error( node.children[0].value.begin().line(), _( "`%1%\' does not have a value" ), get_s( lhs, p_ctx ) );
+            error( node.children[ 0 ].value.begin().line(), _( "`%1%\' does not have a value" ), get_s( lhs, p_ctx ) );
             throw;
           }
           if ( !value )
           {
             break;
           }
-          result = eval_node( node.children[i], p_ctx );
+          result = eval_node( node.children[ i ], p_ctx );
           var_t rhs( p_ctx->stack.top() ); p_ctx->stack.pop();
           element e;
           std::tr1::int64_t value2 = 0;
@@ -584,11 +580,11 @@ namespace toppers
           }
           catch ( expr_error& )
           {
-            error( node.children[i].value.begin().line(), _( "`%1%\' does not have a value" ), get_s( lhs, p_ctx ) );
+            error( node.children[ i ].value.begin().line(), _( "`%1%\' does not have a value" ), get_s( lhs, p_ctx ) );
             throw;
           }
           e.i = ( value && value2 );
-          lhs[0] = e;
+          lhs[ 0 ] = e;
         }
         p_ctx->stack.push( lhs );
       }
@@ -600,7 +596,7 @@ namespace toppers
     {
       //   0 1   2
       // lhs | rhs ...
-      if ( eval_node( node.children[0], p_ctx ) )
+      if ( eval_node( node.children[ 0 ], p_ctx ) )
       {
         std::size_t const n = node.children.size();
         if ( n == 1 )  // 左辺のみ
@@ -608,12 +604,12 @@ namespace toppers
           return true;
         }
         var_t lhs( p_ctx->stack.top() ); p_ctx->stack.pop();
-        for ( std::size_t i = 1; ( i < n ) && eval_node( node.children[i+1], p_ctx ); i += 2 )
+        for ( std::size_t i = 1; ( i < n ) && eval_node( node.children[ i+1 ], p_ctx ); i += 2 )
         {
           var_t rhs( p_ctx->stack.top() ); p_ctx->stack.pop();
           element e;
           e.i = ( get_i( lhs, p_ctx ) | get_i( rhs, p_ctx ) );
-          lhs[0] = e;
+          lhs[ 0 ] = e;
         }
         p_ctx->stack.push( lhs );
       }
@@ -625,7 +621,7 @@ namespace toppers
     {
       //   0 1   2
       // lhs ^ rhs ...
-      if ( eval_node( node.children[0], p_ctx ) )
+      if ( eval_node( node.children[ 0 ], p_ctx ) )
       {
         std::size_t const n = node.children.size();
         if ( n == 1 )  // 左辺のみ
@@ -633,12 +629,12 @@ namespace toppers
           return true;
         }
         var_t lhs( p_ctx->stack.top() ); p_ctx->stack.pop();
-        for ( std::size_t i = 1; ( i < n ) && eval_node( node.children[i+1], p_ctx ); i += 2 )
+        for ( std::size_t i = 1; ( i < n ) && eval_node( node.children[ i+1 ], p_ctx ); i += 2 )
         {
           var_t rhs( p_ctx->stack.top() ); p_ctx->stack.pop();
           element e;
           e.i = ( get_i( lhs, p_ctx ) ^ get_i( rhs, p_ctx ) );
-          lhs[0] = e;
+          lhs[ 0 ] = e;
         }
         p_ctx->stack.push( lhs );
       }
@@ -650,7 +646,7 @@ namespace toppers
     {
       //   0 1   2
       // lhs & rhs ...
-      if ( eval_node( node.children[0], p_ctx ) )
+      if ( eval_node( node.children[ 0 ], p_ctx ) )
       {
         std::size_t const n = node.children.size();
         if ( n == 1 )  // 左辺のみ
@@ -658,12 +654,12 @@ namespace toppers
           return true;
         }
         var_t lhs( p_ctx->stack.top() ); p_ctx->stack.pop();
-        for ( std::size_t i = 1; ( i < n ) && eval_node( node.children[i+1], p_ctx ); i += 2 )
+        for ( std::size_t i = 1; ( i < n ) && eval_node( node.children[ i+1 ], p_ctx ); i += 2 )
         {
           var_t rhs( p_ctx->stack.top() ); p_ctx->stack.pop();
           element e;
           e.i = ( get_i( lhs, p_ctx ) & get_i( rhs, p_ctx ) );
-          lhs[0] = e;
+          lhs[ 0 ] = e;
         }
         p_ctx->stack.push( lhs );
       }
@@ -675,7 +671,7 @@ namespace toppers
     {
       //   0  1   2
       // lhs op rhs ...
-      if ( eval_node( node.children[0], p_ctx ) )
+      if ( eval_node( node.children[ 0 ], p_ctx ) )
       {
         std::size_t const n = node.children.size();
         if ( n == 1 )  // 左辺のみ
@@ -683,10 +679,10 @@ namespace toppers
           return true;
         }
         var_t lhs( p_ctx->stack.top() ); p_ctx->stack.pop();
-        for ( std::size_t i = 1; ( i < n ) && eval_node( node.children[i+1], p_ctx ); i += 2 )
+        for ( std::size_t i = 1; ( i < n ) && eval_node( node.children[ i+1 ], p_ctx ); i += 2 )
         {
           var_t rhs( p_ctx->stack.top() ); p_ctx->stack.pop();
-          std::string op( node.children[i].value.begin(), node.children[i].value.end() );
+          std::string op( node.children[ i ].value.begin(), node.children[ i ].value.end() );
           std::tr1::int64_t value;
           if ( op == "==" )
           {
@@ -698,7 +694,7 @@ namespace toppers
           }
           element e;
           e.i = value;
-          lhs[0] = e;
+          lhs[ 0 ] = e;
         }
         p_ctx->stack.push( lhs );
       }
@@ -718,10 +714,10 @@ namespace toppers
           return true;
         }
         var_t lhs( p_ctx->stack.top() ); p_ctx->stack.pop();
-        for ( std::size_t i = 1; ( i < n ) && eval_node( node.children[i+1], p_ctx ); i += 2 )
+        for ( std::size_t i = 1; ( i < n ) && eval_node( node.children[ i+1 ], p_ctx ); i += 2 )
         {
           var_t rhs( p_ctx->stack.top() ); p_ctx->stack.pop();
-          std::string op( node.children[i].value.begin(), node.children[i].value.end() );
+          std::string op( node.children[i].value.begin(), node.children[ i ].value.end() );
           std::tr1::int64_t value;
           if ( op == "<" )
           {
@@ -741,7 +737,7 @@ namespace toppers
           }
           element e;
           e.i = value;
-          lhs[0] = e;
+          lhs[ 0 ] = e;
         }
         p_ctx->stack.push( lhs );
       }
@@ -753,7 +749,7 @@ namespace toppers
     {
       //   0  1   2
       // lhs op rhs ...
-      if ( eval_node( node.children[0], p_ctx ) )
+      if ( eval_node( node.children[ 0 ], p_ctx ) )
       {
         std::size_t const n = node.children.size();
         if ( n == 1 )  // 左辺のみ
@@ -761,19 +757,19 @@ namespace toppers
           return true;
         }
         var_t lhs( p_ctx->stack.top() ); p_ctx->stack.pop();
-        for ( std::size_t i = 1; ( i < n ) && eval_node( node.children[i+1], p_ctx ); i += 2 )
+        for ( std::size_t i = 1; ( i < n ) && eval_node( node.children[ i+1 ], p_ctx ); i += 2 )
         {
           var_t rhs( p_ctx->stack.top() ); p_ctx->stack.pop();
-          std::string op( node.children[i].value.begin(), node.children[i].value.end() );
+          std::string op( node.children[ i ].value.begin(), node.children[ i ].value.end() );
           std::tr1::int64_t value = get_i( lhs, p_ctx );
           std::tr1::int64_t shift = get_i( rhs, p_ctx );
           if ( shift < 0 )  // 負の値でシフトしようとした
           {
-            error( node.children[0].value.begin().line(), _( "shift with nagative value `%1%\'" ), shift );
+            error( node.children[ 0 ].value.begin().line(), _( "shift with nagative value `%1%\'" ), shift );
           }
           if ( shift > 64 )
           {
-            error( node.children[0].value.begin().line(), _( "shift with too large value `%1%\'" ), shift );
+            error( node.children[ 0 ].value.begin().line(), _( "shift with too large value `%1%\'" ), shift );
           }
           if ( op == "<<" )
           {
@@ -800,7 +796,7 @@ namespace toppers
           }
           element e;
           e.i = value;
-          lhs[0] = e;
+          lhs[ 0 ] = e;
         }
         p_ctx->stack.push( lhs );
       }
@@ -812,7 +808,7 @@ namespace toppers
     {
       //   0  1   2
       // lhs op rhs ...
-      if ( eval_node( node.children[0], p_ctx ) )
+      if ( eval_node( node.children[ 0 ], p_ctx ) )
       {
         std::size_t const n = node.children.size();
         if ( n == 1 )  // 左辺のみ
@@ -820,10 +816,10 @@ namespace toppers
           return true;
         }
         var_t lhs( p_ctx->stack.top() ); p_ctx->stack.pop();
-        for ( std::size_t i = 1; ( i < n ) && eval_node( node.children[i+1], p_ctx ); i += 2 )
+        for ( std::size_t i = 1; ( i < n ) && eval_node( node.children[ i+1 ], p_ctx ); i += 2 )
         {
           var_t rhs( p_ctx->stack.top() ); p_ctx->stack.pop();
-          std::string op( node.children[i].value.begin(), node.children[i].value.end() );
+          std::string op( node.children[ i ].value.begin(), node.children[ i ].value.end() );
           std::tr1::int64_t x = get_i( lhs, p_ctx );
           std::tr1::int64_t y = get_i( rhs, p_ctx );
           element e;
@@ -832,7 +828,7 @@ namespace toppers
             if ( ( y > 0 && ( std::numeric_limits< std::tr1::int64_t >::max() - y ) < x )
               || ( y < 0 && ( std::numeric_limits< std::tr1::int64_t >::min() - y ) > x ) )
             {
-              error( node.children[0].value.begin().line(), _( "overflow at `%1%\'" ), get_s( lhs, p_ctx ) + "+" + get_s( rhs, p_ctx ) );
+              error( node.children[ 0 ].value.begin().line(), _( "overflow at `%1%\'" ), get_s( lhs, p_ctx ) + "+" + get_s( rhs, p_ctx ) );
               // e.i に値はセットされない
             }
             else
@@ -845,7 +841,7 @@ namespace toppers
             if ( ( y < 0 && ( std::numeric_limits< std::tr1::int64_t >::max() + y ) < x )
               || ( y > 0 && ( std::numeric_limits< std::tr1::int64_t >::min() + y ) > x ) )
             {
-              error( node.children[0].value.begin().line(), _( "overflow at `%1%\'" ), get_s( lhs, p_ctx ) + "-" + get_s( rhs, p_ctx ) );
+              error( node.children[ 0 ].value.begin().line(), _( "overflow at `%1%\'" ), get_s( lhs, p_ctx ) + "-" + get_s( rhs, p_ctx ) );
               // e.i に値はセットされない
             }
             else
@@ -853,7 +849,7 @@ namespace toppers
               e.i = x - y;
             }
           }
-          lhs[0] = e;
+          lhs[ 0 ] = e;
         }
         p_ctx->stack.push( lhs );
       }
@@ -865,7 +861,7 @@ namespace toppers
     {
       //   0  1   2
       // lhs op rhs ...
-      if ( eval_node( node.children[0], p_ctx ) )
+      if ( eval_node( node.children[ 0 ], p_ctx ) )
       {
         std::size_t const n = node.children.size();
         if ( n == 1 )  // 左辺のみ
@@ -873,7 +869,7 @@ namespace toppers
           return true;
         }
         var_t lhs( p_ctx->stack.top() ); p_ctx->stack.pop();
-        for ( std::size_t i = 1; ( i < n ) && eval_node( node.children[i+1], p_ctx ); i += 2 )
+        for ( std::size_t i = 1; ( i < n ) && eval_node( node.children[ i+1 ], p_ctx ); i += 2 )
         {
           var_t rhs( p_ctx->stack.top() ); p_ctx->stack.pop();
           std::string op( node.children[i].value.begin(), node.children[i].value.end() );
@@ -920,7 +916,7 @@ namespace toppers
               e.i = value;
             }
           }
-          lhs[0] = e;
+          lhs[ 0 ] = e;
         }
         p_ctx->stack.push( lhs );
       }
@@ -942,7 +938,7 @@ namespace toppers
         var_t expr( p_ctx->stack.top() ); p_ctx->stack.pop();
         for ( long i = static_cast< long >( n ) - 2, t = 0; i >= 0 && eval_node( node.children[i+1], p_ctx ); i-- )
         {
-          std::string op( node.children[i].value.begin(), node.children[i].value.end() );
+          std::string op( node.children[ i ].value.begin(), node.children[ i ].value.end() );
           element e;
           std::tr1::int64_t value = 0;
           if ( op != "@" )
@@ -1019,7 +1015,7 @@ namespace toppers
           std::map< std::string, macro_processor::func_t >::const_iterator iter( p_ctx->func_map.find( func_name ) );
           if ( iter == p_ctx->func_map.end() )  // そんな関数はない
           {
-            error( node.children[0].value.begin().line(), _( "function `%1%\' is undefined" ), func_name );
+            error( node.children[ 0 ].value.begin().line(), _( "function `%1%\' is undefined" ), func_name );
             p_ctx->stack.push( var_t() );
           }
           else  // 関数を呼び出す
@@ -1027,7 +1023,7 @@ namespace toppers
             std::vector< var_t > arg_list;
             for ( std::size_t i = 0, n = node.children.size() - 1; 2 + 2*i < n; i++ )
             {
-              if ( eval_node( node.children[2 + 2*i], p_ctx ) )
+              if ( eval_node( node.children[ 2 + 2*i ], p_ctx ) )
               {
                 var_t arg( p_ctx->stack.top() ); p_ctx->stack.pop();
                 arg_list.push_back( arg );
@@ -1089,7 +1085,7 @@ namespace toppers
       if ( node.children.size() == 1 )
       {
         result = eval_node( node.children[0], p_ctx );
-        if ( node.children[0].value.id() == parser::id_lvalue_expr )
+        if ( node.children[ 0 ].value.id() == parser::id_lvalue_expr )
         {
           var_t ident( p_ctx->stack.top() ); p_ctx->stack.pop();
           std::string name( get_s( ident, p_ctx ) );
@@ -1112,9 +1108,9 @@ namespace toppers
       //          0 1          2 3
       // identifier
       // identifier [ expression ]
-      if ( eval_node( node.children[0], p_ctx ) )
+      if ( eval_node( node.children[ 0 ], p_ctx ) )
       {
-        if ( ( node.children.size() > 1 ) && eval_node( node.children[2], p_ctx ) )
+        if ( ( node.children.size() > 1 ) && eval_node( node.children[ 2 ], p_ctx ) )
         {
           var_t expr( p_ctx->stack.top() ); p_ctx->stack.pop();
           var_t ident( p_ctx->stack.top() ); p_ctx->stack.pop();
@@ -1128,7 +1124,7 @@ namespace toppers
           catch ( expr_error& )
           {
             subscript = get_s( expr, p_ctx );
-            error( node.children[0].value.begin().line(), _( "`%1%\' does not have a value" ), subscript );
+            error( node.children[ 0 ].value.begin().line(), _( "`%1%\' does not have a value" ), subscript );
             throw;
           }
           e.s = ( boost::format( "%s[%s]" ) % get_s( ident, p_ctx ) % subscript ).str();
@@ -1154,6 +1150,14 @@ namespace toppers
     {
       element e;
       e.s.assign( node.children[0].value.begin(), node.children[0].value.end() );
+
+      // Boost 1.39.0?以上で、0の前の空白を含めてトークンとしてしまう不具合の対策
+      std::string::size_type pos = e.s.find_first_not_of( " \t\n" );
+      if (pos != std::string::npos )
+      {
+        e.s = e.s.substr( pos );
+      }
+
       std::istringstream iss( e.s );
       iss.unsetf( std::ios_base::basefield );
       std::tr1::int64_t value;
@@ -1210,10 +1214,10 @@ namespace toppers
       if ( eval_node( node.children[0], p_ctx ) )
       {
         var_t first( p_ctx->stack.top() ); p_ctx->stack.pop();
-        if ( eval_node( node.children[2], p_ctx ) )
+        if ( eval_node( node.children[ 2 ], p_ctx ) )
         {
           var_t second( p_ctx->stack.top() ); p_ctx->stack.pop();
-          if ( eval_node( node.children[6], p_ctx ) )
+          if ( eval_node( node.children[ 6 ], p_ctx ) )
           {
             var_t last( p_ctx->stack.top() ); p_ctx->stack.pop();
             std::tr1::int64_t a0 = get_i( first, p_ctx );
@@ -1222,7 +1226,7 @@ namespace toppers
             std::tr1::int64_t d = a1 - a0;
             if ( ( an - a0 ) % d != 0 )
             {
-              error( node.children[0].value.begin().line(), _( "illegal arithmetic sequence" ) );
+              error( node.children[ 0 ].value.begin().line(), _( "illegal arithmetic sequence" ) );
             }
             else
             {
@@ -1232,8 +1236,8 @@ namespace toppers
                 e.i = i;
                 first.push_back( e );
               }
-              first[1].s = second[0].s;
-              first.back().s = last[0].s;
+              first[ 1 ].s = second[0].s;
+              first.back().s = last[ 0 ].s;
             }
             p_ctx->stack.push( first );
           }
@@ -1247,13 +1251,13 @@ namespace toppers
     {
       //   0 1   2
       // int , int ...
-      if ( eval_node( node.children[0], p_ctx ) )
+      if ( eval_node( node.children[ 0 ], p_ctx ) )
       {
         var_t lhs( p_ctx->stack.top() ); p_ctx->stack.pop();
-        for ( std::size_t i = 1, n = node.children.size(); ( i < n ) && eval_node( node.children[i+1], p_ctx ); i += 2 )
+        for ( std::size_t i = 1, n = node.children.size(); ( i < n ) && eval_node( node.children[ i+1 ], p_ctx ); i += 2 )
         {
           var_t rhs( p_ctx->stack.top() ); p_ctx->stack.pop();
-          lhs.push_back( rhs[0] );
+          lhs.push_back( rhs[ 0 ] );
         }
         p_ctx->stack.push( lhs );
       }
@@ -1267,7 +1271,7 @@ namespace toppers
 
       for ( std::size_t i = 0, n = node.children.size(); i < n; i++ )
       {
-        for ( text::const_iterator iter( node.children[i].value.begin() ), last( node.children[i].value.end() );
+        for ( text::const_iterator iter( node.children[ i ].value.begin() ), last( node.children[ i ].value.end() );
               iter != last;
               ++iter )
         {
@@ -1304,12 +1308,12 @@ namespace toppers
 
       //         0          1 2   3    4
       // $FUNCTION identifier $ top $END$
-      if ( eval_node( node.children[1], p_ctx ) )   // identifier
+      if ( eval_node( node.children[ 1 ], p_ctx ) )   // identifier
       {
         var_t ident( p_ctx->stack.top() ); p_ctx->stack.pop();
         macro_processor::func_t func;
         func.name = get_s( ident, p_ctx );
-        func.node = &node.children[3];
+        func.node = &node.children[ 3 ];
         func.f = 0; // 組み込み関数ではないので
         p_ctx->func_map[ func.name ] = func;
       }
@@ -1334,7 +1338,7 @@ namespace toppers
       //   0          1 2   3      4   5     6
       // $IF expression $ top  $END$
       // $IF expression $ top $ELSE$ top $END$
-      if ( eval_node( node.children[1], p_ctx ) )   // expression
+      if ( eval_node( node.children[ 1 ], p_ctx ) )   // expression
       {
         var_t expr( p_ctx->stack.top() ); p_ctx->stack.pop();
         bool cond = false;
@@ -1344,16 +1348,16 @@ namespace toppers
         }
         catch ( expr_error& )
         {
-          error( node.children[0].value.begin().line(), _( "`%1%\' does not have a value" ), get_s( expr, p_ctx ) );
+          error( node.children[ 0 ].value.begin().line(), _( "`%1%\' does not have a value" ), get_s( expr, p_ctx ) );
           throw;
         }
         if ( cond )           // $IF expr$
         {
-          result &= eval_node( node.children[3], p_ctx );   // top
+          result &= eval_node( node.children[ 3 ], p_ctx );   // top
         }
         else if ( node.children.size() == 7 ) // $ELSE$
         {
-          result &= eval_node( node.children[5], p_ctx );   // top
+          result &= eval_node( node.children[ 5 ], p_ctx );   // top
         }
       }
       return result;
@@ -1374,15 +1378,15 @@ namespace toppers
       if ( eval_node( node.children[1], p_ctx ) )   // identifier
       {
         var_t ident( p_ctx->stack.top() ); p_ctx->stack.pop();
-        if ( eval_node( node.children[2], p_ctx ) ) // order_list
+        if ( eval_node( node.children[ 2 ], p_ctx ) ) // order_list
         {
           var_t order_list( p_ctx->stack.top() ); p_ctx->stack.pop();
-          if ( !order_list.empty() && order_list[0].i )
+          if ( !order_list.empty() )
           {
             for ( var_t::const_iterator iter( order_list.begin() ), last( order_list.end() ); iter != last; ++iter )
             {
               p_ctx->var_map[ get_s( ident, p_ctx ) ] = var_t( 1, *iter );
-              result &= eval_node( node.children[4], p_ctx ); // top
+              result &= eval_node( node.children[ 4 ], p_ctx ); // top
             }
           }
         }
@@ -1402,21 +1406,21 @@ namespace toppers
 
       //         0          1          2         3 4   5     6
       // $JOINEACH identifier order_list delimitor $ top $END$
-      if ( eval_node( node.children[1], p_ctx ) )       // identifier
+      if ( eval_node( node.children[ 1 ], p_ctx ) )       // identifier
       {
         var_t ident( p_ctx->stack.top() ); p_ctx->stack.pop();
-        if ( eval_node( node.children[2], p_ctx ) )     // order_list
+        if ( eval_node( node.children[ 2 ], p_ctx ) )     // order_list
         {
           var_t order_list( p_ctx->stack.top() ); p_ctx->stack.pop();
           if ( !order_list.empty() && order_list[0].i )
           {
-            if ( eval_node( node.children[3], p_ctx ) ) // delimitor
+            if ( eval_node( node.children[ 3 ], p_ctx ) ) // delimitor
             {
               var_t delimitor( p_ctx->stack.top() ); p_ctx->stack.pop();
               for ( var_t::const_iterator iter( order_list.begin() ), last( order_list.end() ); iter != last; ++iter )
               {
                 p_ctx->var_map[ get_s( ident, p_ctx ) ] = var_t( 1, *iter );
-                result &= eval_node( node.children[5], p_ctx ); // top
+                result &= eval_node( node.children[ 5 ], p_ctx ); // top
                 if ( boost::next( iter ) != last )
                 {
                   p_ctx->target_file << get_s( delimitor, p_ctx );
@@ -1506,7 +1510,7 @@ namespace toppers
     {
       // 0          1 2
       // $ expression $
-      if ( eval_node( node.children[1], p_ctx ) ) // expression
+      if ( eval_node( node.children[ 1 ], p_ctx ) ) // expression
       {
         if ( node.children[1].value.id().to_long() == parser::id_expression )
         {
@@ -1521,8 +1525,8 @@ namespace toppers
     bool plain( tree_node_t const& node, context* p_ctx )
     {
       std::string buf;
-      buf.reserve( node.children[0].value.end() - node.children[0].value.begin() );
-      for ( text::const_iterator iter( node.children[0].value.begin() ), last( node.children[0].value.end() ); iter != last; ++iter )
+      buf.reserve( node.children[ 0 ].value.end() - node.children[ 0 ].value.begin() );
+      for ( text::const_iterator iter( node.children[ 0 ].value.begin() ), last( node.children[0].value.end() ); iter != last; ++iter )
       {
         if ( *iter == '$' )
         {
@@ -1553,16 +1557,16 @@ namespace toppers
 
 #if defined( _MSC_VER ) && DEBUG_TRACE
       ::OutputDebugString( ( boost::format( "%s:%d:%s\n" )
-                        % node.children[0].value.begin().line().file
-                        % node.children[0].value.begin().line().line
-                        % std::string( node.children[0].value.begin(), node.children[0].value.end() )
+                        % node.children[ 0 ].value.begin().line().file
+                        % node.children[ 0 ].value.begin().line().line
+                        % std::string( node.children[ 0 ].value.begin(), node.children[ 0 ].value.end() )
                         ).str().c_str() );
 #endif
 
       switch ( parser::rule_id_t id = static_cast< parser::rule_id_t >( node.value.id().to_long() ) )
       {
       case parser::id_expression:
-        result = eval_node( node.children[0], p_ctx );
+        result = eval_node( node.children[ 0 ], p_ctx );
         break;
       case parser::id_assignment_expr:
         result = assignment_expr( node, p_ctx );
@@ -1669,7 +1673,7 @@ namespace toppers
 
     bool eval_text( text::const_iterator first, text::const_iterator last, context* p_ctx )
     {
-      using namespace boost::spirit;
+      using namespace boost::spirit::classic;
       typedef text::const_iterator iterator_t;
       tree_parse_info< iterator_t, node_iter_data_factory<> > info;
       info = pt_parse( first, last, parser(), space_p, node_iter_data_factory<>() );
@@ -1682,7 +1686,7 @@ namespace toppers
         }
         else
         {
-          result = eval_node( info.trees[0], p_ctx );
+          result = eval_node( info.trees[ 0 ], p_ctx );
         }
         return result;
       }
@@ -1705,8 +1709,8 @@ namespace toppers
     return get_s( var, p_ctx );
   }
 
-  macro_processor::macro_processor( hook_t hook_on_assign )
-    : p_ctx_( new context( hook_on_assign ) )
+  macro_processor::macro_processor()
+    : p_ctx_( new context )
   {
   }
 
@@ -1715,8 +1719,8 @@ namespace toppers
   {
   }
 
-  macro_processor::macro_processor( text const& in, hook_t hook_on_assign )
-    : p_ctx_( new context( hook_on_assign ) )
+  macro_processor::macro_processor( text const& in )
+    : p_ctx_( new context )
   {
     evaluate( in );
   }
@@ -1762,7 +1766,7 @@ namespace toppers
   {
 #if defined( _MSC_VER ) && /* DEBUG_TRACE */ 1
     std::string s( "$" + name + " = " + get_s( value, p_ctx_ ) + "$" );
-    if ( !value.empty() && value[0].i )
+    if ( !value.empty() && value[ 0 ].i )
     {
       s += "(" + boost::lexical_cast< std::string >( get_i( value, p_ctx_ ) ) + ")";
     }
@@ -1839,7 +1843,7 @@ std::string debug_str;
 
       for ( size_type i = 0, n = buf.size(); i != n; ++i )
       {
-        using namespace boost::spirit;
+        using namespace boost::spirit::classic;
         char c = buf[i];
         std::string headername;
         text::const_iterator iter2( iter, i );

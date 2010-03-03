@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2005-2008 by TAKAGI Nobuhisa
+ *  Copyright (C) 2005-2010 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -78,7 +78,7 @@ namespace toppers
    *  \endcode
    */
   template < class Derived >
-    struct c_expr_parser_base : boost::spirit::grammar< Derived >
+    struct c_expr_parser_base : boost::spirit::classic::grammar< Derived >
   {
   public:
     /*!
@@ -88,7 +88,7 @@ namespace toppers
     template < class Scanner >
       struct definition
     {
-      typedef boost::spirit::rule< Scanner > rule_t;
+      typedef boost::spirit::classic::rule< Scanner > rule_t;
       rule_t  primary_expression,   
               expression,
               constant_expression,
@@ -149,7 +149,7 @@ namespace toppers
           c_strlit_p( c_strlit_parser( self.codeset_ ) ),
           c_chlit_p( c_chlit_parser( self.codeset_ ) )
       {
-        using namespace boost::spirit;
+        using namespace boost::spirit::classic;
         static functor_parser< detail::c_integer_constant_parse_functor< boost::uintmax_t > > const c_int_const_p;
         static functor_parser< detail::c_integer_suffix_parse_functor > const c_int_suffix_p;
 

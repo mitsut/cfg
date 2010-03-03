@@ -92,8 +92,6 @@ namespace toppers
       void const* node;
     };
 
-    typedef void ( * hook_t )( text_line const&, std::string const&, var_t const&, var_t const&, context* );
-
     struct context
     {
       std::stack< var_t > stack;
@@ -101,14 +99,13 @@ namespace toppers
       std::map< std::string, func_t > func_map;
       bool in_function;
       output_file target_file;
-      hook_t hook_on_assign;
       text_line line;
-      explicit context( hook_t hoa = 0 ) : hook_on_assign( hoa ), in_function( false ) {}
+      context() : in_function( false ) {}
     };
 
-    explicit macro_processor( hook_t hook_on_assign = 0 );
+    macro_processor();
     macro_processor( macro_processor const& other );
-    explicit macro_processor( text const& in, hook_t hook_on_assign = 0 );
+    explicit macro_processor( text const& in );
     ~macro_processor();
     macro_processor& operator=( macro_processor const& other );
     void swap( macro_processor& other );

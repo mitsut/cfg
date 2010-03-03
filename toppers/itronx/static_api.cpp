@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2008 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2010 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -39,7 +39,8 @@
 #include "toppers/diagnostics.hpp"
 #include "toppers/itronx/static_api.hpp"
 #include "toppers/itronx/static_api_parser.hpp"
-#include <boost/spirit.hpp>
+#include <boost/spirit/include/classic.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace toppers
 {
@@ -74,7 +75,7 @@ namespace toppers
                             std::map< std::string, info > const& info_map,
                             bool ucn, codeset_t codeset )
     {
-      boost::spirit::parse_info< text::const_iterator > pi;
+      boost::spirit::classic::parse_info< text::const_iterator > pi;
       std::vector< std::string > tokens;
       c_const_expr_parser cexpr_p( ucn, codeset );
       static_api_parser parser( tokens, cexpr_p );
@@ -97,7 +98,7 @@ namespace toppers
       // この行番号は、静的APIの開始位置のものであるため、エラー発生箇所そのものズバリを指すことはできない。
       temp.line_ = next_temp.line();
 
-      pi = boost::spirit::parse( next_temp, last, parser, boost::spirit::space_p );
+      pi = boost::spirit::classic::parse( next_temp, last, parser, boost::spirit::classic::space_p );
       if ( !pi.hit )
       {
         return false;
@@ -120,12 +121,24 @@ namespace toppers
 
       // 各パラメータの解析
       std::istringstream iss( pinfo->params );
+      int order = 0;            // パラメータリスト内の順序
+      bool param_list = false;  // パラメータリスト解析中フラグ
+      std::string symbol;
+
       for ( std::vector< std::string >::const_iterator iter( tokens.begin() + 1 ), last( tokens.end() );
             iter != last;
             ++iter )
       {
-        std::string symbol;
-        iss >> symbol;
+        if ( !param_list )
+        {
+          iss >> symbol;
+          if ( symbol.size() > 3 && symbol.substr( symbol.size() - 3 ) == "..." )
+          {
+            param_list = true;
+            order = 0;
+            symbol.resize( symbol.size() - 3 );
+          }
+        }
         if ( symbol == "{" || symbol == "}" )
         {
           if ( symbol != *iter )
@@ -136,8 +149,16 @@ namespace toppers
         }
         else if ( *iter == "{" || *iter == "}" )
         {
-          // 省略可能パラメータのスキップ
-          if ( *symbol.rbegin() != '\?' )
+          if ( param_list && *iter == "}" )
+          {
+            iss >> symbol;
+            if ( symbol != "}" )
+            {
+              error( temp.line_, _( "illegal token `%1%\'" ), *iter );
+            }
+            param_list = false;
+          }
+          else if ( *symbol.rbegin() != '\?' ) // 省略可能パラメータのスキップ
           {
             error( temp.line_, _( "illegal token `%1%\'" ), *iter );
           }
@@ -146,9 +167,25 @@ namespace toppers
         {
           parameter value;
           value.symbol = symbol;
+          if ( param_list )
+          {
+            value.symbol += boost::lexical_cast< std::string >( order++ );
+          }
           value.text = *iter;
           value.value = 0;
           temp.params_.push_back( value );
+        }
+      }
+      if ( !iss.eof() )
+      {
+        iss >> symbol;
+        if ( symbol != "}" )
+        {
+          error( temp.line_, _( "few parameters for static API `%s\'" ), api_name );
+        }
+        else
+        {
+          error( temp.line_, _( "missing token `%1%\'" ), symbol );
         }
       }
       next = pi.stop;

@@ -2,7 +2,7 @@
 
 ifndef BOOST_DIR
 	ifndef BOOST_VERSION
-		BOOST_VERSION = 1_33_1
+		BOOST_VERSION = 1_42_0
 	endif
 	ifeq ($(OSTYPE), msys)
 		BOOST_DIR = /mingw/include/boost-$(BOOST_VERSION)
@@ -15,12 +15,8 @@ ifndef BOOST_DIR
 	endif
 endif
 
-ifndef LIBBOOST_SUFFIX
-	LIBBOOST_SUFFIX = -gcc-mt-s
-endif
-
-# ÈóÎÏ¤Ê¥Þ¥·¥ó¤Ê¤É¤Ç¥³¥ó¥Ñ¥¤¥ë¤ËÈó¾ï¤ËÄ¹¤¤»þ´Ö¤¬¤«¤«¤ë¡¢¤â¤·¤¯¤Ï¥³¥ó¥Ñ¥¤¥ë»þ¤Ë
-# ¥Ï¥ó¥°¥¢¥Ã¥×¤¹¤ë¾ì¹ç¤Ë¤Ï¡¢-O0¤ËÊÑ¹¹¤·¤Æ¤ß¤Æ¤¯¤À¤µ¤¤¡£
+# ”ñ—Í‚Èƒ}ƒVƒ“‚È‚Ç‚ÅƒRƒ“ƒpƒCƒ‹‚É”ñí‚É’·‚¢ŽžŠÔ‚ª‚©‚©‚éA‚à‚µ‚­‚ÍƒRƒ“ƒpƒCƒ‹Žž‚É
+# ƒnƒ“ƒOƒAƒbƒv‚·‚éê‡‚É‚ÍA-O0‚É•ÏX‚µ‚Ä‚Ý‚Ä‚­‚¾‚³‚¢B
 OPTIMIZE = -O2
 
 SUBDIRS  = toppers \

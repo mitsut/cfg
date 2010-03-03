@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2005-2008 by TAKAGI Nobuhisa
+ *  Copyright (C) 2005-2010 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -43,10 +43,10 @@
 #define TOPPERS_PARSER_HPP_
 
 #include "toppers/codeset.hpp"
-#include <boost/spirit/core.hpp>
-#include <boost/spirit/actor.hpp>
-#include <boost/spirit/utility.hpp>
-#include <boost/spirit/dynamic.hpp>
+#include <boost/spirit/include/classic_core.hpp>
+#include <boost/spirit/include/classic_actor.hpp>
+#include <boost/spirit/include/classic_utility.hpp>
+#include <boost/spirit/include/classic_dynamic.hpp>
 
 namespace toppers
 {
@@ -56,11 +56,11 @@ namespace toppers
 
     struct c_integer_suffix_parse_functor
     {
-      typedef boost::spirit::nil_t result_t;
+      typedef boost::spirit::classic::nil_t result_t;
       template < class Scanner >
       int operator()( Scanner scan, result_t& ) const
       {
-        using namespace boost::spirit;
+        using namespace boost::spirit::classic;
         int length =
                   as_lower_d
                   [
@@ -78,7 +78,7 @@ namespace toppers
       template < class Scanner >
       int operator()( Scanner scan, result_t& result ) const
       {
-        using namespace boost::spirit;
+        using namespace boost::spirit::classic;
         result_t x = T( 0 );
         int length =
                   (
@@ -106,7 +106,7 @@ namespace toppers
       template < class Scanner >
       int operator()( Scanner scan, result_t& result ) const
       {
-        using namespace boost::spirit;
+        using namespace boost::spirit::classic;
         static functor_parser< c_integer_constant_parse_functor< T > > const c_int_const_p;
         static functor_parser< c_integer_suffix_parse_functor > const c_int_suffix_p;
         bool negative = false;
@@ -125,22 +125,22 @@ namespace toppers
     template <>
     struct mbchar_parse_functor< ascii >
     {
-      typedef boost::spirit::nil_t result_t;
+      typedef boost::spirit::classic::nil_t result_t;
       template < class Scanner >
       int operator()( Scanner scan, result_t& ) const
       {
-        return boost::spirit::range_p( '\x01', '\x7f' ).parse( scan ).length();
+        return boost::spirit::classic::range_p( '\x01', '\x7f' ).parse( scan ).length();
       }
     };
 
     template <>
     struct mbchar_parse_functor< shift_jis >
     {
-      typedef boost::spirit::nil_t result_t;
+      typedef boost::spirit::classic::nil_t result_t;
       template < class Scanner >
       int operator()( Scanner scan, result_t& ) const
       {
-        using namespace boost::spirit;
+        using namespace boost::spirit::classic;
         int length =
                 (
                     range_p( '\x01', '\x7f' ) // 半角英数字記号
@@ -154,11 +154,11 @@ namespace toppers
     template <>
     struct mbchar_parse_functor< euc_jp >
     {
-      typedef boost::spirit::nil_t result_t;
+      typedef boost::spirit::classic::nil_t result_t;
       template < class Scanner >
       int operator()( Scanner scan, result_t& ) const
       {
-        using namespace boost::spirit;
+        using namespace boost::spirit::classic;
         int length =
                 (
                     range_p( '\x01', '\x7f' ) // 半角英数字記号
@@ -172,11 +172,11 @@ namespace toppers
     template <>
     struct mbchar_parse_functor< utf8 >
     {
-      typedef boost::spirit::nil_t result_t;
+      typedef boost::spirit::classic::nil_t result_t;
       template < class Scanner >
       int operator()( Scanner scan, result_t& ) const
       {
-        using namespace boost::spirit;
+        using namespace boost::spirit::classic;
         int length =
                 (
                     range_p( '\x01', '\x7f' ) // 1バイト
@@ -193,7 +193,7 @@ namespace toppers
     template <>
     struct mbchar_parse_functor< -1 >
     {
-      typedef boost::spirit::nil_t result_t;
+      typedef boost::spirit::classic::nil_t result_t;
       explicit mbchar_parse_functor( codeset_t codeset = ascii ) : codeset_( codeset ) {}
       template < class Scanner >
       int operator()( Scanner scan, result_t& result ) const
@@ -240,7 +240,7 @@ namespace toppers
       template < class Scanner >
       int operator()( Scanner scan, result_t& result ) const
       {
-        using namespace boost::spirit;
+        using namespace boost::spirit::classic;
         result_t x;
         int length =
                 (
@@ -269,11 +269,11 @@ namespace toppers
     template < int CodeSet >
     struct c_strlit_parse_functor
     {
-      typedef boost::spirit::nil_t result_t;
+      typedef boost::spirit::classic::nil_t result_t;
       template < class Scanner >
       int operator()( Scanner scan, result_t& result ) const
       {
-        using namespace boost::spirit;
+        using namespace boost::spirit::classic;
         static functor_parser< detail::mbchar_parse_functor< CodeSet > > const mbchar_p;
         static functor_parser< detail::ucn_parse_functor > const ucn_p;
         int length =
@@ -287,12 +287,12 @@ namespace toppers
     template <>
     struct c_strlit_parse_functor< -1 >
     {
-      typedef boost::spirit::nil_t result_t;
+      typedef boost::spirit::classic::nil_t result_t;
       explicit c_strlit_parse_functor( codeset_t codeset = ascii ) : codeset_( codeset ) {}
       template < class Scanner >
       int operator()( Scanner scan, result_t& result ) const
       {
-        using namespace boost::spirit;
+        using namespace boost::spirit::classic;
         mbchar_parse_functor<> const functor( codeset_ );
         functor_parser< detail::mbchar_parse_functor<> > const mbchar_p( functor );
         static functor_parser< detail::ucn_parse_functor > const ucn_p;
@@ -310,11 +310,11 @@ namespace toppers
     template < int CodeSet >
     struct c_chlit_parse_functor
     {
-      typedef boost::spirit::nil_t result_t;
+      typedef boost::spirit::classic::nil_t result_t;
       template < class Scanner >
       int operator()( Scanner scan, result_t& result ) const
       {
-        using namespace boost::spirit;
+        using namespace boost::spirit::classic;
         static functor_parser< detail::mbchar_parse_functor< CodeSet > > const mbchar_p;
         static functor_parser< detail::ucn_parse_functor > const ucn_p;
         int length =
@@ -328,12 +328,12 @@ namespace toppers
     template <>
     struct c_chlit_parse_functor< -1 >
     {
-      typedef boost::spirit::nil_t result_t;
+      typedef boost::spirit::classic::nil_t result_t;
       explicit c_chlit_parse_functor( codeset_t codeset = ascii ) : codeset_( codeset ) {}
       template < class Scanner >
       int operator()( Scanner scan, result_t& result ) const
       {
-        using namespace boost::spirit;
+        using namespace boost::spirit::classic;
         mbchar_parse_functor<> const functor( codeset_ );
         functor_parser< detail::mbchar_parse_functor<> > const mbchar_p( functor );
         static functor_parser< detail::ucn_parse_functor > const ucn_p;
@@ -351,11 +351,11 @@ namespace toppers
 
     struct c_identifier_parse_functor
     {
-      typedef boost::spirit::nil_t result_t;
+      typedef boost::spirit::classic::nil_t result_t;
       template < class Scanner >
       int operator()( Scanner scan, result_t& result ) const
       {
-        using namespace boost::spirit;
+        using namespace boost::spirit::classic;
         static functor_parser< detail::ucn_parse_functor > const ucn_p;
         int length;
         typename Scanner::iterator_t const first( scan.first );
@@ -423,13 +423,13 @@ namespace toppers
    *  する点です。また型を特定するための接尾辞も受け入れます。
    */
   template < typename T >
-  inline boost::spirit::functor_parser< detail::c_integer_parse_functor< T > > const c_int_parser()
+  inline boost::spirit::classic::functor_parser< detail::c_integer_parse_functor< T > > const c_int_parser()
   {
-    return boost::spirit::functor_parser< detail::c_integer_parse_functor< T > >();
+    return boost::spirit::classic::functor_parser< detail::c_integer_parse_functor< T > >();
   }
 
-  extern boost::spirit::functor_parser< detail::c_integer_parse_functor< int > > const c_int_p;
-  extern boost::spirit::functor_parser< detail::c_integer_parse_functor< unsigned int > > const c_uint_p;
+  extern boost::spirit::classic::functor_parser< detail::c_integer_parse_functor< int > > const c_int_p;
+  extern boost::spirit::classic::functor_parser< detail::c_integer_parse_functor< unsigned int > > const c_uint_p;
 
   /*!
    *  \brief  マルチバイト文字パーサー
@@ -439,19 +439,19 @@ namespace toppers
    *  0x00 は文字列の終端と区別できないため、合致対象にはなりません。
    */
   template < int CodeSet >
-  inline boost::spirit::functor_parser< detail::mbchar_parse_functor< CodeSet > > const mbchar_parser()
+  inline boost::spirit::classic::functor_parser< detail::mbchar_parse_functor< CodeSet > > const mbchar_parser()
   {
-    return boost::spirit::functor_parser< detail::mbchar_parse_functor< CodeSet > >();
+    return boost::spirit::classic::functor_parser< detail::mbchar_parse_functor< CodeSet > >();
   }
-  inline boost::spirit::functor_parser< detail::mbchar_parse_functor<> > const mbchar_parser( codeset_t codeset )
+  inline boost::spirit::classic::functor_parser< detail::mbchar_parse_functor<> > const mbchar_parser( codeset_t codeset )
   {
-    return boost::spirit::functor_parser< detail::mbchar_parse_functor<> >( detail::mbchar_parse_functor<>( codeset ) );
+    return boost::spirit::classic::functor_parser< detail::mbchar_parse_functor<> >( detail::mbchar_parse_functor<>( codeset ) );
   }
 
-  extern boost::spirit::functor_parser< detail::mbchar_parse_functor< ascii > > const ascii_p;
-  extern boost::spirit::functor_parser< detail::mbchar_parse_functor< shift_jis > > const shift_jis_p;
-  extern boost::spirit::functor_parser< detail::mbchar_parse_functor< euc_jp > > const euc_jp_p;
-  extern boost::spirit::functor_parser< detail::mbchar_parse_functor< utf8 > > const utf8_p;
+  extern boost::spirit::classic::functor_parser< detail::mbchar_parse_functor< ascii > > const ascii_p;
+  extern boost::spirit::classic::functor_parser< detail::mbchar_parse_functor< shift_jis > > const shift_jis_p;
+  extern boost::spirit::classic::functor_parser< detail::mbchar_parse_functor< euc_jp > > const euc_jp_p;
+  extern boost::spirit::classic::functor_parser< detail::mbchar_parse_functor< utf8 > > const utf8_p;
 
   /*!
    *  \brief  国際文字名パーサー
@@ -460,12 +460,12 @@ namespace toppers
    *  \\uhhhhまたは\\Uhhhhhhhh（hは16進数字）に合致します。なお、これらの形式に
    *  合致している場合でも、一部の値は国際文字名として使用できません。
    */
-  inline boost::spirit::functor_parser< detail::ucn_parse_functor > const ucn_parser()
+  inline boost::spirit::classic::functor_parser< detail::ucn_parse_functor > const ucn_parser()
   {
-    return boost::spirit::functor_parser< detail::ucn_parse_functor >();
+    return boost::spirit::classic::functor_parser< detail::ucn_parse_functor >();
   }
 
-  extern boost::spirit::functor_parser< detail::ucn_parse_functor > const ucn_p;
+  extern boost::spirit::classic::functor_parser< detail::ucn_parse_functor > const ucn_p;
 
   /*!
    *  \brief  C言語形式の文字列定数パーサー
@@ -474,12 +474,12 @@ namespace toppers
    *  文字列の文字コードは CodeSet で指定したものになります。
    */
   template < int CodeSet >
-  inline boost::spirit::functor_parser< detail::c_strlit_parse_functor< CodeSet > > const c_strlit_parser()
+  inline boost::spirit::classic::functor_parser< detail::c_strlit_parse_functor< CodeSet > > const c_strlit_parser()
   {
-    return boost::spirit::functor_parser< detail::c_strlit_parse_functor< CodeSet > >();
+    return boost::spirit::classic::functor_parser< detail::c_strlit_parse_functor< CodeSet > >();
   }
 
-  typedef boost::spirit::functor_parser< detail::c_strlit_parse_functor<> > c_strlit_parser_t;
+  typedef boost::spirit::classic::functor_parser< detail::c_strlit_parse_functor<> > c_strlit_parser_t;
 
   /*!
    *  \brief  C言語形式の文字列定数パーサー
@@ -487,15 +487,15 @@ namespace toppers
    *
    *  二重引用符で囲まれたC言語形式の文字列を解析します。
    */
-  inline boost::spirit::functor_parser< detail::c_strlit_parse_functor<> > const c_strlit_parser( codeset_t codeset )
+  inline boost::spirit::classic::functor_parser< detail::c_strlit_parse_functor<> > const c_strlit_parser( codeset_t codeset )
   {
-    return boost::spirit::functor_parser< detail::c_strlit_parse_functor<> >( detail::c_strlit_parse_functor<>( codeset ) );
+    return boost::spirit::classic::functor_parser< detail::c_strlit_parse_functor<> >( detail::c_strlit_parse_functor<>( codeset ) );
   }
 
-  extern boost::spirit::functor_parser< detail::c_strlit_parse_functor< ascii > > const ascii_str_p;
-  extern boost::spirit::functor_parser< detail::c_strlit_parse_functor< shift_jis > > const shift_jis_str_p;
-  extern boost::spirit::functor_parser< detail::c_strlit_parse_functor< euc_jp > > const euc_jp_str_p;
-  extern boost::spirit::functor_parser< detail::c_strlit_parse_functor< utf8 > > const utf8_str_p;
+  extern boost::spirit::classic::functor_parser< detail::c_strlit_parse_functor< ascii > > const ascii_str_p;
+  extern boost::spirit::classic::functor_parser< detail::c_strlit_parse_functor< shift_jis > > const shift_jis_str_p;
+  extern boost::spirit::classic::functor_parser< detail::c_strlit_parse_functor< euc_jp > > const euc_jp_str_p;
+  extern boost::spirit::classic::functor_parser< detail::c_strlit_parse_functor< utf8 > > const utf8_str_p;
 
   /*!
    *  \brief  C言語形式の文字定数パーサー
@@ -504,12 +504,12 @@ namespace toppers
    *  文字コードは CodeSet で指定したものになります。
    */
   template < int CodeSet >
-  inline boost::spirit::functor_parser< detail::c_chlit_parse_functor< CodeSet > > const c_chlit_parser()
+  inline boost::spirit::classic::functor_parser< detail::c_chlit_parse_functor< CodeSet > > const c_chlit_parser()
   {
-    return boost::spirit::functor_parser< detail::c_chlit_parse_functor< CodeSet > >();
+    return boost::spirit::classic::functor_parser< detail::c_chlit_parse_functor< CodeSet > >();
   }
 
-  typedef boost::spirit::functor_parser< detail::c_chlit_parse_functor<> > c_chlit_parser_t;
+  typedef boost::spirit::classic::functor_parser< detail::c_chlit_parse_functor<> > c_chlit_parser_t;
 
   /*!
    *  \brief  C言語形式の文字定数パーサー
@@ -517,17 +517,17 @@ namespace toppers
    *
    *  単引用符で囲まれたC言語形式の文字定数を解析します。
    */
-  inline boost::spirit::functor_parser< detail::c_chlit_parse_functor<> > const c_chlit_parser( codeset_t codeset )
+  inline boost::spirit::classic::functor_parser< detail::c_chlit_parse_functor<> > const c_chlit_parser( codeset_t codeset )
   {
-    return boost::spirit::functor_parser< detail::c_chlit_parse_functor<> >( detail::c_chlit_parse_functor<>( codeset ) );
+    return boost::spirit::classic::functor_parser< detail::c_chlit_parse_functor<> >( detail::c_chlit_parse_functor<>( codeset ) );
   }
 
-  extern boost::spirit::functor_parser< detail::c_chlit_parse_functor< ascii > > const ascii_ch_p;
-  extern boost::spirit::functor_parser< detail::c_chlit_parse_functor< shift_jis > > const shift_jis_ch_p;
-  extern boost::spirit::functor_parser< detail::c_chlit_parse_functor< euc_jp > > const euc_jp_ch_p;
-  extern boost::spirit::functor_parser< detail::c_chlit_parse_functor< utf8 > > const utf8_ch_p;
+  extern boost::spirit::classic::functor_parser< detail::c_chlit_parse_functor< ascii > > const ascii_ch_p;
+  extern boost::spirit::classic::functor_parser< detail::c_chlit_parse_functor< shift_jis > > const shift_jis_ch_p;
+  extern boost::spirit::classic::functor_parser< detail::c_chlit_parse_functor< euc_jp > > const euc_jp_ch_p;
+  extern boost::spirit::classic::functor_parser< detail::c_chlit_parse_functor< utf8 > > const utf8_ch_p;
 
-  typedef boost::spirit::functor_parser< detail::c_identifier_parse_functor > c_ident_parser_t;
+  typedef boost::spirit::classic::functor_parser< detail::c_identifier_parse_functor > c_ident_parser_t;
 
   /*!
    *  \brief  C言語形式の識別子パーサー
@@ -541,14 +541,14 @@ namespace toppers
    *
    *  \note 翻訳限界および予約識別子の判別は行っていません。
    */
-  inline boost::spirit::functor_parser< detail::c_identifier_parse_functor > const c_ident_parser( bool ucn = false, bool c_plus_plus = false )
+  inline boost::spirit::classic::functor_parser< detail::c_identifier_parse_functor > const c_ident_parser( bool ucn = false, bool c_plus_plus = false )
   {
-    return boost::spirit::functor_parser< detail::c_identifier_parse_functor >( detail::c_identifier_parse_functor( ucn, c_plus_plus ) );
+    return boost::spirit::classic::functor_parser< detail::c_identifier_parse_functor >( detail::c_identifier_parse_functor( ucn, c_plus_plus ) );
   }
 
-  extern boost::spirit::functor_parser< detail::c_identifier_parse_functor > const c_ident_p;
-  extern boost::spirit::functor_parser< detail::c_identifier_parse_functor > const c99_ident_p;
-  extern boost::spirit::functor_parser< detail::c_identifier_parse_functor > const c_plus_plus_ident_p;
+  extern boost::spirit::classic::functor_parser< detail::c_identifier_parse_functor > const c_ident_p;
+  extern boost::spirit::classic::functor_parser< detail::c_identifier_parse_functor > const c99_ident_p;
+  extern boost::spirit::classic::functor_parser< detail::c_identifier_parse_functor > const c_plus_plus_ident_p;
 
 }
 

@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2009 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2010 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -39,8 +39,9 @@
 #include "toppers/diagnostics.hpp"
 #include "toppers/s_record.hpp"
 #include "toppers/macro_processor.hpp"
+#include "toppers/itronx/component.hpp"
 #include "cfg.hpp"
-#include <boost/spirit.hpp>
+#include <boost/spirit/include/classic.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 
@@ -98,7 +99,7 @@ void assign_id( toppers::itronx::cfg1_out::static_api_map& api_map )
 
       if ( id_map.find( name ) != id_map.end() )
       {
-        fatal( _( "`%1%\' is duplicated" ), name );
+        fatal( _( "E_OBJ: `%1%\' is duplicated" ), name );
       }
       else
       {
@@ -174,6 +175,38 @@ void assign_id( toppers::itronx::cfg1_out::static_api_map& api_map )
   }
 }
 
+
+/*!
+ *  \brief  マクロプロセッサに登録するID割付け関数
+ *  \param[in]  line      行番号
+ *  \param[in]  arg_list  マクロ実引数リスト
+ *  \param[in]  p_ctx     マクロコンテキスト
+ *  \retval     マクロ返却値
+ */
+toppers::macro_processor::var_t bf_assignid( toppers::text_line const& line,
+                                             std::vector< toppers::macro_processor::var_t > const& arg_list,
+                                             toppers::macro_processor::context* p_ctx )
+{
+  using namespace toppers;
+  using namespace toppers::itronx;
+  using toppers::text_line;
+  typedef toppers::macro_processor::element element;
+  typedef toppers::macro_processor::var_t var_t;
+  typedef toppers::macro_processor::context context;
+
+  return var_t();
+}
+
+//! 組み込み関数ASSIGNIDを登録する
+void register_bf_assignid( toppers::macro_processor* mproc )
+{
+  // ↓ 追加組み込み関数の登録
+  toppers::macro_processor::func_t func_info = {};
+  func_info.name = "ASSIGNID";
+  func_info.f = &bf_assignid;
+  mproc->add_builtin_function( func_info );
+}
+
 /*!
  *  \brief  パス２処理
  *  \retval true  成功
@@ -186,6 +219,7 @@ bool cfg2_main()
 
   std::string kernel( get_global< std::string >( "kernel" ) );
   itronx::factory factory( kernel );
+  global( "factory" ) = &factory;
 
   // *.cfgとcfg1_out.srecの読み込み
   std::string input_file;
@@ -203,12 +237,21 @@ bool cfg2_main()
   codeset_t codeset = get_global< codeset_t >( "codeset" );
   cfg1_out->load_cfg( input_file, codeset, *factory.get_static_api_info_map() );
   cfg1_out->load_srec();
-  cfg1_out::static_api_map api_map( cfg1_out->merge() );
 
-  // ID番号の割付け
-  assign_id( api_map );
+  std::auto_ptr< macro_processor > mproc;
+  std::auto_ptr< component > component_ptr;
 
-  std::auto_ptr< macro_processor > mproc( factory.create_macro_processor( factory.get_hook_on_assign(), *cfg1_out, api_map ) );
+  if ( get_global< bool >( "with-software-components" ) )
+  {
+    mproc = factory.create_macro_processor( *cfg1_out, cfg1_out->get_static_api_array() );
+    component_ptr.reset( new component( mproc.get() ) );
+  }
+  else  // 従来仕様（ソフトウェア部品非対応）
+  {
+    cfg1_out::static_api_map api_map( cfg1_out->merge() );
+    assign_id( api_map ); // ID番号の割付け
+    mproc = factory.create_macro_processor( *cfg1_out, api_map );
+  }
 
   // テンプレート処理
   boost::any template_file( global( "template-file" ) );

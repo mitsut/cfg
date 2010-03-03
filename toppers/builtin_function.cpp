@@ -41,7 +41,6 @@
 #include <utility>
 #include <algorithm>
 #include <ostream>
-#include <utility>
 #include "toppers/macro_processor.hpp"
 #include "toppers/diagnostics.hpp"
 #include "toppers/gettext.hpp"
@@ -397,13 +396,16 @@ namespace toppers
     {
       error( line, _( "too few arguments for `%1%\'" ), "FORMAT" );
     }
-    boost::format fmt( get_s( arg_list[ 0 ], p_ctx ) );
+	  std::string debug_str = get_s( arg_list[ 0 ], p_ctx );
+	  if ( debug_str == "0x%08x" )
+  		toppers::trace("%s", debug_str.c_str() );
+    boost::format fmt( debug_str );
     for ( std::size_t i = 1; i < arity; i++ )
     {
       std::pair< var_t const*, context const* > arg( &arg_list[i], p_ctx );
       fmt % arg;
     }
-    e.s = fmt.str();
+  	e.s = fmt.str();
     return var_t( 1, e );
   }
 
@@ -675,13 +677,14 @@ namespace toppers
         arg_list.push_back( var_t( 1, e ) );
         arg_list.push_back( var_t( 1, lhs ) );
         arg_list.push_back( var_t( 1, rhs ) );
-        int arg1 = *lhs.i, arg2 = *rhs.i;
+		int arg1 = static_cast< int >( *lhs.i );
+		int arg2 = static_cast< int >( *rhs.i );
 
         var_t r = bf_call( line_, arg_list, p_ctx_ );
         bool result = 0;
         if ( !r.empty() )
         {
-          int retval = *r.front().i;
+			int retval = static_cast< int >( *r.front().i );
           result = ( *r.front().i < 0 );
         }
         return result;

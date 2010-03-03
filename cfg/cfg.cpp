@@ -36,7 +36,7 @@
  */
 #include "cfg.hpp"
 #include <boost/program_options.hpp>
-#include <boost/spirit.hpp>
+#include <boost/spirit/include/classic.hpp>
 
 namespace
 {
@@ -87,6 +87,7 @@ namespace
       ( "alignof-fp", po::value< std::size_t >()->default_value( 1 ), _( "alignment of pointer to function" ) )
       ( "external-id", _( "output ID numbers as external `const\' object" ) )
       ( "print-dependencies,M", po::value< std::string >(), _( "output dependencies of source file (for `make\')" ) )
+      ( "with-software-components", _( "with software components" ) )
       ;
 
     // 非表示オプション
@@ -119,23 +120,23 @@ namespace
     // グローバル変数の設定
     if ( vm.count( "print-dependencies" ) )
     {
-      toppers::global( "print-dependencies" ) = vm["print-dependencies"].as< std::string >();
+      toppers::global( "print-dependencies" ) = vm[ "print-dependencies" ].as< std::string >();
       pass = 1; // 依存関係の出力が必要な場合、強制的にパス1に変更
     }
 
     toppers::global( "pass" ) = pass;
     if ( vm.count( "kernel" ) )
     {
-      std::string kernel = toppers::tolower( vm["kernel"].as< std::string >() );
+      std::string kernel = toppers::tolower( vm[ "kernel" ].as< std::string >() );
       toppers::global( "kernel" ) = kernel;
       bool has_class = false;
       bool has_domain = false;
 
-      if ( kernel == "fmp" )
+      if ( kernel == "fmp" || kernel == "fmp+hrp2" || kernel == "hrp2+fmp" )
       {
         has_class = true;
       }
-      if ( kernel == "hrp2" )
+      if ( kernel == "hrp2" || kernel == "fmp+hrp2" || kernel == "hrp2+fmp" )
       {
         has_domain = true;
       }
@@ -146,23 +147,23 @@ namespace
     }
     if ( vm.count( "include-path" ) )
     {
-      std::vector< std::string > v( vm["include-path"].as< std::vector< std::string > >() );
+      std::vector< std::string > v( vm[ "include-path" ].as< std::vector< std::string > >() );
       std::transform( v.begin(), v.end(), v.begin(), &slashes_to_single_slash );
       toppers::global( "include-path" ) = v;
     }
     if ( vm.count( "template-file" ) )
     {
       toppers::global( "template-file" )
-        = slashes_to_single_slash( vm["template-file"].as< std::string >() );
+        = slashes_to_single_slash( vm[ "template-file" ].as< std::string >() );
     }
     if ( vm.count( "input-file" ) )
     {
       toppers::global( "input-file" )
-        = slashes_to_single_slash( vm["input-file"].as< std::string >() );
+        = slashes_to_single_slash( vm[ "input-file" ].as< std::string >() );
     }
     if ( vm.count( "input-charset" ) )
     {
-      std::string input_charset( toppers::tolower( vm["input-charset"].as< std::string >() ) );
+      std::string input_charset( toppers::tolower( vm[ "input-charset" ].as< std::string >() ) );
       toppers::global( "input-charset" ) = input_charset;
 
       toppers::codeset_t codeset = toppers::ascii;
@@ -187,19 +188,19 @@ namespace
     }
     if ( vm.count( "api-table" ) )
     {
-      std::vector< std::string > v( vm["api-table"].as< std::vector< std::string > >() );
+      std::vector< std::string > v( vm[ "api-table" ].as< std::vector< std::string > >() );
       std::transform( v.begin(), v.end(), v.begin(), &slashes_to_single_slash );
       toppers::global( "api-table" ) = v;
     }
     if ( vm.count( "cfg1-def-table" ) )
     {
-      std::vector< std::string > v( vm["cfg1-def-table"].as< std::vector< std::string > >() );
+      std::vector< std::string > v( vm[ "cfg1-def-table" ].as< std::vector< std::string > >() );
       std::transform( v.begin(), v.end(), v.begin(), &slashes_to_single_slash );
       toppers::global( "cfg1-def-table" ) = v;
     }
     if ( vm.count( "cfg1_out" ) )
     {
-      toppers::global( "cfg1_out" ) = vm["cfg1_out"].as< std::string >();
+      toppers::global( "cfg1_out" ) = vm[ "cfg1_out" ].as< std::string >();
     }
     else
     {
@@ -207,13 +208,13 @@ namespace
     }
     if ( vm.count( "cfg-directory" ) )
     {
-      std::string cfg_directory( vm["cfg-directory"].as< std::string >() );
+      std::string cfg_directory( vm[ "cfg-directory" ].as< std::string >() );
       toppers::global( "cfg-directory" ) = slashes_to_single_slash( cfg_directory );
       toppers::load_msgcat( cfg_directory );
     }
     if ( vm.count( "msgcat-directory" ) )
     {
-      std::vector< std::string > msgcat_dirs( vm["msgcat-directory"].as< std::vector< std::string > >() );
+      std::vector< std::string > msgcat_dirs( vm[ "msgcat-directory" ].as< std::vector< std::string > >() );
       std::transform( msgcat_dirs.begin(), msgcat_dirs.end(), msgcat_dirs.begin(), &slashes_to_single_slash );
       std::for_each( msgcat_dirs.begin(), msgcat_dirs.end(), &toppers::load_msgcat );
     }
@@ -230,15 +231,15 @@ namespace
     }
     if ( vm.count( "output-directory" ) )
     {
-      toppers::global( "output-directory" ) = slashes_to_single_slash( vm["output-directory"].as< std::string >() );
+      toppers::global( "output-directory" ) = slashes_to_single_slash( vm[ "output-directory" ].as< std::string >() );
     }
     if ( vm.count( "rom-image" ) )
     {
-      toppers::global( "rom-image" ) = slashes_to_single_slash( vm["rom-image"].as< std::string >() );
+      toppers::global( "rom-image" ) = slashes_to_single_slash( vm[ "rom-image" ].as< std::string >() );
     }
     if ( vm.count( "symbol-table" ) )
     {
-      toppers::global( "symbol-table" ) = slashes_to_single_slash( vm["symbol-table"].as< std::string >() );
+      toppers::global( "symbol-table" ) = slashes_to_single_slash( vm[ "symbol-table" ].as< std::string >() );
     }
     else
     {
@@ -246,17 +247,18 @@ namespace
     }
     if ( vm.count( "id-output-file" ) )
     {
-      toppers::global( "id-output-file" ) = slashes_to_single_slash( vm["id-output-file"].as< std::string >() );
+      toppers::global( "id-output-file" ) = slashes_to_single_slash( vm[ "id-output-file" ].as< std::string >() );
     }
     if ( vm.count( "id-input-file" ) )
     {
-      toppers::global( "id-input-file" ) = slashes_to_single_slash( vm["id-input-file"].as< std::string >() );
+      toppers::global( "id-input-file" ) = slashes_to_single_slash( vm[ "id-input-file" ].as< std::string >() );
     }
     if ( vm.count( "alignof-fp" ) )
     {
-      toppers::global( "alignof-fp" ) = vm["alignof-fp"].as< std::size_t >();
+      toppers::global( "alignof-fp" ) = vm[ "alignof-fp" ].as< std::size_t >();
     }
     toppers::global( "external-id" ) = vm.count( "external-id" ) ? true : false;
+    toppers::global( "with-software-components" ) = vm.count( "with-software-components" ) ? true : false;
 
     toppers::global( "version" ) = std::string( CFG_VERSION );
 

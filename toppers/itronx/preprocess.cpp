@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2008 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2010 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -43,7 +43,7 @@
 #include "toppers/global.hpp"
 #include "toppers/diagnostics.hpp"
 #include "toppers/itronx/preprocess.hpp"
-#include <boost/spirit.hpp>
+#include <boost/spirit/include/classic.hpp>
 
 namespace toppers
 {
@@ -99,7 +99,7 @@ namespace toppers
           }
           else
           {
-            using namespace boost::spirit;
+            using namespace boost::spirit::classic;
             std::string headername;
             if ( iter == last )
             {
@@ -122,7 +122,7 @@ namespace toppers
               std::string hname = search_include_file( include_paths.begin(), include_paths.end(), headername );
               if ( hname.empty() )  // ヘッダ名が見つからない
               {
-                error( iter->line, _( "cannot open file `%1%\'" ), headername );
+                fatal( iter->line, _( "cannot open file `%1%\'" ), headername );
               }
               else if ( onces == 0 || onces->find( hname ) == onces->end() )
               {
@@ -146,7 +146,7 @@ namespace toppers
               {
                 info = parse( iter2, in.end(),
                               ( *( space_p - eol_p ) >>
-                                  ch_p( '#' ) >> *space_p >> "pragma" >> *space_p
+                                  ch_p( '#' ) >> *( space_p - eol_p ) >> "pragma" >> *( space_p - eol_p )
                                     >> "once"
                                     >> *( space_p - eol_p ) >> eol_p ) );
                 if ( info.hit )
@@ -155,11 +155,11 @@ namespace toppers
                   {
                     onces->insert( iter2.line().file );
                   }
-                  out.push_back( ' ' );
+                  out.push_back( '\n' );
                   iter = info.stop.get_row();
                   if ( iter != last )
                   {
-                    out.set_line( iter->line.file, iter->line.line );
+//                    out.set_line( iter->line.file, iter->line.line );
                   }
                   --iter;   // インクリメントされるのでいったん戻す。
                   break;

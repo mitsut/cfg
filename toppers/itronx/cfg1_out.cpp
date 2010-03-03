@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2009 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2010 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -51,7 +51,7 @@
 #include "toppers/nm_symbol.hpp"
 #include "toppers/itronx/cfg1_out.hpp"
 #include "toppers/itronx/preprocess.hpp"
-#include <boost/spirit.hpp>
+#include <boost/spirit/include/classic.hpp>
 #include <boost/filesystem/path.hpp>
 
 namespace toppers
@@ -117,20 +117,35 @@ namespace toppers
                 iter != last;
                 ++iter )
           {
-            // 式の最初に # があれば、それは前処理式
+            // 式の最初に # があれば、それはマクロ定義の判定
             bool is_pp = ( iter->expression[ 0 ] == '#' );
 
             std::string definition = ( iter->is_signed ? "const signed_t " : "const unsigned_t " );
             definition += "TOPPERS_cfg_" + iter->name;
             if ( is_pp )
             {
-              definition +=
-                          " = \n"
-                          "#if " + iter->expression.substr( 1 ) + "\n"
-                          "1;\n"
-                          "#else\n"
-                          "0;\n"
-                          "#endif\n";
+              // 式の最初に #@ があればマクロの評価結果をそのまま値として利用
+              if ( iter->expression.size() >= 2 && iter->expression[ 1 ] == '@' )
+              {
+                std::string expression = iter->expression.substr( 2 );
+                definition +=
+                            " = \n"
+                            "#if " + expression + "\n"
+                            "(" + expression + ");\n"
+                            "#else\n"
+                            "0;\n"
+                            "#endif\n";
+              }
+              else
+              {
+                definition +=
+                            " = \n"
+                            "#if " + iter->expression.substr( 1 ) + "\n"
+                            "1;\n"
+                            "#else\n"
+                            "0;\n"
+                            "#endif\n";
+              }
             }
             else
             {
@@ -238,7 +253,7 @@ namespace toppers
 
       for ( text::const_iterator iter( txt.begin() ), last( txt.end() ); iter != last; ++iter )
       {
-        using namespace boost::spirit;
+        using namespace boost::spirit::classic;
         parse_info< text::const_iterator > info;
 
         info = parse( iter, last, ( ch_p( '#' ) >> *( anychar_p - eol_p ) >> eol_p ) ); // 前処理指令の検出
@@ -574,7 +589,9 @@ namespace toppers
                "#endif\n";
       }
 
-      const std::size_t domain_max = 32;  // ドメインIDは32個まで
+      // 統合仕様書1.1.0における2.14.2 TOPPERS共通データ型の規定により、ACPTNは32ビット符号無し整数型である。
+      // これにより、ドメインの最大数は32個でなければならない。
+      const std::size_t domain_max = 32;
       if ( domid_table.size() > domain_max )
       {
         fatal( _( "there are too many %1% ids" ), "domain" );

@@ -52,7 +52,6 @@
 #include <algorithm>
 #include "toppers/workaround.hpp"
 #include "toppers/text.hpp"
-#include "toppers/text.hpp"
 #include "toppers/codeset.hpp"
 #include "toppers/diagnostics.hpp"
 #include <boost/any.hpp>
@@ -150,11 +149,6 @@ namespace toppers
       
       text_line const& line() const { return line_; }
       void line( text_line const& value ) { line_ = value; }
-      template < typename T >
-        T const& exinf() const { return boost::any_cast< T& >( exinf_ ); }
-      template < typename T >
-        void exinf( T const& value ) { exinf_ = value; }
-
       size_type count_integer_params() const;
         
       //! オブジェクトの交換
@@ -163,7 +157,6 @@ namespace toppers
         std::swap( pinfo_, other.pinfo_ );
         params_.swap( other.params_ );
         line_.swap( other.line_ );
-        exinf_.swap( other.exinf_ );
       }
 
       bool parse( text::const_iterator& next, text::const_iterator last, 
@@ -202,7 +195,7 @@ namespace toppers
             {
               if ( iter->at( info->id_pos ).symbol[0] == '#' )
               {
-                boost::optional< std::tr1::int64_t > id_value = iter->at( info->id_pos ).value;
+                boost::optional< std::tr1::int64_t > id_value = *iter->at( info->id_pos ).value;
                 if ( id_value )
                 {
                   long id = static_cast< long >( *id_value );
@@ -263,7 +256,7 @@ namespace toppers
                 }
                 if ( id_map.find( name ) != id_map.end() )
                 {
-                  fatal( iter->line(), _( "`%1%\' is duplicated" ), name );
+                  fatal( iter->line(), _( "E_OBJ: `%1%\' is duplicated" ), name );
                 }
               }
               else if ( iter->at( info->id_pos ).value )
@@ -311,7 +304,6 @@ namespace toppers
       info const* pinfo_;
       std::vector< parameter > params_;
       text_line line_;
-      boost::any exinf_;
     };
 
   }

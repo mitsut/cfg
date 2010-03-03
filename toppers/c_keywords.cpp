@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2005-2007 by TAKAGI Nobuhisa  
+ *  Copyright (C) 2005-2010 by TAKAGI Nobuhisa  
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -53,7 +53,9 @@ namespace toppers
       "continue", "default", "do", "double", "else", "enum", "extern", "float",
       "for", "goto", "if", "inline", "int", "long" "register", "restrict", "return",
       "short", "sizeof", "static", "struct", "switch", "typedef", "union", "unsigned",
-      "void", "volatile", "while", 0,
+      "void", "volatile", "while",
+      "_Decimal", "_Fract", "_Accum", "_Sat",
+      0,
     };
 
   }

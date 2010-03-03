@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2009 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2010 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -185,6 +185,87 @@ namespace toppers
         mproc.set_var( "USE_EXTERNAL_ID", var_t( 1, external_id ) );
       }
 
+      // カーネルオブジェクト生成・定義用静的APIの各パラメータをマクロプロセッサの変数として設定する。
+      void set_object_vars( std::vector< static_api > const& api_array, macro_processor& mproc )
+      {
+        typedef macro_processor::element element;
+        typedef macro_processor::var_t var_t;
+        long order = 1;
+        var_t order_list;
+
+        for ( std::vector< static_api >::const_iterator v_iter( api_array.begin() ), v_last( api_array.end() );
+              v_iter != v_last;
+              ++v_iter )
+        {
+          static_api::info const* info = v_iter->get_info();
+          var_t params;
+          var_t args;
+
+          // 静的APIが出現した行番号
+          element e;
+          e.s = v_iter->line().file;
+          e.i = v_iter->line().line;
+          mproc.set_var( "API.TEXT_LINE", order, var_t( 1, e ) );
+
+          // 静的API名
+          e.s = info->api_name;
+          e.i = boost::none;
+          mproc.set_var( "API.NAME", order, var_t( 1, e ) );
+
+          // オブジェクトタイプ（"TSK", "SEM", ...）
+          e.s = toppers::toupper( info->type );
+          mproc.set_var( "API.TYPE", order, var_t( 1 , e ) );
+
+          // 各パラメータ
+          for ( static_api::const_iterator api_iter( v_iter->begin() ), api_last( v_iter->end() );
+                api_iter != api_last;
+                ++api_iter )
+          {
+            std::string name( toppers::toupper( ( boost::format( "%s.%s" ) % info->type % ( api_iter->symbol.c_str() + 1 ) ).str() ) );
+            // 末尾の ? を除去
+            if ( *name.rbegin() == '\?' ) 
+            {
+              name.resize( name.size() - 1 );
+            }
+
+            element e;
+            e.s = api_iter->text; // ソースの字面
+            if ( api_iter->symbol[0] != '&' )   // 一般定数式パラメータは値が特定できない
+            {
+              if ( api_iter->symbol[0] == '$' )  // 文字列定数式パラメータ
+              {
+                e.v = api_iter->string; // 展開後の文字列
+              }
+              else
+              {
+                e.i = api_iter->value;
+              }
+            }
+            args.push_back( e );
+
+            e.s = name;
+            e.i = boost::none;
+            params.push_back( e );
+
+            if ( api_iter->symbol[0] == '%' )
+            {
+              continue;
+            }
+          }
+          mproc.set_var( "API.ARGS", order, args );
+          mproc.set_var( "API.PARAMS", order, params );
+          e.s.clear();
+          e.i = order;
+          order_list.push_back( e );
+          ++order;
+        }
+        mproc.set_var( "API.ORDER_LIST", order_list );
+
+        element external_id;
+        external_id.i = get_global< bool >( "external-id" );
+        mproc.set_var( "USE_EXTERNAL_ID", var_t( 1, external_id ) );
+      }
+
       // クラスIDリストをマクロプロセッサの変数として設定する。
       void set_clsid_vars( std::vector< std::pair< std::string, long > > const& table, cfg1_out const& cfg1out, macro_processor& mproc )
       {
@@ -340,7 +421,8 @@ namespace toppers
                   ++iter )
             {
               std::string buf;
-              read( iter->c_str(), buf );
+              std::string api_table_filename = *iter;
+              read( api_table_filename.c_str(), buf );
               csv data( buf.begin(), buf.end() );
               for ( csv::const_iterator d_iter( data.begin() ), d_last( data.end() );
                     d_iter != d_last;
@@ -475,24 +557,18 @@ namespace toppers
       kernel_.swap( other.kernel_ );
     }
 
-    macro_processor::hook_t factory::do_get_hook_on_assign() const
-    {
-//      return &hook_on_assign;
-      return 0;
-    }
-
     /*!
      *  \brief  マクロプロセッサの生成
-     *  \param[in]  hook    変数に値を代入した際のフック処理
      *  \param[in]  cfg1out cfg1_out オブジェクト
      *  \param[in]  api_map .cfg ファイルに記述された静的API情報
      *  \return     マクロプロセッサへのポインタ
+     *  \note   このメンバ関数は従来仕様（ソフトウェア部品非対応版）の温存のためにそのまま残す。
      */
-    std::auto_ptr< macro_processor > factory::do_create_macro_processor( macro_processor::hook_t hook, cfg1_out const& cfg1out, cfg1_out::static_api_map const& api_map ) const
+    std::auto_ptr< macro_processor > factory::do_create_macro_processor( cfg1_out const& cfg1out, cfg1_out::static_api_map const& api_map ) const
     {
       typedef macro_processor::element element;
       typedef macro_processor::var_t var_t;
-      std::auto_ptr< macro_processor > mproc( new macro_processor( hook ) );
+      std::auto_ptr< macro_processor > mproc( new macro_processor );
       element e;
 
       e.s = " ";    mproc->set_var( "SPC", var_t( 1, e ) );  // $SPC$
@@ -506,6 +582,38 @@ namespace toppers
 
       // その他の組み込み変数の設定
       set_object_vars( api_map, *mproc );
+      set_clsid_vars( cfg1out.get_clsid_table(), cfg1out, *mproc );
+      set_domid_vars( cfg1out.get_domid_table(), *mproc );
+      set_platform_vars( cfg1out, *mproc );
+      e.s = cfg1out.get_includes();
+      mproc->set_var( "INCLUDES", var_t( 1, e ) );
+      return mproc;
+    }
+
+    /*!
+     *  \brief  マクロプロセッサの生成
+     *  \param[in]  cfg1out cfg1_out オブジェクト
+     *  \param[in]  api_array .cfg ファイルに記述された静的API情報
+     *  \return     マクロプロセッサへのポインタ
+     */
+    std::auto_ptr< macro_processor > factory::do_create_macro_processor( cfg1_out const& cfg1out, std::vector< static_api > const& api_array ) const
+    {
+      typedef macro_processor::element element;
+      typedef macro_processor::var_t var_t;
+      std::auto_ptr< macro_processor > mproc( new macro_processor );
+      element e;
+
+      e.s = " ";    mproc->set_var( "SPC", var_t( 1, e ) );  // $SPC$
+      e.s = "\t";   mproc->set_var( "TAB", var_t( 1, e ) );  // $TAB$
+      e.s = "\n";   mproc->set_var( "NL",  var_t( 1, e ) );  // $NL$
+
+      // バージョン情報
+      e.s = toppers::get_global< std::string >( "version" );
+      e.i = toppers::get_global< std::tr1::int64_t >( "timestamp" );
+      mproc->set_var( "CFG_VERSION", var_t( 1, e ) );   // $CFG_VERSION$
+
+      // その他の組み込み変数の設定
+      set_object_vars( api_array, *mproc );
       set_clsid_vars( cfg1out.get_clsid_table(), cfg1out, *mproc );
       set_domid_vars( cfg1out.get_domid_table(), *mproc );
       set_platform_vars( cfg1out, *mproc );

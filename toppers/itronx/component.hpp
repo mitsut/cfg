@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2005-2010 by TAKAGI Nobuhisa
+ *  Copyright (C) 2010 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -34,29 +34,41 @@
  *  の責任を負わない．
  * 
  */
-
-/*
- *  toppers/c_plus_plus_keywords.cpp
+/*!
+ *  \file   toppers/itronx/component.hpp
+ *  \brief  ソフトウェア部品用のコンフィギュレーションを扱うための宣言定義
+ *
+ *  このファイルで定義されるクラス
+ *  \code
+ *  class component;
+ *  \endcode
  */
+#ifndef TOPPERS_ITRONX_COMPONENT_HPP_
+#define TOPPERS_ITRONX_COMPONENT_HPP_
 
 namespace toppers
 {
-  namespace detail
+
+  class macro_processor;
+
+  namespace itronx
   {
 
-    extern char const* const c_plus_plus_keywords[];
-
-    char const* const c_plus_plus_keywords[] =
+    /*!
+     *  \class  component component.hpp "toppers/itronx/component.hpp"
+     *  \brief  ソフトウェア部品用のコンフィギュレーションを扱うためのクラス
+     *  \note   現状ではコンストラクタ以外のメンバ関数を持たない。将来の拡張用にクラスにする。
+     */
+    class component
     {
-      "and", "and_eq", "asm", "bitand", "bitor", "bool", "catch", "class", "compl",
-      "const_cast", "delete", "dynamic_cast", "explicit", "false", "friend", "namespace",
-      "new", "not", "not_eq", "operator", "or", "or_eq", "private", "protected",
-      "public", "reinterpret_cast", "static_cast", "this", "throw", "true", "try",
-      "typeid", "using", "virtual", "wchar_t", "xor", "xor_eq",
-      "alignof", "axiom", "char16_t", "char32_t", "constexpr", "decltype", "late_check",
-      "nullptr", "requires", "static_assert", "thread_local",
-      0
+    public:
+      explicit component( macro_processor* mproc );
+      // 現状ではメンバ無し
+    private:
+      macro_processor* mproc_;
     };
 
   }
 }
+
+#endif  // !TOPPERS_ITRONX_COMPONENT_HPP_

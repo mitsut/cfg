@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2005-2008 by TAKAGI Nobuhisa  
+ *  Copyright (C) 2005-2010 by TAKAGI Nobuhisa  
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -44,15 +44,15 @@ namespace toppers
 {
 
   //! C言語形式の文字定数パーサー（ASCII）
-  boost::spirit::functor_parser< detail::c_chlit_parse_functor< ascii > > const ascii_ch_p;
+  boost::spirit::classic::functor_parser< detail::c_chlit_parse_functor< ascii > > const ascii_ch_p;
 
   //! C言語形式の文字定数パーサー（Shift JIS）
-  boost::spirit::functor_parser< detail::c_chlit_parse_functor< shift_jis > > const shift_jis_ch_p;
+  boost::spirit::classic::functor_parser< detail::c_chlit_parse_functor< shift_jis > > const shift_jis_ch_p;
 
   //! C言語形式の文字定数パーサー（EUC-JP）
-  boost::spirit::functor_parser< detail::c_chlit_parse_functor< euc_jp > > const euc_jp_ch_p;
+  boost::spirit::classic::functor_parser< detail::c_chlit_parse_functor< euc_jp > > const euc_jp_ch_p;
 
   //! C言語形式の文字定数パーサー（UTF-8）
-  boost::spirit::functor_parser< detail::c_chlit_parse_functor< utf8 > > const utf8_ch_p;
+  boost::spirit::classic::functor_parser< detail::c_chlit_parse_functor< utf8 > > const utf8_ch_p;
 
 }

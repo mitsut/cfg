@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2005-2008 by TAKAGI Nobuhisa
+ *  Copyright (C) 2005-2010 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -51,7 +51,7 @@
 
 #include "toppers/diagnostics.hpp"
 #include "toppers/c_expr.hpp"
-#include <boost/spirit/error_handling.hpp>
+#include <boost/spirit/include/classic_error_handling.hpp>
 
 namespace toppers
 {
@@ -62,7 +62,7 @@ namespace toppers
      *  \struct static_api_parser static_api_parser.hpp "toppers/itronx/static_api_parser.hpp"
      *  \brief  静的APIの構文解析クラス
      */
-    struct static_api_parser : boost::spirit::grammar< static_api_parser >
+    struct static_api_parser : boost::spirit::classic::grammar< static_api_parser >
     {
       enum rule_id_t
       {
@@ -81,7 +81,7 @@ namespace toppers
       struct error_handler
       {
         template < class Scanner, class Error >
-          boost::spirit::error_status<> operator()( Scanner const& scan, Error const& error ) const
+          boost::spirit::classic::error_status<> operator()( Scanner const& scan, Error const& error ) const
         {
           typename Error::iterator_t iter( error.where );
           std::string str;
@@ -116,7 +116,7 @@ namespace toppers
             toppers::fatal( ln, _( "missing `%1%\' before %2%" ), ';', str );
             break;
           }
-          return  boost::spirit::error_status<>( boost::spirit::error_status<>::fail );
+          return  boost::spirit::classic::error_status<>( boost::spirit::classic::error_status<>::fail );
         }
       };
 
@@ -127,9 +127,9 @@ namespace toppers
       template < class Scanner >
         struct definition
       {
-        typedef boost::spirit::rule< Scanner, boost::spirit::dynamic_parser_tag > rule_t;
-        typedef boost::spirit::guard< expected_t > guard_t;
-        typedef boost::spirit::assertion< expected_t > assertion_t;
+        typedef boost::spirit::classic::rule< Scanner, boost::spirit::classic::dynamic_parser_tag > rule_t;
+        typedef boost::spirit::classic::guard< expected_t > guard_t;
+        typedef boost::spirit::classic::assertion< expected_t > assertion_t;
 
         c_strlit_parser_t const c_strlit_p;
         c_ident_parser_t const c_ident_p;
@@ -154,7 +154,7 @@ namespace toppers
             expect_comma( comma_expected ),
             expect_semicolon( semicolon_expected )
         {
-          using namespace boost::spirit;
+          using namespace boost::spirit::classic;
           set_id();
           top =
               guard_api
