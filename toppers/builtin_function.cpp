@@ -396,10 +396,13 @@ namespace toppers
     {
       error( line, _( "too few arguments for `%1%\'" ), "FORMAT" );
     }
-	  std::string debug_str = get_s( arg_list[ 0 ], p_ctx );
-	  if ( debug_str == "0x%08x" )
-  		toppers::trace("%s", debug_str.c_str() );
-    boost::format fmt( debug_str );
+    std::string format_str = get_s( arg_list[ 0 ], p_ctx );
+#if 0
+    std::string debug_str = format_str;
+    if ( debug_str == "0x%08x" )
+      toppers::trace("%s", debug_str.c_str() );
+#endif
+    boost::format fmt( format_str );
     for ( std::size_t i = 1; i < arity; i++ )
     {
       std::pair< var_t const*, context const* > arg( &arg_list[i], p_ctx );
