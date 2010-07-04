@@ -130,7 +130,7 @@ namespace toppers
                 std::string expression = iter->expression.substr( 2 );
                 definition +=
                             " = \n"
-                            "#if " + expression + "\n"
+                            "#ifdef " + expression + "\n"
                             "(" + expression + ");\n"
                             "#else\n"
                             "0;\n"
@@ -140,7 +140,7 @@ namespace toppers
               {
                 definition +=
                             " = \n"
-                            "#if " + iter->expression.substr( 1 ) + "\n"
+                            "#ifdef " + iter->expression.substr( 1 ) + "\n"
                             "1;\n"
                             "#else\n"
                             "0;\n"
