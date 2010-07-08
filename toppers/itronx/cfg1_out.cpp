@@ -128,9 +128,12 @@ namespace toppers
               if ( iter->expression.size() >= 2 && iter->expression[ 1 ] == '@' )
               {
                 std::string expression = iter->expression.substr( 2 );
+                std::string ifdef_ = "#ifdef ";
+                if ( std::strncmp( expression.c_str(), "defined", sizeof "defined" - 1 ) == 0 )
+                  ifdef_ = "#if ";
                 definition +=
                             " = \n"
-                            "#ifdef " + expression + "\n"
+                            + ifdef_ + expression + "\n"
                             "(" + expression + ");\n"
                             "#else\n"
                             "0;\n"
@@ -138,9 +141,13 @@ namespace toppers
               }
               else
               {
+                std::string expression = iter->expression.substr( 1 );
+                std::string ifdef_ = "#ifdef ";
+                if ( std::strncmp( expression.c_str(), "defined", sizeof "defined" - 1 ) == 0 )
+                  ifdef_ = "#if ";
                 definition +=
                             " = \n"
-                            "#ifdef " + iter->expression.substr( 1 ) + "\n"
+                            + ifdef_ + expression + "\n"
                             "1;\n"
                             "#else\n"
                             "0;\n"
