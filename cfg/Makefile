@@ -20,7 +20,7 @@ OBJFILES := $(CXXFILES:%.cpp=%.o)
 ifeq ($(OSTYPE),msys)
 BOOST_LIBFILES = /mingw/lib/libboost_system-mgw-mt-s.lib /mingw/lib/libboost_filesystem-mgw-mt-s.lib /mingw/lib/libboost_program_options-mgw-mt-s.lib
 else
-BOOST_LIBFILES := $(BOOST_LIBFILES) -lboost_filesystem$(LIBBOOST_SUFFIX) -lboost_program_options$(LIBBOOST_SUFFIX)
+BOOST_LIBFILES := $(BOOST_LIBFILES) -lboost_system$(LIBBOOST_SUFFIX) -lboost_filesystem$(LIBBOOST_SUFFIX) -lboost_program_options$(LIBBOOST_SUFFIX)
 endif
 
 LIBFILES = $(PROJDIR)/toppers/itronx/libitronx.a \
