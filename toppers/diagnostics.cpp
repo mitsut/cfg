@@ -112,7 +112,7 @@ namespace toppers
   }
   void fatal( text_line const& line, const char* msg )
   {
-    fprintf( stderr, "%s:%s:%d: %s: %s\n", program_name.c_str(), line.file.c_str(), line.line, _( "error" ), msg );
+    fprintf( stderr, "%s:%s:%ld: %s: %s\n", program_name.c_str(), line.file.c_str(), line.line, _( "error" ), msg );
     throw diagnostics_error( _( "fatal error" ) );
   }
 
