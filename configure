@@ -9,8 +9,8 @@ do
 	value=`echo $arg | cut -d "=" -f 2`
 
 	case $name in
-		--with-headers)		include_path=$include_path $value ;;
-		--with-libraries)	library_path=$library_path $value ;;
+		--with-headers)		include_path=$value ;;
+		--with-libraries)	library_path=$value ;;
 		--help)				echo "configure options:"
 							echo "--help"
 							echo "	display this information"
