@@ -118,56 +118,27 @@ namespace toppers
                 ++iter )
           {
             // 式の最初に # があれば、それはマクロ定義の判定
+            // ★注意★ #@ で始まる書式は廃止 2010/07/23
             bool is_pp = ( iter->expression[ 0 ] == '#' );
+            if ( !iter->value1.empty() || !iter->value2.empty() ) // （CSVの）4番目または5番目の値があれば...
+            {
+              is_pp = true;
+            }
 
             std::string definition = ( iter->is_signed ? "const signed_t " : "const unsigned_t " );
             definition += "TOPPERS_cfg_" + iter->name;
             if ( is_pp )
             {
-              // 式の最初に #@ があればマクロの評価結果をそのまま値として利用
-              if ( iter->expression.size() >= 2 && iter->expression[ 1 ] == '@' )
-              {
-                std::string expression = iter->expression.substr( 2 );
-                std::string ifdef_ = "#ifdef ";
-                std::string value = expression;
-                if ( std::strncmp( expression.c_str(), "defined", sizeof "defined" - 1 ) == 0 )
-                {
-                  ifdef_ = "#if ";
-                  value = expression.substr( sizeof "defined" - 1 );
-                }
-                if ( !iter->value.empty() ) // 値の指定があれば、それを利用
-                {
-                  value = iter->value;
-                }
-                definition +=
-                            " = \n"
-                            + ifdef_ + expression + "\n"
-                            "(" + value + ");\n"
-                            "#else\n"
-                            "0;\n"
-                            "#endif\n";
-              }
-              else
-              {
-                std::string expression = iter->expression.substr( 1 );
-                std::string ifdef_ = "#ifdef ";
-                std::string value = "1";
-                if ( std::strncmp( expression.c_str(), "defined", sizeof "defined" - 1 ) == 0 )
-                {
-                  ifdef_ = "#if ";
-                }
-                if ( !iter->value.empty() ) // 値の指定があれば、それを利用
-                {
-                  value = iter->value;
-                }
-                definition +=
-                            " = \n"
-                            + ifdef_ + expression + "\n"
-                            "(" + value + ");\n"
-                            "#else\n"
-                            "0;\n"
-                            "#endif\n";
-              }
+              std::string expression = iter->expression.substr( iter->expression[ 0 ] == '#' ? 1 : 0 );
+              std::string value1 = ( !iter->value1.empty() ? iter->value1 : "1" );
+              std::string value2 = ( !iter->value2.empty() ? iter->value2 : "0" );
+              definition +=
+                          " = \n"
+                          "#if " + expression + "\n"
+                          "(" + value1 + ");\n"
+                          "#else\n"
+                          "(" + value2 + ");\n"
+                          "#endif\n";
             }
             else
             {

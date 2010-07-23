@@ -541,7 +541,11 @@ namespace toppers
                 }
                 if ( len >= 4)
                 {
-                  def.value = ( *d_iter )[ 3 ];
+                  def.value1 = ( *d_iter )[ 3 ];
+                }
+                if ( len >= 5)
+                {
+                  def.value2 = ( *d_iter )[ 4 ];
                 }
                 cfg1_def_table_.push_back( def );
               }
