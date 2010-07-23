@@ -4,34 +4,34 @@
  *
  *  Copyright (C) 2007-2010 by TAKAGI Nobuhisa
  * 
- *  ã‹L’˜ìŒ ŽÒ‚ÍCˆÈ‰º‚Ì(1)`(4)‚ÌðŒ‚ð–ž‚½‚·ê‡‚ÉŒÀ‚èC–{ƒ\ƒtƒgƒEƒF
- *  ƒAi–{ƒ\ƒtƒgƒEƒFƒA‚ð‰ü•Ï‚µ‚½‚à‚Ì‚ðŠÜ‚ÞDˆÈ‰º“¯‚¶j‚ðŽg—pE•¡»E‰ü
- *  •ÏEÄ”z•ziˆÈ‰ºC—˜—p‚ÆŒÄ‚Ôj‚·‚é‚±‚Æ‚ð–³ž‚Å‹–‘ø‚·‚éD
- *  (1) –{ƒ\ƒtƒgƒEƒFƒA‚ðƒ\[ƒXƒR[ƒh‚ÌŒ`‚Å—˜—p‚·‚éê‡‚É‚ÍCã‹L‚Ì’˜ì
- *      Œ •\Ž¦C‚±‚Ì—˜—pðŒ‚¨‚æ‚Ñ‰º‹L‚Ì–³•ÛØ‹K’è‚ªC‚»‚Ì‚Ü‚Ü‚ÌŒ`‚Åƒ\[
- *      ƒXƒR[ƒh’†‚ÉŠÜ‚Ü‚ê‚Ä‚¢‚é‚±‚ÆD
- *  (2) –{ƒ\ƒtƒgƒEƒFƒA‚ðCƒ‰ƒCƒuƒ‰ƒŠŒ`Ž®‚È‚ÇC‘¼‚Ìƒ\ƒtƒgƒEƒFƒAŠJ”­‚ÉŽg
- *      —p‚Å‚«‚éŒ`‚ÅÄ”z•z‚·‚éê‡‚É‚ÍCÄ”z•z‚É”º‚¤ƒhƒLƒ…ƒƒ“ƒgi—˜—p
- *      ŽÒƒ}ƒjƒ…ƒAƒ‹‚È‚Çj‚ÉCã‹L‚Ì’˜ìŒ •\Ž¦C‚±‚Ì—˜—pðŒ‚¨‚æ‚Ñ‰º‹L
- *      ‚Ì–³•ÛØ‹K’è‚ðŒfÚ‚·‚é‚±‚ÆD
- *  (3) –{ƒ\ƒtƒgƒEƒFƒA‚ðC‹@Ší‚É‘g‚Ýž‚Þ‚È‚ÇC‘¼‚Ìƒ\ƒtƒgƒEƒFƒAŠJ”­‚ÉŽg
- *      —p‚Å‚«‚È‚¢Œ`‚ÅÄ”z•z‚·‚éê‡‚É‚ÍCŽŸ‚Ì‚¢‚¸‚ê‚©‚ÌðŒ‚ð–ž‚½‚·‚±
- *      ‚ÆD
- *    (a) Ä”z•z‚É”º‚¤ƒhƒLƒ…ƒƒ“ƒgi—˜—pŽÒƒ}ƒjƒ…ƒAƒ‹‚È‚Çj‚ÉCã‹L‚Ì’˜
- *        ìŒ •\Ž¦C‚±‚Ì—˜—pðŒ‚¨‚æ‚Ñ‰º‹L‚Ì–³•ÛØ‹K’è‚ðŒfÚ‚·‚é‚±‚ÆD
- *    (b) Ä”z•z‚ÌŒ`‘Ô‚ðC•Ê‚É’è‚ß‚é•û–@‚É‚æ‚Á‚ÄCTOPPERSƒvƒƒWƒFƒNƒg‚É
- *        •ñ‚·‚é‚±‚ÆD
- *  (4) –{ƒ\ƒtƒgƒEƒFƒA‚Ì—˜—p‚É‚æ‚è’¼Ú“I‚Ü‚½‚ÍŠÔÚ“I‚É¶‚¶‚é‚¢‚©‚È‚é‘¹
- *      ŠQ‚©‚ç‚àCã‹L’˜ìŒ ŽÒ‚¨‚æ‚ÑTOPPERSƒvƒƒWƒFƒNƒg‚ð–ÆÓ‚·‚é‚±‚ÆD
- *      ‚Ü‚½C–{ƒ\ƒtƒgƒEƒFƒA‚Ìƒ†[ƒU‚Ü‚½‚ÍƒGƒ“ƒhƒ†[ƒU‚©‚ç‚Ì‚¢‚©‚È‚é—
- *      —R‚ÉŠî‚Ã‚­¿‹‚©‚ç‚àCã‹L’˜ìŒ ŽÒ‚¨‚æ‚ÑTOPPERSƒvƒƒWƒFƒNƒg‚ð
- *      –ÆÓ‚·‚é‚±‚ÆD
+ *  ¾åµ­Ãøºî¸¢¼Ô¤Ï¡¤°Ê²¼¤Î(1)¡Á(4)¤Î¾ò·ï¤òËþ¤¿¤¹¾ì¹ç¤Ë¸Â¤ê¡¤ËÜ¥½¥Õ¥È¥¦¥§
+ *  ¥¢¡ÊËÜ¥½¥Õ¥È¥¦¥§¥¢¤ò²þÊÑ¤·¤¿¤â¤Î¤ò´Þ¤à¡¥°Ê²¼Æ±¤¸¡Ë¤ò»ÈÍÑ¡¦Ê£À½¡¦²þ
+ *  ÊÑ¡¦ºÆÇÛÉÛ¡Ê°Ê²¼¡¤ÍøÍÑ¤È¸Æ¤Ö¡Ë¤¹¤ë¤³¤È¤òÌµ½þ¤ÇµöÂú¤¹¤ë¡¥
+ *  (1) ËÜ¥½¥Õ¥È¥¦¥§¥¢¤ò¥½¡¼¥¹¥³¡¼¥É¤Î·Á¤ÇÍøÍÑ¤¹¤ë¾ì¹ç¤Ë¤Ï¡¤¾åµ­¤ÎÃøºî
+ *      ¸¢É½¼¨¡¤¤³¤ÎÍøÍÑ¾ò·ï¤ª¤è¤Ó²¼µ­¤ÎÌµÊÝ¾Úµ¬Äê¤¬¡¤¤½¤Î¤Þ¤Þ¤Î·Á¤Ç¥½¡¼
+ *      ¥¹¥³¡¼¥ÉÃæ¤Ë´Þ¤Þ¤ì¤Æ¤¤¤ë¤³¤È¡¥
+ *  (2) ËÜ¥½¥Õ¥È¥¦¥§¥¢¤ò¡¤¥é¥¤¥Ö¥é¥ê·Á¼°¤Ê¤É¡¤Â¾¤Î¥½¥Õ¥È¥¦¥§¥¢³«È¯¤Ë»È
+ *      ÍÑ¤Ç¤­¤ë·Á¤ÇºÆÇÛÉÛ¤¹¤ë¾ì¹ç¤Ë¤Ï¡¤ºÆÇÛÉÛ¤ËÈ¼¤¦¥É¥­¥å¥á¥ó¥È¡ÊÍøÍÑ
+ *      ¼Ô¥Þ¥Ë¥å¥¢¥ë¤Ê¤É¡Ë¤Ë¡¤¾åµ­¤ÎÃøºî¸¢É½¼¨¡¤¤³¤ÎÍøÍÑ¾ò·ï¤ª¤è¤Ó²¼µ­
+ *      ¤ÎÌµÊÝ¾Úµ¬Äê¤ò·ÇºÜ¤¹¤ë¤³¤È¡¥
+ *  (3) ËÜ¥½¥Õ¥È¥¦¥§¥¢¤ò¡¤µ¡´ï¤ËÁÈ¤ß¹þ¤à¤Ê¤É¡¤Â¾¤Î¥½¥Õ¥È¥¦¥§¥¢³«È¯¤Ë»È
+ *      ÍÑ¤Ç¤­¤Ê¤¤·Á¤ÇºÆÇÛÉÛ¤¹¤ë¾ì¹ç¤Ë¤Ï¡¤¼¡¤Î¤¤¤º¤ì¤«¤Î¾ò·ï¤òËþ¤¿¤¹¤³
+ *      ¤È¡¥
+ *    (a) ºÆÇÛÉÛ¤ËÈ¼¤¦¥É¥­¥å¥á¥ó¥È¡ÊÍøÍÑ¼Ô¥Þ¥Ë¥å¥¢¥ë¤Ê¤É¡Ë¤Ë¡¤¾åµ­¤ÎÃø
+ *        ºî¸¢É½¼¨¡¤¤³¤ÎÍøÍÑ¾ò·ï¤ª¤è¤Ó²¼µ­¤ÎÌµÊÝ¾Úµ¬Äê¤ò·ÇºÜ¤¹¤ë¤³¤È¡¥
+ *    (b) ºÆÇÛÉÛ¤Î·ÁÂÖ¤ò¡¤ÊÌ¤ËÄê¤á¤ëÊýË¡¤Ë¤è¤Ã¤Æ¡¤TOPPERS¥×¥í¥¸¥§¥¯¥È¤Ë
+ *        Êó¹ð¤¹¤ë¤³¤È¡¥
+ *  (4) ËÜ¥½¥Õ¥È¥¦¥§¥¢¤ÎÍøÍÑ¤Ë¤è¤êÄ¾ÀÜÅª¤Þ¤¿¤Ï´ÖÀÜÅª¤ËÀ¸¤¸¤ë¤¤¤«¤Ê¤ëÂ»
+ *      ³²¤«¤é¤â¡¤¾åµ­Ãøºî¸¢¼Ô¤ª¤è¤ÓTOPPERS¥×¥í¥¸¥§¥¯¥È¤òÌÈÀÕ¤¹¤ë¤³¤È¡¥
+ *      ¤Þ¤¿¡¤ËÜ¥½¥Õ¥È¥¦¥§¥¢¤Î¥æ¡¼¥¶¤Þ¤¿¤Ï¥¨¥ó¥É¥æ¡¼¥¶¤«¤é¤Î¤¤¤«¤Ê¤ëÍý
+ *      Í³¤Ë´ð¤Å¤¯ÀÁµá¤«¤é¤â¡¤¾åµ­Ãøºî¸¢¼Ô¤ª¤è¤ÓTOPPERS¥×¥í¥¸¥§¥¯¥È¤ò
+ *      ÌÈÀÕ¤¹¤ë¤³¤È¡¥
  * 
- *  –{ƒ\ƒtƒgƒEƒFƒA‚ÍC–³•ÛØ‚Å’ñ‹Ÿ‚³‚ê‚Ä‚¢‚é‚à‚Ì‚Å‚ ‚éDã‹L’˜ìŒ ŽÒ‚¨
- *  ‚æ‚ÑTOPPERSƒvƒƒWƒFƒNƒg‚ÍC–{ƒ\ƒtƒgƒEƒFƒA‚ÉŠÖ‚µ‚ÄC“Á’è‚ÌŽg—p–Ú“I
- *  ‚É‘Î‚·‚é“K‡«‚àŠÜ‚ß‚ÄC‚¢‚©‚È‚é•ÛØ‚às‚í‚È‚¢D‚Ü‚½C–{ƒ\ƒtƒgƒEƒF
- *  ƒA‚Ì—˜—p‚É‚æ‚è’¼Ú“I‚Ü‚½‚ÍŠÔÚ“I‚É¶‚¶‚½‚¢‚©‚È‚é‘¹ŠQ‚ÉŠÖ‚µ‚Ä‚àC‚»
- *  ‚ÌÓ”C‚ð•‰‚í‚È‚¢D
+ *  ËÜ¥½¥Õ¥È¥¦¥§¥¢¤Ï¡¤ÌµÊÝ¾Ú¤ÇÄó¶¡¤µ¤ì¤Æ¤¤¤ë¤â¤Î¤Ç¤¢¤ë¡¥¾åµ­Ãøºî¸¢¼Ô¤ª
+ *  ¤è¤ÓTOPPERS¥×¥í¥¸¥§¥¯¥È¤Ï¡¤ËÜ¥½¥Õ¥È¥¦¥§¥¢¤Ë´Ø¤·¤Æ¡¤ÆÃÄê¤Î»ÈÍÑÌÜÅª
+ *  ¤ËÂÐ¤¹¤ëÅ¬¹çÀ­¤â´Þ¤á¤Æ¡¤¤¤¤«¤Ê¤ëÊÝ¾Ú¤â¹Ô¤ï¤Ê¤¤¡¥¤Þ¤¿¡¤ËÜ¥½¥Õ¥È¥¦¥§
+ *  ¥¢¤ÎÍøÍÑ¤Ë¤è¤êÄ¾ÀÜÅª¤Þ¤¿¤Ï´ÖÀÜÅª¤ËÀ¸¤¸¤¿¤¤¤«¤Ê¤ëÂ»³²¤Ë´Ø¤·¤Æ¤â¡¤¤½
+ *  ¤ÎÀÕÇ¤¤òÉé¤ï¤Ê¤¤¡¥
  * 
  */
 #include <cctype>
@@ -62,14 +62,14 @@ namespace toppers
     }
 
     /*!
-     *  \brief  Ã“IAPI‚Ì\•¶‰ðÍ
-     *  \param[in,out]  next      ƒeƒLƒXƒg‚Ì“Ç‚Ýž‚ÝˆÊ’uAŒ“\•¶‰ðÍŒã‚ÌŽŸ‚Ì“Ç‚Ýž‚ÝˆÊ’u‚ÌŠi”[æ
-     *  \param[in]      last      ƒeƒLƒXƒg‚ÌI’[ˆÊ’u
-     *  \param[in]      info_map  Ã“IAPIî•ñƒ}ƒbƒv
-     *  \param[in]      ucn       ‘Û•¶Žš–¼‚ð—LŒø‚É‚·‚éê‡‚Í true ‚ðŽw’è‚·‚éB
-     *  \param[in]      codeset   •¶ŽšƒR[ƒh
-     *  \retval         true    ¬Œ÷
-     *  \retval         false   Ž¸”s
+     *  \brief  ÀÅÅªAPI¤Î¹½Ê¸²òÀÏ
+     *  \param[in,out]  next      ¥Æ¥­¥¹¥È¤ÎÆÉ¤ß¹þ¤ß°ÌÃÖ¡¢·ó¹½Ê¸²òÀÏ¸å¤Î¼¡¤ÎÆÉ¤ß¹þ¤ß°ÌÃÖ¤Î³ÊÇ¼Àè
+     *  \param[in]      last      ¥Æ¥­¥¹¥È¤Î½ªÃ¼°ÌÃÖ
+     *  \param[in]      info_map  ÀÅÅªAPI¾ðÊó¥Þ¥Ã¥×
+     *  \param[in]      ucn       ¹ñºÝÊ¸»úÌ¾¤òÍ­¸ú¤Ë¤¹¤ë¾ì¹ç¤Ï true ¤ò»ØÄê¤¹¤ë¡£
+     *  \param[in]      codeset   Ê¸»ú¥³¡¼¥É
+     *  \retval         true    À®¸ù
+     *  \retval         false   ¼ºÇÔ
      */
     bool static_api::parse( text::const_iterator& next, text::const_iterator last,
                             std::map< std::string, info > const& info_map,
@@ -94,8 +94,8 @@ namespace toppers
         return false;
       }
 
-      // ƒGƒ‰[ƒƒbƒZ[ƒW—p‚Ìs”Ô†
-      // ‚±‚Ìs”Ô†‚ÍAÃ“IAPI‚ÌŠJŽnˆÊ’u‚Ì‚à‚Ì‚Å‚ ‚é‚½‚ßAƒGƒ‰[”­¶‰ÓŠ‚»‚Ì‚à‚ÌƒYƒoƒŠ‚ðŽw‚·‚±‚Æ‚Í‚Å‚«‚È‚¢B
+      // ¥¨¥é¡¼¥á¥Ã¥»¡¼¥¸ÍÑ¤Î¹ÔÈÖ¹æ
+      // ¤³¤Î¹ÔÈÖ¹æ¤Ï¡¢ÀÅÅªAPI¤Î³«»Ï°ÌÃÖ¤Î¤â¤Î¤Ç¤¢¤ë¤¿¤á¡¢¥¨¥é¡¼È¯À¸²Õ½ê¤½¤Î¤â¤Î¥º¥Ð¥ê¤ò»Ø¤¹¤³¤È¤Ï¤Ç¤­¤Ê¤¤¡£
       temp.line_ = next_temp.line();
 
       pi = boost::spirit::classic::parse( next_temp, last, parser, boost::spirit::classic::space_p );
@@ -104,7 +104,7 @@ namespace toppers
         return false;
       }
 
-      // Ã“IAPI‚ª‘¶Ý‚·‚é‚©‚Ç‚¤‚©‚Ì”»’è‚¨‚æ‚ÑƒVƒOƒjƒ`ƒƒ‚ÌŽæ“¾
+      // ÀÅÅªAPI¤¬Â¸ºß¤¹¤ë¤«¤É¤¦¤«¤ÎÈ½Äê¤ª¤è¤Ó¥·¥°¥Ë¥Á¥ã¤Î¼èÆÀ
       std::string api_name( tokens.front() );
       std::map< std::string, info >::const_iterator info_iter = info_map.find( api_name );
       info const* pinfo = 0;
@@ -119,10 +119,10 @@ namespace toppers
         return false;
       }
 
-      // Šeƒpƒ‰ƒ[ƒ^‚Ì‰ðÍ
+      // ³Æ¥Ñ¥é¥á¡¼¥¿¤Î²òÀÏ
       std::istringstream iss( pinfo->params );
-      int order = 0;            // ƒpƒ‰ƒ[ƒ^ƒŠƒXƒg“à‚Ì‡˜
-      bool param_list = false;  // ƒpƒ‰ƒ[ƒ^ƒŠƒXƒg‰ðÍ’†ƒtƒ‰ƒO
+      int order = 0;            // ¥Ñ¥é¥á¡¼¥¿¥ê¥¹¥ÈÆâ¤Î½ç½ø
+      bool param_list = false;  // ¥Ñ¥é¥á¡¼¥¿¥ê¥¹¥È²òÀÏÃæ¥Õ¥é¥°
       std::string symbol;
       bool skip = false;
 
@@ -159,7 +159,7 @@ namespace toppers
             }
             param_list = false;
           }
-          else if ( *symbol.rbegin() == '\?' ) // È—ª‰Â”\ƒpƒ‰ƒ[ƒ^‚ÌƒXƒLƒbƒv
+          else if ( *symbol.rbegin() == '\?' ) // ¾ÊÎ¬²ÄÇ½¥Ñ¥é¥á¡¼¥¿¤Î¥¹¥­¥Ã¥×
           {
             skip = true;
           }

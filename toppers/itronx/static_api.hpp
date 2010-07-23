@@ -4,41 +4,41 @@
  *
  *  Copyright (C) 2007-2008 by TAKAGI Nobuhisa
  * 
- *  ã‹L’˜ìŒ ŽÒ‚ÍCˆÈ‰º‚Ì(1)`(4)‚ÌðŒ‚ð–ž‚½‚·ê‡‚ÉŒÀ‚èC–{ƒ\ƒtƒgƒEƒF
- *  ƒAi–{ƒ\ƒtƒgƒEƒFƒA‚ð‰ü•Ï‚µ‚½‚à‚Ì‚ðŠÜ‚ÞDˆÈ‰º“¯‚¶j‚ðŽg—pE•¡»E‰ü
- *  •ÏEÄ”z•ziˆÈ‰ºC—˜—p‚ÆŒÄ‚Ôj‚·‚é‚±‚Æ‚ð–³ž‚Å‹–‘ø‚·‚éD
- *  (1) –{ƒ\ƒtƒgƒEƒFƒA‚ðƒ\[ƒXƒR[ƒh‚ÌŒ`‚Å—˜—p‚·‚éê‡‚É‚ÍCã‹L‚Ì’˜ì
- *      Œ •\Ž¦C‚±‚Ì—˜—pðŒ‚¨‚æ‚Ñ‰º‹L‚Ì–³•ÛØ‹K’è‚ªC‚»‚Ì‚Ü‚Ü‚ÌŒ`‚Åƒ\[
- *      ƒXƒR[ƒh’†‚ÉŠÜ‚Ü‚ê‚Ä‚¢‚é‚±‚ÆD
- *  (2) –{ƒ\ƒtƒgƒEƒFƒA‚ðCƒ‰ƒCƒuƒ‰ƒŠŒ`Ž®‚È‚ÇC‘¼‚Ìƒ\ƒtƒgƒEƒFƒAŠJ”­‚ÉŽg
- *      —p‚Å‚«‚éŒ`‚ÅÄ”z•z‚·‚éê‡‚É‚ÍCÄ”z•z‚É”º‚¤ƒhƒLƒ…ƒƒ“ƒgi—˜—p
- *      ŽÒƒ}ƒjƒ…ƒAƒ‹‚È‚Çj‚ÉCã‹L‚Ì’˜ìŒ •\Ž¦C‚±‚Ì—˜—pðŒ‚¨‚æ‚Ñ‰º‹L
- *      ‚Ì–³•ÛØ‹K’è‚ðŒfÚ‚·‚é‚±‚ÆD
- *  (3) –{ƒ\ƒtƒgƒEƒFƒA‚ðC‹@Ší‚É‘g‚Ýž‚Þ‚È‚ÇC‘¼‚Ìƒ\ƒtƒgƒEƒFƒAŠJ”­‚ÉŽg
- *      —p‚Å‚«‚È‚¢Œ`‚ÅÄ”z•z‚·‚éê‡‚É‚ÍCŽŸ‚Ì‚¢‚¸‚ê‚©‚ÌðŒ‚ð–ž‚½‚·‚±
- *      ‚ÆD
- *    (a) Ä”z•z‚É”º‚¤ƒhƒLƒ…ƒƒ“ƒgi—˜—pŽÒƒ}ƒjƒ…ƒAƒ‹‚È‚Çj‚ÉCã‹L‚Ì’˜
- *        ìŒ •\Ž¦C‚±‚Ì—˜—pðŒ‚¨‚æ‚Ñ‰º‹L‚Ì–³•ÛØ‹K’è‚ðŒfÚ‚·‚é‚±‚ÆD
- *    (b) Ä”z•z‚ÌŒ`‘Ô‚ðC•Ê‚É’è‚ß‚é•û–@‚É‚æ‚Á‚ÄCTOPPERSƒvƒƒWƒFƒNƒg‚É
- *        •ñ‚·‚é‚±‚ÆD
- *  (4) –{ƒ\ƒtƒgƒEƒFƒA‚Ì—˜—p‚É‚æ‚è’¼Ú“I‚Ü‚½‚ÍŠÔÚ“I‚É¶‚¶‚é‚¢‚©‚È‚é‘¹
- *      ŠQ‚©‚ç‚àCã‹L’˜ìŒ ŽÒ‚¨‚æ‚ÑTOPPERSƒvƒƒWƒFƒNƒg‚ð–ÆÓ‚·‚é‚±‚ÆD
- *      ‚Ü‚½C–{ƒ\ƒtƒgƒEƒFƒA‚Ìƒ†[ƒU‚Ü‚½‚ÍƒGƒ“ƒhƒ†[ƒU‚©‚ç‚Ì‚¢‚©‚È‚é—
- *      —R‚ÉŠî‚Ã‚­¿‹‚©‚ç‚àCã‹L’˜ìŒ ŽÒ‚¨‚æ‚ÑTOPPERSƒvƒƒWƒFƒNƒg‚ð
- *      –ÆÓ‚·‚é‚±‚ÆD
+ *  ¾åµ­Ãøºî¸¢¼Ô¤Ï¡¤°Ê²¼¤Î(1)¡Á(4)¤Î¾ò·ï¤òËþ¤¿¤¹¾ì¹ç¤Ë¸Â¤ê¡¤ËÜ¥½¥Õ¥È¥¦¥§
+ *  ¥¢¡ÊËÜ¥½¥Õ¥È¥¦¥§¥¢¤ò²þÊÑ¤·¤¿¤â¤Î¤ò´Þ¤à¡¥°Ê²¼Æ±¤¸¡Ë¤ò»ÈÍÑ¡¦Ê£À½¡¦²þ
+ *  ÊÑ¡¦ºÆÇÛÉÛ¡Ê°Ê²¼¡¤ÍøÍÑ¤È¸Æ¤Ö¡Ë¤¹¤ë¤³¤È¤òÌµ½þ¤ÇµöÂú¤¹¤ë¡¥
+ *  (1) ËÜ¥½¥Õ¥È¥¦¥§¥¢¤ò¥½¡¼¥¹¥³¡¼¥É¤Î·Á¤ÇÍøÍÑ¤¹¤ë¾ì¹ç¤Ë¤Ï¡¤¾åµ­¤ÎÃøºî
+ *      ¸¢É½¼¨¡¤¤³¤ÎÍøÍÑ¾ò·ï¤ª¤è¤Ó²¼µ­¤ÎÌµÊÝ¾Úµ¬Äê¤¬¡¤¤½¤Î¤Þ¤Þ¤Î·Á¤Ç¥½¡¼
+ *      ¥¹¥³¡¼¥ÉÃæ¤Ë´Þ¤Þ¤ì¤Æ¤¤¤ë¤³¤È¡¥
+ *  (2) ËÜ¥½¥Õ¥È¥¦¥§¥¢¤ò¡¤¥é¥¤¥Ö¥é¥ê·Á¼°¤Ê¤É¡¤Â¾¤Î¥½¥Õ¥È¥¦¥§¥¢³«È¯¤Ë»È
+ *      ÍÑ¤Ç¤­¤ë·Á¤ÇºÆÇÛÉÛ¤¹¤ë¾ì¹ç¤Ë¤Ï¡¤ºÆÇÛÉÛ¤ËÈ¼¤¦¥É¥­¥å¥á¥ó¥È¡ÊÍøÍÑ
+ *      ¼Ô¥Þ¥Ë¥å¥¢¥ë¤Ê¤É¡Ë¤Ë¡¤¾åµ­¤ÎÃøºî¸¢É½¼¨¡¤¤³¤ÎÍøÍÑ¾ò·ï¤ª¤è¤Ó²¼µ­
+ *      ¤ÎÌµÊÝ¾Úµ¬Äê¤ò·ÇºÜ¤¹¤ë¤³¤È¡¥
+ *  (3) ËÜ¥½¥Õ¥È¥¦¥§¥¢¤ò¡¤µ¡´ï¤ËÁÈ¤ß¹þ¤à¤Ê¤É¡¤Â¾¤Î¥½¥Õ¥È¥¦¥§¥¢³«È¯¤Ë»È
+ *      ÍÑ¤Ç¤­¤Ê¤¤·Á¤ÇºÆÇÛÉÛ¤¹¤ë¾ì¹ç¤Ë¤Ï¡¤¼¡¤Î¤¤¤º¤ì¤«¤Î¾ò·ï¤òËþ¤¿¤¹¤³
+ *      ¤È¡¥
+ *    (a) ºÆÇÛÉÛ¤ËÈ¼¤¦¥É¥­¥å¥á¥ó¥È¡ÊÍøÍÑ¼Ô¥Þ¥Ë¥å¥¢¥ë¤Ê¤É¡Ë¤Ë¡¤¾åµ­¤ÎÃø
+ *        ºî¸¢É½¼¨¡¤¤³¤ÎÍøÍÑ¾ò·ï¤ª¤è¤Ó²¼µ­¤ÎÌµÊÝ¾Úµ¬Äê¤ò·ÇºÜ¤¹¤ë¤³¤È¡¥
+ *    (b) ºÆÇÛÉÛ¤Î·ÁÂÖ¤ò¡¤ÊÌ¤ËÄê¤á¤ëÊýË¡¤Ë¤è¤Ã¤Æ¡¤TOPPERS¥×¥í¥¸¥§¥¯¥È¤Ë
+ *        Êó¹ð¤¹¤ë¤³¤È¡¥
+ *  (4) ËÜ¥½¥Õ¥È¥¦¥§¥¢¤ÎÍøÍÑ¤Ë¤è¤êÄ¾ÀÜÅª¤Þ¤¿¤Ï´ÖÀÜÅª¤ËÀ¸¤¸¤ë¤¤¤«¤Ê¤ëÂ»
+ *      ³²¤«¤é¤â¡¤¾åµ­Ãøºî¸¢¼Ô¤ª¤è¤ÓTOPPERS¥×¥í¥¸¥§¥¯¥È¤òÌÈÀÕ¤¹¤ë¤³¤È¡¥
+ *      ¤Þ¤¿¡¤ËÜ¥½¥Õ¥È¥¦¥§¥¢¤Î¥æ¡¼¥¶¤Þ¤¿¤Ï¥¨¥ó¥É¥æ¡¼¥¶¤«¤é¤Î¤¤¤«¤Ê¤ëÍý
+ *      Í³¤Ë´ð¤Å¤¯ÀÁµá¤«¤é¤â¡¤¾åµ­Ãøºî¸¢¼Ô¤ª¤è¤ÓTOPPERS¥×¥í¥¸¥§¥¯¥È¤ò
+ *      ÌÈÀÕ¤¹¤ë¤³¤È¡¥
  * 
- *  –{ƒ\ƒtƒgƒEƒFƒA‚ÍC–³•ÛØ‚Å’ñ‹Ÿ‚³‚ê‚Ä‚¢‚é‚à‚Ì‚Å‚ ‚éDã‹L’˜ìŒ ŽÒ‚¨
- *  ‚æ‚ÑTOPPERSƒvƒƒWƒFƒNƒg‚ÍC–{ƒ\ƒtƒgƒEƒFƒA‚ÉŠÖ‚µ‚ÄC“Á’è‚ÌŽg—p–Ú“I
- *  ‚É‘Î‚·‚é“K‡«‚àŠÜ‚ß‚ÄC‚¢‚©‚È‚é•ÛØ‚às‚í‚È‚¢D‚Ü‚½C–{ƒ\ƒtƒgƒEƒF
- *  ƒA‚Ì—˜—p‚É‚æ‚è’¼Ú“I‚Ü‚½‚ÍŠÔÚ“I‚É¶‚¶‚½‚¢‚©‚È‚é‘¹ŠQ‚ÉŠÖ‚µ‚Ä‚àC‚»
- *  ‚ÌÓ”C‚ð•‰‚í‚È‚¢D
+ *  ËÜ¥½¥Õ¥È¥¦¥§¥¢¤Ï¡¤ÌµÊÝ¾Ú¤ÇÄó¶¡¤µ¤ì¤Æ¤¤¤ë¤â¤Î¤Ç¤¢¤ë¡¥¾åµ­Ãøºî¸¢¼Ô¤ª
+ *  ¤è¤ÓTOPPERS¥×¥í¥¸¥§¥¯¥È¤Ï¡¤ËÜ¥½¥Õ¥È¥¦¥§¥¢¤Ë´Ø¤·¤Æ¡¤ÆÃÄê¤Î»ÈÍÑÌÜÅª
+ *  ¤ËÂÐ¤¹¤ëÅ¬¹çÀ­¤â´Þ¤á¤Æ¡¤¤¤¤«¤Ê¤ëÊÝ¾Ú¤â¹Ô¤ï¤Ê¤¤¡¥¤Þ¤¿¡¤ËÜ¥½¥Õ¥È¥¦¥§
+ *  ¥¢¤ÎÍøÍÑ¤Ë¤è¤êÄ¾ÀÜÅª¤Þ¤¿¤Ï´ÖÀÜÅª¤ËÀ¸¤¸¤¿¤¤¤«¤Ê¤ëÂ»³²¤Ë´Ø¤·¤Æ¤â¡¤¤½
+ *  ¤ÎÀÕÇ¤¤òÉé¤ï¤Ê¤¤¡¥
  * 
  */
 /*!
  *  \file   toppers/itronx/static_api.hpp
- *  \brief  Ã“IAPIî•ñ‚Ì‰ðÍ‚ÆŠÇ—‚ÉŠÖ‚·‚ééŒ¾’è‹`
+ *  \brief  ÀÅÅªAPI¾ðÊó¤Î²òÀÏ¤È´ÉÍý¤Ë´Ø¤¹¤ëÀë¸ÀÄêµÁ
  *
- *  ‚±‚Ìƒtƒ@ƒCƒ‹‚Å’è‹`‚³‚ê‚éƒNƒ‰ƒX
+ *  ¤³¤Î¥Õ¥¡¥¤¥ë¤ÇÄêµÁ¤µ¤ì¤ë¥¯¥é¥¹
  *  \code
  *  class static_api;
  *  \endcode
@@ -64,43 +64,43 @@ namespace toppers
 
     /*!
      *  \class  static_api static_api.hpp "toppers/itronx/static_api.hpp"
-     *  \brief  ƒRƒ“ƒtƒBƒMƒ…ƒŒ[ƒVƒ‡ƒ“ƒtƒ@ƒCƒ‹‚É‹Lq‚³‚ê‚½Ã“IAPI‚Ìî•ñ‚ðŠÇ—‚·‚é‚½‚ß‚ÌƒNƒ‰ƒX
+     *  \brief  ¥³¥ó¥Õ¥£¥®¥å¥ì¡¼¥·¥ç¥ó¥Õ¥¡¥¤¥ë¤Ëµ­½Ò¤µ¤ì¤¿ÀÅÅªAPI¤Î¾ðÊó¤ò´ÉÍý¤¹¤ë¤¿¤á¤Î¥¯¥é¥¹
      */
     class static_api
     {
     public:
       /*!
        *  \struct info  static_api.hpp "toppers/itronx/static_api.hpp"
-       *  \brief  Ã“IAPI‚ÌŽd—l‚ÉŠÖ‚·‚éî•ñ
+       *  \brief  ÀÅÅªAPI¤Î»ÅÍÍ¤Ë´Ø¤¹¤ë¾ðÊó
        *
-       *  static_api::info ‚Ì params ƒƒ“ƒo“à‚ÌŠe—v‘f‚É•t‚¯‚ç‚ê‚½Ú“ªŽ«‚ÌˆÓ–¡‚ÍŽŸ‚Ì‚Æ‚¨‚è
+       *  static_api::info ¤Î params ¥á¥ó¥ÐÆâ¤Î³ÆÍ×ÁÇ¤ËÉÕ¤±¤é¤ì¤¿ÀÜÆ¬¼­¤Î°ÕÌ£¤Ï¼¡¤Î¤È¤ª¤ê
        *
-       *  - #: ƒIƒuƒWƒFƒNƒgŽ¯•ÊŽq
-       *  - %: ƒIƒuƒWƒFƒNƒgŽ¯•ÊŽq‚ÅA‚©‚ÂŽ©“®Š„•t‚¯‚Ì‘ÎÛ‚Æ‚È‚ç‚È‚¢‚à‚Ì
-       *  - .: •„†–³‚µ®”’è”Ž®ƒpƒ‰ƒ[ƒ^
-       *  - +: •„†•t‚«®”’è”Ž®ƒpƒ‰ƒ[ƒ^
-       *  - $: •¶Žš—ñ’è”Ž®ƒpƒ‰ƒ[ƒ^
-       *  - &: ˆê”Ê’è”Ž®ƒpƒ‰ƒ[ƒ^
+       *  - #: ¥ª¥Ö¥¸¥§¥¯¥È¼±ÊÌ»Ò
+       *  - %: ¥ª¥Ö¥¸¥§¥¯¥È¼±ÊÌ»Ò¤Ç¡¢¤«¤Ä¼«Æ°³äÉÕ¤±¤ÎÂÐ¾Ý¤È¤Ê¤é¤Ê¤¤¤â¤Î
+       *  - .: Éä¹æÌµ¤·À°¿ôÄê¿ô¼°¥Ñ¥é¥á¡¼¥¿
+       *  - +: Éä¹æÉÕ¤­À°¿ôÄê¿ô¼°¥Ñ¥é¥á¡¼¥¿
+       *  - $: Ê¸»úÎóÄê¿ô¼°¥Ñ¥é¥á¡¼¥¿
+       *  - &: °ìÈÌÄê¿ô¼°¥Ñ¥é¥á¡¼¥¿
        *
-       *  ‚È‚¨A{ ‚¨‚æ‚Ñ } ‚à•Ö‹X“I‚Éƒpƒ‰ƒ[ƒ^‚ÌˆêŽí‚Æ‚µ‚Äˆµ‚Á‚Ä‚¢‚éi\•¶‰ðÍ‚É•K—v‚È‚½‚ßjB
+       *  ¤Ê¤ª¡¢{ ¤ª¤è¤Ó } ¤âÊØµ¹Åª¤Ë¥Ñ¥é¥á¡¼¥¿¤Î°ì¼ï¤È¤·¤Æ°·¤Ã¤Æ¤¤¤ë¡Ê¹½Ê¸²òÀÏ¤ËÉ¬Í×¤Ê¤¿¤á¡Ë¡£
        */
       struct info
       {
-        char const* type;     //!< ƒJ[ƒlƒ‹ƒIƒuƒWƒFƒNƒg‚ÌŽí•Ê‚ð•\‚·ŽO•¶Žši"tsk", "sem"“™j
-        char const* api_name; //!< Ã“IAPI–¼i"CRE_TSK", "CRE_SEM"“™j
-        char const* params;   //!< ƒpƒ‰ƒ[ƒ^•À‚Ñ
-        int id_pos;           //!< ƒpƒ‰ƒ[ƒ^‚Ì‚¤‚¿ID”Ô†‚ÌˆÊ’ui-1‚Ìê‡‚ÍID”Ô†–³‚µj
-        bool slave;           //!< ‘¼‚ÌÃ“IAPI‚É‘Î‚µ‚Ä]‘®ŠÖŒW‚É‚ ‚éê‡‚Étruei"DEF_TEX"“™j
+        char const* type;     //!< ¥«¡¼¥Í¥ë¥ª¥Ö¥¸¥§¥¯¥È¤Î¼ïÊÌ¤òÉ½¤¹»°Ê¸»ú¡Ê"tsk", "sem"Åù¡Ë
+        char const* api_name; //!< ÀÅÅªAPIÌ¾¡Ê"CRE_TSK", "CRE_SEM"Åù¡Ë
+        char const* params;   //!< ¥Ñ¥é¥á¡¼¥¿ÊÂ¤Ó
+        int id_pos;           //!< ¥Ñ¥é¥á¡¼¥¿¤Î¤¦¤ÁIDÈÖ¹æ¤Î°ÌÃÖ¡Ê-1¤Î¾ì¹ç¤ÏIDÈÖ¹æÌµ¤·¡Ë
+        bool slave;           //!< Â¾¤ÎÀÅÅªAPI¤ËÂÐ¤·¤Æ½¾Â°´Ø·¸¤Ë¤¢¤ë¾ì¹ç¤Ëtrue¡Ê"DEF_TEX"Åù¡Ë
       };
       /*!
        *  \struct parameter static_api.hpp "toppers/itronx/static_api.hpp"
-       *  \brief  Ã“IAPI‚Ìƒpƒ‰ƒ[ƒ^‚ÉŠÖ‚·‚éî•ñ
+       *  \brief  ÀÅÅªAPI¤Î¥Ñ¥é¥á¡¼¥¿¤Ë´Ø¤¹¤ë¾ðÊó
        */
       struct parameter
       {
-        std::string symbol;   //!< ‰¼ˆø”–¼
-        std::string text;     //!< ŽÀˆø”‚ÌŽš–Ê
-        boost::optional< std::tr1::intmax_t > value;  //!< ŽÀˆø”‚Ì’l
+        std::string symbol;   //!< ²¾°ú¿ôÌ¾
+        std::string text;     //!< ¼Â°ú¿ô¤Î»úÌÌ
+        boost::optional< std::tr1::intmax_t > value;  //!< ¼Â°ú¿ô¤ÎÃÍ
         std::string string;
       };
       typedef std::vector< parameter > parameter_container;
@@ -151,7 +151,7 @@ namespace toppers
       void line( text_line const& value ) { line_ = value; }
       size_type count_integer_params() const;
         
-      //! ƒIƒuƒWƒFƒNƒg‚ÌŒðŠ·
+      //! ¥ª¥Ö¥¸¥§¥¯¥È¤Î¸ò´¹
       void swap( static_api& other )
       {
         std::swap( pinfo_, other.pinfo_ );
@@ -173,9 +173,9 @@ namespace toppers
       }
 
       /*!
-       *  \brief  ID”Ô†‚ÌŠ„•t‚¯
-       *  \param[in]  first   ID”Ô†‚ðŠ„‚è•t‚¯‚é static_api —ñ‚Ìæ“ªˆÊ’u
-       *  \param[in]  last    ID”Ô†‚ðŠ„‚è•t‚¯‚é static_api —ñ‚ÌI’[ + 1
+       *  \brief  IDÈÖ¹æ¤Î³äÉÕ¤±
+       *  \param[in]  first   IDÈÖ¹æ¤ò³ä¤êÉÕ¤±¤ë static_api Îó¤ÎÀèÆ¬°ÌÃÖ
+       *  \param[in]  last    IDÈÖ¹æ¤ò³ä¤êÉÕ¤±¤ë static_api Îó¤Î½ªÃ¼ + 1
        */
       template < class ForwardIterator >
         static void assign_id( ForwardIterator first, ForwardIterator last )
@@ -185,7 +185,7 @@ namespace toppers
         std::vector< std::string > id_res;
         typedef std::vector< std::string >::size_type size_type;
 
-        // —\–ñÏ‚Ý‚ÌID”Ô†‚ðô‚¢o‚·
+        // Í½ÌóºÑ¤ß¤ÎIDÈÖ¹æ¤òÀö¤¤½Ð¤¹
         for ( ForwardIterator iter( first ); iter != last; ++iter )
         {
           static_api::info const* info = iter->get_info();
@@ -220,7 +220,7 @@ namespace toppers
           }
         }
 
-        // —\–ñ‚³‚ê‚Ä‚¢‚È‚¢ID”Ô†‚ðŽ©“®Š„•t‚¯
+        // Í½Ìó¤µ¤ì¤Æ¤¤¤Ê¤¤IDÈÖ¹æ¤ò¼«Æ°³äÉÕ¤±
         long id = 1;
         for ( ForwardIterator iter( first ); iter != last; ++iter )
         {
@@ -234,11 +234,11 @@ namespace toppers
               if ( iter->at( info->id_pos ).symbol[0] == '#' )
               {
                 std::vector< std::string >::iterator id_iter( std::find( id_res.begin(), id_res.end(), name ) );
-                if ( id_iter != id_res.end() )  // Š„‚è•t‚¯Ï‚Ý‚Ìê‡...
+                if ( id_iter != id_res.end() )  // ³ä¤êÉÕ¤±ºÑ¤ß¤Î¾ì¹ç...
                 {
                   id_value = id_iter - id_res.begin();
                 }
-                else  // ‚Ü‚¾Š„‚è•t‚¯‚ç‚ê‚Ä‚¢‚È‚¢ê‡...
+                else  // ¤Þ¤À³ä¤êÉÕ¤±¤é¤ì¤Æ¤¤¤Ê¤¤¾ì¹ç...
                 {
                   long n = static_cast< long >( id_res.size() );
                   while ( id < n && !id_res[ id ].empty() )
@@ -272,7 +272,7 @@ namespace toppers
                 fatal( iter->line(), _( "`%1%\' is undefined" ), iter->at( info->id_pos ).text );
               }
               std::set< std::string >& set = slave_id_set[ info->api_name ];
-              if ( set.find( name ) != set.end() )  // DEF_TEXd•¡’è‹`‚Ì”»’è
+              if ( set.find( name ) != set.end() )  // DEF_TEX½ÅÊ£ÄêµÁ¤ÎÈ½Äê
               {
                 fatal( iter->line(), _( "E_OBJ: `%1%\' is duplicated" ), iter->at( info->id_pos ).text );
               }
