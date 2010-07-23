@@ -29,7 +29,7 @@ LIBFILES = $(PROJDIR)/toppers/itronx/libitronx.a \
 all: cfg
 
 cfg: $(OBJFILES) $(LIBFILES)
-	$(CXX) -o cfg $(OBJFILES) -L$(LIBBOOST_DIR) $(LIBFILES) $(BOOST_LIBFILES)
+	$(CXX) $(CXXFLAGS) -o cfg $(OBJFILES) -L$(LIBBOOST_DIR) $(LIBFILES) $(BOOST_LIBFILES)
 
 depend:
 	$(CXX) $(CPPFLAGS) -M $(CXXFILES) > Makefile.depend
