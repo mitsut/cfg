@@ -539,6 +539,10 @@ namespace toppers
                   std::string is_signed( ( *d_iter )[ 2 ] );
                   def.is_signed = ( is_signed == "s" || is_signed == "signed" );
                 }
+                if ( len >= 4)
+                {
+                  def.value = ( *d_iter )[ 3 ];
+                }
                 cfg1_def_table_.push_back( def );
               }
             }

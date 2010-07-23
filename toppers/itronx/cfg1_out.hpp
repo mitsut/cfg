@@ -75,6 +75,7 @@ namespace toppers
         bool is_signed;
         std::string name;
         std::string expression;
+        std::string value;
       };
       typedef std::map< std::string, std::vector< static_api > > static_api_map;
       typedef std::vector< cfg1_def_t > cfg1_def_table;

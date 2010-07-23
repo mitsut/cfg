@@ -129,12 +129,20 @@ namespace toppers
               {
                 std::string expression = iter->expression.substr( 2 );
                 std::string ifdef_ = "#ifdef ";
+                std::string value = expression;
                 if ( std::strncmp( expression.c_str(), "defined", sizeof "defined" - 1 ) == 0 )
+                {
                   ifdef_ = "#if ";
+                  value = expression.substr( sizeof "defined" - 1 );
+                }
+                if ( !iter->value.empty() ) // 値の指定があれば、それを利用
+                {
+                  value = iter->value;
+                }
                 definition +=
                             " = \n"
                             + ifdef_ + expression + "\n"
-                            "(" + expression + ");\n"
+                            "(" + value + ");\n"
                             "#else\n"
                             "0;\n"
                             "#endif\n";
@@ -143,12 +151,19 @@ namespace toppers
               {
                 std::string expression = iter->expression.substr( 1 );
                 std::string ifdef_ = "#ifdef ";
+                std::string value = "1";
                 if ( std::strncmp( expression.c_str(), "defined", sizeof "defined" - 1 ) == 0 )
+                {
                   ifdef_ = "#if ";
+                }
+                if ( !iter->value.empty() ) // 値の指定があれば、それを利用
+                {
+                  value = iter->value;
+                }
                 definition +=
                             " = \n"
                             + ifdef_ + expression + "\n"
-                            "1;\n"
+                            "(" + value + ");\n"
                             "#else\n"
                             "0;\n"
                             "#endif\n";
