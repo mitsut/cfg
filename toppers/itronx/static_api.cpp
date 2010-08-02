@@ -162,6 +162,7 @@ namespace toppers
           else if ( *symbol.rbegin() == '\?' ) // 省略可能パラメータのスキップ
           {
             skip = true;
+            --iter;
           }
           else
           {
