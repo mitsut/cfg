@@ -187,7 +187,8 @@ namespace toppers
               | ( unary_operator >> cast_expression )
             );
         unary_operator =
-            chset<>( "&*~!+-" );
+            //chset<>( "&*~!+-" );
+		    ch_p( '&' ) | '*' | '~' | '!' | '+' | '-';
         cast_expression =
             *( '(' >> type_name >> ')' ) >> unary_expression
           | +( '(' >> ( type_name | identifier ) >> ')' );  // 構文解析に失敗する不具合対策
@@ -251,8 +252,10 @@ namespace toppers
               as_lower_d
               [
                 ( ( *digit_p >> '.' >> +digit_p ) | ( +digit_p >> '.' ) ) >>
-                'e' >> !chset<>( "+-" ) >> +digit_p >>
-                !chset<>( "fl" )
+//                'e' >> !chset<>( "+-" ) >> +digit_p >>
+				'e' >> !( ch_p( '+' ) | '-' ) >> +digit_p >>
+//                !chset<>( "fl" )
+			    ( ch_p( 'f' ) | 'l' )
               ]
             ];
         hexadecimal_floating_constant =
@@ -262,8 +265,10 @@ namespace toppers
               [
                 "0x" >>
                 ( ( *xdigit_p >> '.' >> +xdigit_p ) | ( +xdigit_p >> '.' ) ) >>
-                'p' >> !chset<>( "+-" ) >> +digit_p >>
-                !chset<>( "fl" )
+//                'p' >> !chset<>( "+-" ) >> +digit_p >>
+				'p' >> !( ch_p( '+' ) | '-' ) >> +digit_p >>
+//                !chset<>( "fl" )
+			    ( ch_p( 'f' ) | 'l' )
               ]
             ];
         integer_constant =

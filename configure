@@ -71,10 +71,6 @@ fi
 libboost_suffix=`echo $libboost_regex_filename | sed -e s/.*libboost_regex//g -e s/\.[a-z]*$//g`
 echo "LIBBOOST_SUFFIX=$libboost_suffix" >> $makefile_config
 
-options=`echo "#if defined(__x86_64) && defined(__APPLE__)
--m32
-#endif" | g++ -E -x c++ - | grep m32`
-
 # ŠeŽí•Ï”‚ðo—Í
 echo BOOST_VERSION=$boost_lib_version >> $makefile_config
 echo BOOST_DIR=$include_path >> $makefile_config
