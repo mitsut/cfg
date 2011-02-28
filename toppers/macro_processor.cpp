@@ -1955,7 +1955,9 @@ std::string debug_str;
       return var_t();
     }
 
-    return p_ctx->var_map[ "RESULT" ];
+    var_t result = p_ctx->var_map[ "RESULT" ];
+	p_ctx->var_map[ "RESULT" ] = var_t();	// 変数$RESULT$をクリア
+	return result;
   }
 
 }
