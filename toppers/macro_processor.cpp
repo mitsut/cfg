@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2010 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2011 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -1809,11 +1809,18 @@ namespace toppers
     for ( text::const_iterator iter; ( iter = std::find( first, last, '\n' ) ) != last ; first = iter + 1 )
     {
       std::string buf( first, iter );
-      if ( ( ( buf[0] == '$' ) && ( buf.size() >= 2 ) && std::isspace( static_cast< unsigned char >( buf[1] ) ) ) )
+      std::string::size_type found_pos;
+
+      if ( ( ( buf[0] == '$' ) && ( buf.size() >= 2 ) && std::isspace( static_cast< unsigned char >( buf[1] ) ) )
+        || ( buf.size() == 1 && buf[0] == '$' ) )	// 行頭に限り、'$'単独でもコメントとみなす
       {
         *result = '\n'; 
       }
-      else
+      else if ( ( found_pos = buf.find( std::string( "$#" ) ) ) != std::string::npos )  // 行の途中に"$#"があれば、それ以降をコメントとみなす
+      {
+        result = std::copy( buf.begin(), buf.begin() + found_pos, result );
+      }
+	  else
       {
         // コメント行以外は行頭の空白類を除去する。
         first = std::find_if( first, iter, std::not1( std::ptr_fun< char, bool >( &toppers::isspace ) ) );
