@@ -1275,7 +1275,7 @@ namespace toppers
               iter != last;
               ++iter )
         {
-          char c = *iter;
+		  char c = *iter;
           if ( !std::isspace( static_cast< unsigned char >( c ) ) )
           {
             break;
@@ -1526,7 +1526,12 @@ namespace toppers
     {
       std::string buf;
       buf.reserve( node.children[ 0 ].value.end() - node.children[ 0 ].value.begin() );
-      for ( text::const_iterator iter( node.children[ 0 ].value.begin() ), last( node.children[0].value.end() ); iter != last; ++iter )
+	  std::size_t offset = 0;
+
+	  if ( std::isspace( static_cast< unsigned char >( *node.children[ 0 ].value.begin() ) ) )	// plainの先頭が空白類文字の場合、なぜか二重になる不具合の暫定対策
+	  	offset = 1;
+
+	  for ( text::const_iterator iter( node.children[ 0 ].value.begin() + offset ), last( node.children[0].value.end() ); iter != last; ++iter )
       {
         if ( *iter == '$' )
         {
