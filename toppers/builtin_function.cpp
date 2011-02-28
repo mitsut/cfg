@@ -321,16 +321,30 @@ namespace toppers
    *  \param[in]  arg_list  マクロ実引数リスト
    *  \param[in]  p_ctx     マクロコンテキスト
    *  \retval     マクロ返却値
-   *  第1マクロ実引数と第2マクロ実引数を連結して新しい順序付きリストを生成する。
+   *  第1マクロ実引数と第2マクロ実引数以降を連結して新しい順序付きリストを生成する。
    */
   var_t bf_append( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     var_t result;
-    if ( macro_processor::check_arity( line, arg_list.size(), 2, "APPEND" ) )
+/*    if ( macro_processor::check_arity( line, arg_list.size(), 2, "APPEND" ) )
     {
       result = arg_list[ 0 ];
       result.insert( result.end(), arg_list[ 1 ].begin(), arg_list[1].end() );
     }
+*/
+    var_t::size_type const n = arg_list.size();
+    if ( n < 2 )
+    {
+      error( line, _( "too few arguments for `%1%\'" ), "APPEND" );
+		}
+		else
+		{
+		  result = arg_list[ 0 ];
+      for ( var_t::size_type i = 1; i < n; i++)
+			{
+			  result.insert( result.end(), arg_list[ i ].begin(), arg_list[ i ].end() );
+			}
+		}
     return result;
   }
 
