@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2009 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2011 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -48,6 +48,7 @@
 #include <boost/format.hpp>
 #include <boost/utility.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/xpressive/xpressive.hpp>
 
 namespace toppers
 {
@@ -762,6 +763,28 @@ namespace toppers
     return result;
   }
 
+  /*! 
+   *  \brief  正規表現を用いた置換 
+   *  \param[in]  line      行番号 
+   *  \param[in]  arg_list  マクロ実引数リスト 
+   *  \param[in]  p_ctx     マクロコンテキスト 
+   *  \retval     マクロ返却値 
+   *  第1マクロ実引数で指定した文字列のうち、第2マクロ実引数で指定した正規表現にマッチする箇所を第3マクロ実引数の内容で置換する。
+	 *  正規表現はECMAScript互換とする。
+   */ 
+   var_t bf_regex_replace( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx ) 
+   { 
+     element e; 
+     if ( macro_processor::check_arity( line, arg_list.size(), 3, "REGEX_REPLACE" ) ) 
+     {
+       e.s = boost::xpressive::regex_replace( get_s( arg_list[ 0 ], p_ctx ), 
+                                              boost::xpressive::sregex::compile( get_s( arg_list[ 1 ], p_ctx ) ), 
+                                              get_s( arg_list[ 2 ], p_ctx ) ); 
+     } 
+     return var_t( 1, e ); 
+   }
+
+
   /*!
    *  \brief  何もしない組み込み関数
    *  \param[in]  line      行番号
@@ -802,6 +825,7 @@ namespace toppers
     { "LSORT", bf_lsort },
     { "ISFUNCTION", bf_isfunction },
     { "REVERSE", bf_reverse },
+  { "REGEX_REPLACE", bf_regex_replace }, 
     { "NOOP", bf_noop },
     { "", 0 },
   };
