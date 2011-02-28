@@ -326,12 +326,6 @@ namespace toppers
   var_t bf_append( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     var_t result;
-/*    if ( macro_processor::check_arity( line, arg_list.size(), 2, "APPEND" ) )
-    {
-      result = arg_list[ 0 ];
-      result.insert( result.end(), arg_list[ 1 ].begin(), arg_list[1].end() );
-    }
-*/
     var_t::size_type const n = arg_list.size();
     if ( n < 2 )
     {
@@ -695,14 +689,14 @@ namespace toppers
         arg_list.push_back( var_t( 1, e ) );
         arg_list.push_back( var_t( 1, lhs ) );
         arg_list.push_back( var_t( 1, rhs ) );
-		int arg1 = static_cast< int >( *lhs.i );
-		int arg2 = static_cast< int >( *rhs.i );
+        int arg1 = static_cast< int >( *lhs.i );
+        int arg2 = static_cast< int >( *rhs.i );
 
         var_t r = bf_call( line_, arg_list, p_ctx_ );
         bool result = 0;
         if ( !r.empty() )
         {
-			int retval = static_cast< int >( *r.front().i );
+          int retval = static_cast< int >( *r.front().i );
           result = ( *r.front().i < 0 );
         }
         return result;
@@ -798,6 +792,31 @@ namespace toppers
      return var_t( 1, e ); 
    }
 
+  /*!
+   *  \brief  配列の全削除
+   *  \param[in]  line      行番号
+   *  \param[in]  arg_list  マクロ実引数リスト
+   *  \param[in]  p_ctx     マクロコンテキスト
+   *  \retval     マクロ返却値
+	 *  第1マクロ実引数で指定した名前の配列を全削除する。
+   */
+  var_t bf_clean( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
+  {
+    element e;
+		if ( macro_processor::check_arity( line, arg_list.size(), 1, "CLEAN" ) ) 
+    {
+		  std::string name = get_s( arg_list[ 0 ], p_ctx ) + "[";
+			for ( std::map< std::string, var_t >::iterator it = p_ctx->var_map.lower_bound( name );
+			      it != p_ctx->var_map.end();
+						++it )
+			{
+			  if ( std::strncmp( it->first.c_str(), name.c_str(), name.size() ) != 0 )
+				  break;
+        it->second = var_t();
+			}
+    }
+    return var_t( 1, e );
+  }
 
   /*!
    *  \brief  何もしない組み込み関数
@@ -839,7 +858,8 @@ namespace toppers
     { "LSORT", bf_lsort },
     { "ISFUNCTION", bf_isfunction },
     { "REVERSE", bf_reverse },
-  { "REGEX_REPLACE", bf_regex_replace }, 
+    { "REGEX_REPLACE", bf_regex_replace }, 
+    { "CLEAN", bf_clean },
     { "NOOP", bf_noop },
     { "", 0 },
   };
