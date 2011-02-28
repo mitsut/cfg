@@ -308,7 +308,7 @@ namespace toppers
   var_t bf_concat( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     element e;
-    if ( macro_processor::check_arity( line, arg_list.size(), 2, "CAT" ) )
+    if ( macro_processor::check_arity( line, arg_list.size(), 2, "CONCAT" ) )
     {
       e.s = get_s( arg_list[ 0 ], p_ctx ) + get_s( arg_list[ 1 ], p_ctx );
     }
@@ -345,7 +345,7 @@ namespace toppers
   var_t bf_at( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     element e;
-    if ( macro_processor::check_arity( line, arg_list.size(), 2, "CAT" ) )
+    if ( macro_processor::check_arity( line, arg_list.size(), 2, "AT" ) )
     {
       try
       {
