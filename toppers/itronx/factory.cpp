@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2010 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2011 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -590,6 +590,7 @@ namespace toppers
 
       // その他の組み込み変数の設定
       set_object_vars( api_map, *mproc );
+      set_object_vars( cfg1out.get_static_api_array(), *mproc );
       set_clsid_vars( cfg1out.get_clsid_table(), cfg1out, *mproc );
       set_domid_vars( cfg1out.get_domid_table(), *mproc );
       set_platform_vars( cfg1out, *mproc );

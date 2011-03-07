@@ -61,7 +61,7 @@ namespace toppers
       unsigned long address = 0;
       char type;
       std::string symbol;
-      if ( !std::isspace( static_cast< unsigned char >( buf[0] ) ) )
+      if ( !buf.empty() && !std::isspace( static_cast< unsigned char >( buf[0] ) ) )
       {
         isstr >> std::hex >> address;
       }
