@@ -49,6 +49,7 @@
 #include "toppers/macro_processor.hpp"
 #include "toppers/s_record.hpp"
 #include "toppers/nm_symbol.hpp"
+#include "toppers/misc.hpp"
 #include "toppers/itronx/cfg1_out.hpp"
 #include "toppers/itronx/preprocess.hpp"
 #include <boost/spirit/include/classic.hpp>
@@ -409,7 +410,7 @@ namespace toppers
             {
               oss << "\n#ifndef TOPPERS_cfg_valueof_" << id << "_DEFINED\n"
                     "#define TOPPERS_cfg_valueof_" << id << "_DEFINED 1\n";
-              oss << boost::format( "\n#line %1% \"%2%\"\n" ) % ( iter.line().line ) % iter.line().file;
+              oss << boost::format( "\n#line %1% \"%2%\"\n" ) % ( iter.line().line ) % dir_delimiter_to_slash( iter.line().file );
 
               current_class = idexp;
               oss << "const unsigned_t TOPPERS_cfg_valueof_" << id << " = " << idexp << ";\n";
@@ -418,7 +419,7 @@ namespace toppers
             {
               oss << "\n#ifndef TOPPERS_cfg_valueof_" << id << "_DEFINED\n"
                     "#define TOPPERS_cfg_valueof_" << id << "_DEFINED 1\n";
-              oss << boost::format( "\n#line %1% \"%2%\"\n" ) % ( iter.line().line ) % iter.line().file;
+              oss << boost::format( "\n#line %1% \"%2%\"\n" ) % ( iter.line().line ) % dir_delimiter_to_slash( iter.line().file );
 
               current_domain = id;
               oss << "const unsigned_t TOPPERS_cfg_valueof_" << id << " = ";
@@ -447,7 +448,7 @@ namespace toppers
             block_stack.pop();
 
             oss << "\n#ifndef TOPPERS_cfg_inside_of_" << b.id << "\n";
-            oss << boost::format( "\n#line %1% \"%2%\"\n" ) % ( iter.line().line ) % iter.line().file;
+            oss << boost::format( "\n#line %1% \"%2%\"\n" ) % ( iter.line().line ) % dir_delimiter_to_slash( iter.line().file );
             oss << "#error syntax error\n"
                     "#endif\n";
             oss << "#undef TOPPERS_cfg_inside_of_" << b.id << "\n"
@@ -481,8 +482,7 @@ namespace toppers
 
               api_array.push_back( api );
 
-              std::string file( boost::filesystem::path( api.line().file, boost::filesystem::native ).string() ); // ディレクトリ区切子を / に変更
-              oss << boost::format( "\n#line %1% \"%2%\"\n" ) % api.line().line % file;
+              oss << boost::format( "\n#line %1% \"%2%\"\n" ) % api.line().line % dir_delimiter_to_slash( api.line().file );
               oss << "const unsigned_t TOPPERS_cfg_static_api_" << serial << " = " << serial << ";\n";
 
               if ( !api.params().empty() && api.begin()->symbol[0] == '#' )   // オブジェクト識別名
@@ -512,7 +512,7 @@ namespace toppers
                 else
                 {
                   oss << "#define " << object_id << "\t(<>)\n";   // でたらめな字句（基本ソース文字集合のみで構成）に定義することで、誤使用を検出する
-                  oss << boost::format( "\n#line %1% \"%2%\"\n" ) % ( api.line().line ) % file;
+                  oss << boost::format( "\n#line %1% \"%2%\"\n" ) % ( api.line().line ) % dir_delimiter_to_slash( api.line().file );
                 }
               }
               for ( static_api::iterator api_iter( api.begin() ), api_last( api.end() );

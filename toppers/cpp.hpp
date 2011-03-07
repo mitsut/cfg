@@ -167,7 +167,8 @@ namespace toppers
     std::string search_include_file( InputIterator first, InputIterator last, std::string const& headername )
   {
     namespace fs = boost::filesystem;
-    fs::path filename( headername, fs::native );
+//    fs::path filename( headername, fs::native );
+    fs::path filename( headername );  // filesystem3対応
 
     if ( fs::exists( filename ) && !fs::is_directory( filename ) )
     {
@@ -175,10 +176,12 @@ namespace toppers
     }
     while ( first != last )
     {
-      fs::path pathname = fs::path( *first, fs::native )/filename;
+//      fs::path pathname = fs::path( *first, fs::native )/filename;
+      fs::path pathname = fs::path( *first )/filename;  // filesystem3対応
       if ( fs::exists( pathname ) && !fs::is_directory( pathname ) )
       {
-        return pathname.native_file_string();
+//        return pathname.native_file_string();
+        return pathname.string();  // filesysytem3対応
       }
       ++first;
     }

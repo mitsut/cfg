@@ -118,13 +118,16 @@ namespace toppers
       {
         if ( iter->first != "" )
         {
-          fs::path filename( iter->first, fs::native );
-          fs::path backup( iter->first + ".org", fs::native );
+//          fs::path filename( iter->first, fs::native );
+          fs::path filename( iter->first );  // filesystem3対応
+//          fs::path backup( iter->first + ".org", fs::native );
+          fs::path backup( iter->first + ".org" );  // filesystem3対応
           bool existed = fs::exists( filename );
 
           try
           {
-            std::string file( filename.native_file_string() );
+//            std::string file( filename.native_file_string() );
+            std::string file( filename.string() );  // filesystem3対応
             if ( existed )
             {
               fs::rename( filename, backup );
@@ -152,9 +155,11 @@ namespace toppers
             iter != last;
             ++iter )
       {
-        fs::path filename( *iter, fs::native );
+//        fs::path filename( *iter, fs::native );
+        fs::path filename( *iter );  // filesystem3対応
         fs::remove( filename );
-        fs::path backup( *iter + ".org", fs::native );
+//        fs::path backup( *iter + ".org", fs::native );
+        fs::path backup( *iter + ".org" );  // filesystem3対応
         if ( fs::exists( backup ) )
         {
           fs::rename( backup, filename );
@@ -187,8 +192,10 @@ namespace toppers
     {
       return filename;
     }
-    fs::path dir( get_global< std::string >( "output-directory" ), fs::native  );
-    return ( dir/filename ).native_file_string();
+//    fs::path dir( get_global< std::string >( "output-directory" ), fs::native  );
+    fs::path dir( get_global< std::string >( "output-directory" )  );  // filesystem3対応
+//    return ( dir/filename ).native_file_string();
+    return ( dir/filename ).string();  // filesystem3対応
   }
 
   /*!

@@ -34,6 +34,7 @@
  *  の責任を負わない．
  * 
  */
+#include <cstdio>
 #include <cstdlib>
 #include <cerrno>
 #include <string>

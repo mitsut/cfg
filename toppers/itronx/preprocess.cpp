@@ -42,6 +42,7 @@
 #include "toppers/cpp.hpp"
 #include "toppers/global.hpp"
 #include "toppers/diagnostics.hpp"
+#include "toppers/misc.hpp"
 #include "toppers/itronx/preprocess.hpp"
 #include <boost/spirit/include/classic.hpp>
 
@@ -128,7 +129,7 @@ namespace toppers
               {
                 if ( dependencies != 0 )
                 {
-                  dependencies->insert( hname );
+                  dependencies->insert( dir_delimiter_to_slash( hname ) );
                 }
                 out.push_back( ' ' ); // ダミーを挿入しておかないと行番号がずれる
                 preprocess( hname, out, codeset, dependencies, onces );  // ヘッダ名で指定されたファイルに対して前処理を再帰的に行う

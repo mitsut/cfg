@@ -54,6 +54,10 @@
 #include "toppers/codeset.hpp"
 #include <boost/scoped_array.hpp>
 
+#if defined(_MSC_VER) || defined(__MINGW32__)
+#include <mbstring.h>
+#endif
+
 // workaround
 #include <ctype.h>
 #include <wctype.h>
@@ -278,6 +282,25 @@ namespace toppers
       }
     }
     return str.substr( first );
+  }
+
+  inline std::string dir_delimiter_to_slash( std::string const& str )
+  {
+#if defined(_MSC_VER) || defined(__MINGW32__)
+    std::string result;
+    result.reserve( str.size() );
+
+    unsigned char const* s1 = reinterpret_cast< unsigned char const* >( str.c_str() );
+    while ( unsigned char const* s2 = _mbschr( s1, '\\' ) )
+    {
+      result.append( s1, s2 );
+      result.push_back( '/' );
+      s1 = s2 + 1;
+    }
+    return result + reinterpret_cast< char const* >( s1 );
+#else
+    return str;
+#endif
   }
 
 }

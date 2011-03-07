@@ -138,9 +138,13 @@ namespace toppers
     }
     std::string lang( env );
 
-    fs::path cfg_dir( dir, fs::native );
-    fs::path po_file( cfg_dir/fs::path( lang + ".po", fs::native ) );
-    std::ifstream ifs( po_file.native_file_string().c_str() );
+//    fs::path cfg_dir( dir, fs::native );
+    fs::path cfg_dir( dir );  // filesystem3対応
+//    fs::path po_file( cfg_dir/fs::path( lang + ".po", fs::native ) );
+    fs::path po_file( cfg_dir/fs::path( lang + ".po" ) );  // filesystem3対応
+
+//    std::ifstream ifs( po_file.native_file_string().c_str() );
+    std::ifstream ifs( po_file.string().c_str() );  // filesystem3対応
     std::string msgid;
     std::string msgstr;
 
