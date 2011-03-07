@@ -90,7 +90,8 @@ namespace toppers
         id_string_literal, id_ordered_list, id_ordered_sequence, id_ordered_item,
 
         id_root, id_top,
-        id_function_, id_if_, id_foreach_, id_joineach_, id_error_, id_warning_,
+        id_function_, id_if_, id_foreach_, id_joineach_, id_while_, id_joinwhile_,
+        id_error_, id_warning_,
         id_file_, id_expr_, id_plain,
 
         id_illegal = -1
@@ -199,6 +200,8 @@ namespace toppers
                 if_,
                 foreach_,
                 joineach_,
+                while_,
+                joinwhile_,
                 error_,
                 warning_,
                 file_,
@@ -210,6 +213,8 @@ namespace toppers
                 guard_if_,
                 guard_foreach_,
                 guard_joineach_,
+                guard_while_,
+                guard_joinwhile_,
                 guard_expr,
                 guard_postfix_expr,
                 guard_lvalue_expr,
@@ -317,7 +322,7 @@ namespace toppers
           root =
               top >> lexeme_d[ !space_p ];
           top =
-              *( function_ | if_ | foreach_ | joineach_ | warning_ | error_ | file_ | expr_ | plain );
+              *( function_ | if_ | foreach_ | joineach_ | while_ | joinwhile_ | warning_ | error_ | file_ | expr_ | plain );
           function_ =
             guard_function_
             (
@@ -347,6 +352,22 @@ namespace toppers
             guard_joineach_
             (
               "$JOINEACH" >> identifier >> expression >> expression >> expect_doller( ch_p( '$' ) ) >> top >> expect_end( str_p( "$END$" ) )
+            )
+            [
+              error_handler()
+            ];
+          while_ =
+            guard_while_
+            (
+              "$WHILE" >> expression >> expect_doller( ch_p( '$' ) ) >> top >> expect_end( str_p( "$END$" ) )
+            )
+            [
+              error_handler()
+            ];
+          joinwhile_ =
+            guard_joinwhile_
+            (
+              "$JOINWHILE" >> expression >> expression >> expect_doller( ch_p( '$' ) ) >> top >> expect_end( str_p( "$END$" ) )
             )
             [
               error_handler()
@@ -402,6 +423,8 @@ namespace toppers
           if_.set_id( id_if_ );
           foreach_.set_id( id_foreach_ );
           joineach_.set_id( id_joineach_ );
+          while_.set_id( id_while_ );
+          joinwhile_.set_id( id_joinwhile_ );
           error_.set_id( id_error_ );
           warning_.set_id( id_warning_ );
           file_.set_id( id_file_ );
@@ -1433,6 +1456,85 @@ namespace toppers
       return result;
     }
 
+    //! WHILE命令
+    bool while_( tree_node_t const& node, context* p_ctx )
+    {
+      bool result = true;
+
+      if ( node.children.empty() )
+      {
+        fatal( node.value.begin().line(), "no body of %1%", "'WHILE'" );
+      }
+
+      //      0          1 2   3     4
+      // $WHILE expression $ top $END$
+      for (;;)
+      {
+        if ( eval_node( node.children[1], p_ctx ) )   // expression
+        {
+          var_t expr( p_ctx->stack.top() ); p_ctx->stack.pop();
+          bool cond = false;
+          try
+          {
+            cond = !!get_i( expr, p_ctx );
+          }
+          catch ( expr_error& )
+          {
+            error( node.children[ 0 ].value.begin().line(), _( "`%1%\' does not have a value" ), get_s( expr, p_ctx ) );
+            throw;
+          }
+          if ( !cond )
+          {
+            break;
+          }
+          result &= eval_node( node.children[ 3 ], p_ctx ); // top
+        }
+      }
+      return result;
+    }
+
+    //! $JOINWHILE命令
+    bool joinwhile_( tree_node_t const& node, context* p_ctx )
+    {
+      bool result = true;
+
+      if ( node.children.empty() )
+      {
+        fatal( node.value.begin().line(), "no body of %1%", "'JOINWHILE'" );
+      }
+
+      //          0          1         2 3   4     5
+      // $JOINWHILE expression delimitor $ top $END$
+      for ( bool first = true; ; first = false )
+      {
+        if ( eval_node( node.children[1], p_ctx ) )   // expression
+        {
+          var_t expr( p_ctx->stack.top() ); p_ctx->stack.pop();
+          bool cond = false;
+          try
+          {
+            cond = !!get_i( expr, p_ctx );
+          }
+          catch ( expr_error& )
+          {
+            error( node.children[ 0 ].value.begin().line(), _( "`%1%\' does not have a value" ), get_s( expr, p_ctx ) );
+            throw;
+          }
+          if ( !cond )
+          {
+            break;
+          }
+          if ( !first && eval_node( node.children[ 2 ], p_ctx ) ) // delimitor
+          {
+            var_t delimitor( p_ctx->stack.top() ); p_ctx->stack.pop();
+            p_ctx->target_file << get_s( delimitor, p_ctx );
+          }
+        }
+        result &= eval_node( node.children[ 4 ], p_ctx ); // top
+      }
+      return result;
+    }
+
     //! $ERROR命令
     bool error_( tree_node_t const& node, context* p_ctx )
     { 
@@ -1654,6 +1756,12 @@ namespace toppers
       case parser::id_joineach_:
         result = joineach_( node, p_ctx );
         break;
+      case parser::id_while_:
+        result = while_( node, p_ctx );
+        break;
+      case parser::id_joinwhile_:
+        result = joinwhile_( node, p_ctx );
+        break;
       case parser::id_error_:
         result = error_( node, p_ctx );
         break;
@@ -1816,7 +1924,7 @@ namespace toppers
       std::string buf( first, iter );
       std::string::size_type found_pos;
 
-      if ( ( ( buf[0] == '$' ) && ( buf.size() >= 2 ) && std::isspace( static_cast< unsigned char >( buf[1] ) ) )
+      if ( ( ( buf.size() >= 2 ) && ( buf[0] == '$' ) && std::isspace( static_cast< unsigned char >( buf[1] ) ) )
         || ( buf.size() == 1 && buf[0] == '$' ) )	// 行頭に限り、'$'単独でもコメントとみなす
       {
         *result = '\n'; 
