@@ -438,16 +438,38 @@ namespace toppers
     if ( macro_processor::check_arity( line, arg_list.size(), 2, "FIND" ) )
     {
       var_t list( arg_list[ 0 ] );
-      std::tr1::int64_t value( get_i( arg_list[ 1 ], p_ctx ) );
 
-      for ( var_t::const_iterator iter( list.begin() ), last( list.end() ); iter != last; ++iter )
-      {
-        if ( iter->i.get() == value ) // 発見！
+	  if ( !arg_list[ 1 ].empty() )
+	  {
+        element key( arg_list[ 1 ].front() );
+
+        if ( !key.i )	// 整数値が設定されていなければ...
         {
-          e.i = iter - list.begin();  // iter は RandomAccessIterator
-          return var_t( 1, e );
+          std::string value( key.s );
+
+          for ( var_t::const_iterator iter( list.begin() ), last( list.end() ); iter != last; ++iter )
+          {
+            if ( iter->s == value ) // 発見！
+            {
+              e.i = iter - list.begin();  // iter は RandomAccessIterator
+              return var_t( 1, e );
+            }
+          }
         }
-      }
+		else
+		{
+          std::tr1::int64_t value( key.i.get() );
+
+          for ( var_t::const_iterator iter( list.begin() ), last( list.end() ); iter != last; ++iter )
+          {
+            if ( iter->i && iter->i.get() == value ) // 発見！
+            {
+              e.i = iter - list.begin();  // iter は RandomAccessIterator
+              return var_t( 1, e );
+            }
+          }
+        }
+	  }
     }
     return var_t();
   }
