@@ -1,5 +1,5 @@
 
-	TOPPERS新世代カーネル用コンフィギュレータ（Release 1.6.0）
+	TOPPERS新世代カーネル用コンフィギュレータ（Release 1.7.A）
 
 
 TOPPERS新世代カーネル用コンフィギュレータは、カーネルやソフトウェア部品
@@ -33,6 +33,11 @@ http://www.boostpro.com/
 Boost C++ Librariesをバイナリで入手できない場合には、ソースからビルドし
 てください。
 
+・動作確認済みの環境
+Windows Vista + Cygwin 1.7.7-1 + GCC 4.3.4 + Boost 1.43.0
+Windows Vista + Visual Studio 2008 SP1 + Boost 1.44.0
+Windows Vista + Visual Studio 2010 + Boost 1.44.0
+
 === GNU開発環境を用いる場合 ===
 
 コンフィギュレータ（cfgプログラム）を構築するには、cfgディレクトリに移動
@@ -64,6 +69,8 @@ cfg/cfg/Releaseディレクトリにcfg.exeが生成されますので、必要なフォルダ
 
 Boost C++ Librariesをインストールした後、インクルードおよびライブラリの
 ディレクトリをVisual Studioに登録してからビルドを実行してください。
+Visual Studio 2010からはプロジェクトごとにディレクトリを登録するように
+仕様変更されているので注意してください。
 Visual C++ 2005 Express Editionを使用する場合、別途Platform SDKをインス
 トールする必要があります。
 
