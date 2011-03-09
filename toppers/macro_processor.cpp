@@ -1360,7 +1360,6 @@ namespace toppers
 
       if ( node.children.empty() )
       {
-std::cerr << "*** fatal" << std::endl;
         fatal( node.value.begin().line(), "no body of %1%", "'IF' or 'ELSE'" );
       }
 
@@ -1392,7 +1391,6 @@ std::cerr << "*** fatal" << std::endl;
         {
           result &= eval_node( node.children[ 5 ], p_ctx );   // top
         }
-#if 1
         else if ( n > 5 )  // $ELIF...
         {
           for ( std::size_t i = 0; 4 + 4 * i < n - 1; i++ )
@@ -1427,7 +1425,6 @@ std::cerr << "*** fatal" << std::endl;
             }
           }
         }
-#endif
       }
       return result;
     }
