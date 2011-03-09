@@ -332,6 +332,7 @@ namespace toppers
 
         cfg1_out::cfg1_def_table const* def_table = cfg1out.get_def_table();
         std::size_t sizeof_signed_t;
+        std::size_t sizeof_pointer;
 
         static cfg1_out::cfg1_def_t const limit_defs[] =
         {
@@ -346,6 +347,9 @@ namespace toppers
 
         nm_symbol::entry nm_entry = cfg1out.get_syms()->find( "TOPPERS_cfg_sizeof_signed_t" );
         sizeof_signed_t = static_cast< std::size_t >( cfg1out.get_srec()->get_value( nm_entry.address, 4, cfg1out.is_little_endian() ) );
+
+        nm_entry = cfg1out.get_syms()->find( "TOPPERS_cfg_sizeof_pointer" );
+        sizeof_pointer = static_cast< std::size_t >( cfg1out.get_srec()->get_value( nm_entry.address, 4, cfg1out.is_little_endian() ) );
 
         for ( std::size_t i = 0; i < sizeof limit_defs / sizeof limit_defs[ 0 ]; ++i )
         {
@@ -365,14 +369,35 @@ namespace toppers
               ++iter )
         {
           element e;
-          e.s = iter->expression;
+          std::tr1::int64_t value;
+
           nm_entry = cfg1out.get_syms()->find( "TOPPERS_cfg_" + iter->name );
           if ( nm_entry.type >= 0 )
           {
-            std::tr1::int64_t value = cfg1out.get_srec()->get_value( nm_entry.address, sizeof_signed_t, cfg1out.is_little_endian() );
-            if ( sizeof_signed_t < 8 && iter->is_signed )
+            if ( !iter->expression.empty() && iter->expression[ 0 ] == '@' )  // 式が'@'で始まる場合はアドレス定数式
             {
-              value = cfg1_out::make_signed( static_cast< std::tr1::uint32_t >( value ) );
+              value = cfg1out.get_srec()->get_value( nm_entry.address, sizeof_pointer, cfg1out.is_little_endian() );
+              if ( sizeof_signed_t < 8 && iter->is_signed )
+              {
+                value = cfg1_out::make_signed( static_cast< std::tr1::uint32_t >( value ) );
+              }
+
+              // 先ほど取り出したアドレスを使って間接参照
+              value = cfg1out.get_srec()->get_value( value, 8, cfg1out.is_little_endian() );  // 取り出す値は型に関係なく常に8バイト
+              if ( sizeof_signed_t < 8 && iter->is_signed )
+              {
+                value = cfg1_out::make_signed( static_cast< std::tr1::uint32_t >( value ) );
+              }
+              e.s = iter->expression.c_str() + 1; // 先頭の'@'を除去
+            }
+            else  // アドレスではない通常の整数定数式
+            {
+              value = cfg1out.get_srec()->get_value( nm_entry.address, sizeof_signed_t, cfg1out.is_little_endian() );
+              if ( sizeof_signed_t < 8 && iter->is_signed )
+              {
+                value = cfg1_out::make_signed( static_cast< std::tr1::uint32_t >( value ) );
+              }
+              e.s = iter->expression;
             }
             e.i = value;
             mproc.set_var( iter->name, var_t( 1, e ) );

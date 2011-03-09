@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2010 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2011 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -103,6 +103,7 @@ namespace toppers
       {
         ofile_ << "const uint32_t TOPPERS_cfg_magic_number = 0x12345678;\n"
                   "const uint32_t TOPPERS_cfg_sizeof_signed_t = sizeof(signed_t);\n"
+                  "const uint32_t TOPPERS_cfg_sizeof_pointer = sizeof(const volatile void*);\n"
                   "const unsigned_t TOPPERS_cfg_CHAR_BIT = CHAR_BIT;\n"
                   "const unsigned_t TOPPERS_cfg_CHAR_MAX = CHAR_MAX;\n"
                   "const unsigned_t TOPPERS_cfg_CHAR_MIN = CHAR_MIN;\n"
@@ -112,7 +113,7 @@ namespace toppers
                   "const unsigned_t TOPPERS_cfg_LONG_MAX = LONG_MAX;\n"
                   "\n";
 
-        if ( def_table_ != 0 )
+        if ( def_table_ != 0 )	// 「値取得シンボルテーブル」
         {
           for ( cfg1_def_table::const_iterator iter( def_table_->begin() ), last( def_table_->end() );
                 iter != last;
@@ -140,6 +141,10 @@ namespace toppers
                           "#else\n"
                           "(" + value2 + ");\n"
                           "#endif\n";
+            }
+            else if ( iter->expression[ 0 ] == '@' )  // '@'で始まればアドレス
+            {
+              definition = "const volatile void* const TOPPERS_cfg_" + iter->name + " = (" + ( iter->expression.c_str() + 1 ) + ");\n";
             }
             else
             {
