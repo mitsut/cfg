@@ -285,7 +285,7 @@ namespace toppers
               error_handler()
             ];
           identifier =
-              leaf_node_d[ lexeme_d[ ( alpha_p | '_' ) >> *( alnum_p | '_' | '.' ) ] ];
+              leaf_node_d[ lexeme_d[ ( alpha_p | '_' ) >> *( alnum_p | '_' | '.' ) ] ] - "ELIF";
           constant =
               leaf_node_d
               [
@@ -334,7 +334,12 @@ namespace toppers
           if_ =
             guard_if_
             (
-                ( "$IF" >> expression >> expect_doller( ch_p( '$' ) ) >> top >> "$ELSE$" >> top >> expect_end( str_p( "$END$" ) ) )
+                ( "$IF" >> expression >> expect_doller( ch_p( '$' ) ) >> top
+                  >> +( "$ELIF" >> expression >> expect_doller( ch_p( '$' ) ) >> top )
+                  >> ( "$ELSE$" >> top ) >> expect_end( str_p( "$END$" ) ) )
+              | ( "$IF" >> expression >> expect_doller( ch_p( '$' ) ) >> top
+                  >> +( "$ELIF" >> expression >> expect_doller( ch_p( '$' ) ) >> top ) >> expect_end( str_p( "$END$" ) ) )
+              | ( "$IF" >> expression >> expect_doller( ch_p( '$' ) ) >> top >> "$ELSE$" >> top >> expect_end( str_p( "$END$" ) ) )
               | ( "$IF" >> expression >> expect_doller( ch_p( '$' ) ) >> top >> expect_end( str_p( "$END$" ) ) )
             )
             [
@@ -1355,12 +1360,14 @@ namespace toppers
 
       if ( node.children.empty() )
       {
+std::cerr << "*** fatal" << std::endl;
         fatal( node.value.begin().line(), "no body of %1%", "'IF' or 'ELSE'" );
       }
 
-      //   0          1 2   3      4   5     6
+      //   0          1 2   3      4   5     6 4+4*i    4+4*i+1 4+4*i+2 4+4*i+3        n-3 n-2   n-1
       // $IF expression $ top  $END$
       // $IF expression $ top $ELSE$ top $END$
+      // $IF expression $ top ...              $ELIF expression       $     top ... $ELSE$ top $END$
       if ( eval_node( node.children[ 1 ], p_ctx ) )   // expression
       {
         var_t expr( p_ctx->stack.top() ); p_ctx->stack.pop();
@@ -1374,14 +1381,53 @@ namespace toppers
           error( node.children[ 0 ].value.begin().line(), _( "`%1%\' does not have a value" ), get_s( expr, p_ctx ) );
           throw;
         }
+
+        std::size_t n = node.children.size();
+        
         if ( cond )           // $IF expr$
         {
           result &= eval_node( node.children[ 3 ], p_ctx );   // top
         }
-        else if ( node.children.size() == 7 ) // $ELSE$
+        else if ( n == 7 ) // $ELSE$
         {
           result &= eval_node( node.children[ 5 ], p_ctx );   // top
         }
+#if 1
+        else if ( n > 5 )  // $ELIF...
+        {
+          for ( std::size_t i = 0; 4 + 4 * i < n - 1; i++ )
+          {
+            std::string token( node.children[ 4 + 4 * i ].value.begin(), node.children[ 4 + 4 * i ].value.end() );
+            if ( token == "$ELIF" )  // $ELIF
+            {
+              if ( eval_node( node.children[ 4 + 4 * i + 1 ], p_ctx ) )   // expression
+              {
+                var_t expr( p_ctx->stack.top() ); p_ctx->stack.pop();
+                cond = false;
+                try
+                {
+                  cond = !!get_i( expr, p_ctx );
+                }
+                catch ( expr_error& )
+                {
+                  error( node.children[ 0 ].value.begin().line(), _( "`%1%\' does not have a value" ), get_s( expr, p_ctx ) );
+                  throw;
+                }
+                if ( cond )           // $ELIF expr$
+                {
+                  result &= eval_node( node.children[ 4 + 4 * i + 3 ], p_ctx );   // top
+                  break;
+                }
+              }
+            }
+            else  // ELSE
+            {
+              result &= eval_node( node.children[ 4 + 4 * i + 1 ], p_ctx );   // top
+              break;
+            }
+          }
+        }
+#endif
       }
       return result;
     }
@@ -1668,6 +1714,12 @@ namespace toppers
                         % node.children[ 0 ].value.begin().line().line
                         % std::string( node.children[ 0 ].value.begin(), node.children[ 0 ].value.end() )
                         ).str().c_str() );
+#elif 0
+      std::cerr << boost::format( "%s:%d:%s" )
+                        % node.children[ 0 ].value.begin().line().file
+                        % node.children[ 0 ].value.begin().line().line
+                        % std::string( node.children[ 0 ].value.begin(), node.children[ 0 ].value.end() )
+                        << std::endl;
 #endif
 
       switch ( parser::rule_id_t id = static_cast< parser::rule_id_t >( node.value.id().to_long() ) )
