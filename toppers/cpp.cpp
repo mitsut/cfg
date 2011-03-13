@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2010 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2011 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -38,6 +38,7 @@
 #include <cstring>
 #include <cstdio>
 #include <stdexcept>
+#include <iostream>
 #include "toppers/cpp.hpp"
 
 namespace toppers
@@ -52,7 +53,7 @@ namespace toppers
     std::string::size_type n = str.find_first_not_of( " \t\r\n" );
     std::string quoted( str, n );
 
-    if ( quoted.empty() || quoted[0] != '"' || quoted[quoted.size() - 1] != '"' )
+    if ( quoted.size() < 2 || quoted[0] != '"' || quoted[quoted.size() - 1] != '"' )
     {
       throw std::invalid_argument( "argument is not quoted" );
     }

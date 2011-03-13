@@ -41,7 +41,7 @@
 #include <vector>
 #include <utility>
 #include <algorithm>
-#include <ostream>
+#include <iostream>
 #include "toppers/macro_processor.hpp"
 #include "toppers/diagnostics.hpp"
 #include "toppers/gettext.hpp"
