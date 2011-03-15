@@ -43,6 +43,8 @@ Windows Vista Home Premium SP2 + Cygwin 1.7.7-1 + GCC 4.3.4 + Boost 1.43.0
 Windows Vista Home Premium SP2 + Visual Studio 2008 SP1 + Boost 1.44.0
 Windows Vista Home Premium SP2 + Visual Studio 2010 + Boost 1.44.0
 Windows XP Professional SP3 + Cygwin 1.7.7-1 + GCC 4.3.4 + Boost 1.43.0
+Windows XP Professional SP3 + Visual C++.net 2003 + Boost 1.44.0
+Windows XP Professional SP3 + Visual C++.net 2003 + Boost 1.43.0
 Linux Ubuntu 10.10 + GCC 4.4.5 + Boost 1.42.0
 Mac OSX 10.6.6 + GCC 4.2.1 + Boost 1.45.0
 
