@@ -103,6 +103,8 @@ namespace toppers
       context() : in_function( false ) {}
     };
 
+    struct die_terminate {};
+
     macro_processor();
     macro_processor( macro_processor const& other );
     explicit macro_processor( text const& in );

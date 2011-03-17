@@ -801,7 +801,7 @@ namespace toppers
    *  \param[in]  p_ctx     マクロコンテキスト 
    *  \retval     マクロ返却値 
    *  第1マクロ実引数で指定した文字列のうち、第2マクロ実引数で指定した正規表現にマッチする箇所を第3マクロ実引数の内容で置換する。
-	 *  正規表現はECMAScript互換とする。
+   *  正規表現はECMAScript互換とする。
    */ 
    var_t bf_regex_replace( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx ) 
    { 
@@ -826,17 +826,35 @@ namespace toppers
   var_t bf_clean( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     element e;
-		if ( macro_processor::check_arity( line, arg_list.size(), 1, "CLEAN" ) ) 
+    if ( macro_processor::check_arity( line, arg_list.size(), 1, "CLEAN" ) ) 
     {
-		  std::string name = get_s( arg_list[ 0 ], p_ctx ) + "[";
-			for ( std::map< std::string, var_t >::iterator it = p_ctx->var_map.lower_bound( name );
-			      it != p_ctx->var_map.end();
-						++it )
-			{
-			  if ( std::strncmp( it->first.c_str(), name.c_str(), name.size() ) != 0 )
-				  break;
+      std::string name = get_s( arg_list[ 0 ], p_ctx ) + "[";
+      for ( std::map< std::string, var_t >::iterator it = p_ctx->var_map.lower_bound( name );
+            it != p_ctx->var_map.end();
+            ++it )
+      {
+        if ( std::strncmp( it->first.c_str(), name.c_str(), name.size() ) != 0 )
+          break;
         it->second = var_t();
-			}
+      }
+    }
+    return var_t( 1, e );
+  }
+
+  /*!
+   *  \brief  マクロプロセッサの終了
+   *  \param[in]  line      行番号
+   *  \param[in]  arg_list  マクロ実引数リスト
+   *  \param[in]  p_ctx     マクロコンテキスト
+   *  \retval     マクロ返却値
+   *  マクロプロセッサを終了する。
+   */
+  var_t bf_die( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
+  {
+    element e;
+    if ( macro_processor::check_arity( line, arg_list.size(), 0, "DIE" ) ) 
+    {
+      throw macro_processor::die_terminate();
     }
     return var_t( 1, e );
   }
@@ -883,6 +901,7 @@ namespace toppers
     { "REVERSE", bf_reverse },
     { "REGEX_REPLACE", bf_regex_replace }, 
     { "CLEAN", bf_clean },
+    { "DIE", bf_die },
     { "NOOP", bf_noop },
     { "", 0 },
   };

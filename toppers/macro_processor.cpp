@@ -1304,7 +1304,7 @@ namespace toppers
               iter != last;
               ++iter )
         {
-		  char c = *iter;
+          char c = *iter;
           if ( !std::isspace( static_cast< unsigned char >( c ) ) )
           {
             break;
@@ -1918,6 +1918,10 @@ namespace toppers
       {
         fatal( _( "macro processing error" ) );
       }
+    }
+    catch ( die_terminate& )
+    {
+      // $DIE()$関数が呼ばれた
     }
     catch ( expr_error& )
     {
