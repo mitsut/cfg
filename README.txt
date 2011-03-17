@@ -86,6 +86,37 @@ Visual Studio 2010からはプロジェクトごとにディレクトリを登録するように
 仕様変更されているので注意してください。
 Visual C++ 2005 Express Editionを使用する場合、別途Platform SDKをインス
 トールする必要があります。
+複数のバージョンのBoost C++ Librariesがインストールされている場合（中途
+半端に案インストールされた場合を含む）、configureに失敗する可能性があり
+ます。その場合は手作業でMakefile.configを修正してください。
+
+【Mekefile.configの説明】
+
+configureコマンドによって生成されるMakefile.configでは次のパラメータが
+定義されます。
+
+・LIBBOOST_SUFFIX
+Boost C+ Librariesのライブラリファイルのサフィックス
+たとえば、ライブラリファイルがlibboost_system-mt.aのような形式であれば、
+LIBBOOST_SUFFIXには-mtが設定されます。
+
+・BOOST_VERSION
+Boost C++ Librariesのバージョン
+バージョン1.43.0であれば、BOOST_VERSIONには1_43が設定されます。
+
+・BOOST_DIR=/usr/include
+Boost C++ Librariesのヘッダファイルがあるディレクトリ
+自分でBoost C++ Librariesをインストールした場合、通常/usr/local/include
+が設定されます。
+
+・LIBBOOST_DIR
+Boost C++ Librariesのライブラリファイルがあるディレクトリ
+自分でBoost C++ Librariesをインストールした場合、通常/usr/local/libが設定
+されます。
+
+・OPTIONS
+コンパイラの追加オプション
+普通は何も設定されません。
 
 
 【コンフィギュレータの使い方】
