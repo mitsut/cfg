@@ -18,6 +18,7 @@ do
 							echo "	specify the directory of Boost headers"
 							echo "--with-libraries=<dir>"
 							echo "	specify the directory of Boost libraries"
+							exit
 							;;
 	esac
 done
