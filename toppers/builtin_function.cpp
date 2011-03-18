@@ -676,7 +676,10 @@ namespace toppers
     if ( macro_processor::check_arity( line, arg_list.size(), 1, "UNESCSTR" ) )
     {
       std::string str( get_s( arg_list[ 0 ], p_ctx ) );
-      e.s = expand_quote( str );
+      if ( !str.empty() )
+      {
+        e.s = expand_quote( str );
+      }
     }
     return var_t( 1, e );
   }
