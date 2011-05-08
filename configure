@@ -30,7 +30,7 @@ do
 	if test $? -eq 0
 	then
 		boost_dir=`ls -d $dir/boost* | sort -r | head -1`
-		if test $boost_dir == $dir/boost
+		if test $boost_dir = $dir/boost
 		then
 			include_path=$dir
 		else
