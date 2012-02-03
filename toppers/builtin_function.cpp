@@ -556,10 +556,12 @@ namespace toppers
     if ( filename == "stdout" )
     {
       fputs( dump_str.c_str(), stdout );
+      fflush( stdout );
     }
     else if ( filename == "stderr" )
     {
       fputs( dump_str.c_str(), stderr );
+      fflush( stderr );
     }
     else
     {
@@ -626,10 +628,12 @@ namespace toppers
     if ( filename == "stdout" )
     {
       fputs( trace_str.c_str(), stdout );
+      fflush( stdout );
     }
     else if ( filename == "stderr" )
     {
       fputs( trace_str.c_str(), stderr );
+      fflush( stderr );
     }
     else
     {
