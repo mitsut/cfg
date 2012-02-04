@@ -289,12 +289,14 @@ bool cfg3_main()
 
     in_text.set_line( file_name, 1 );
     std::ifstream ifs( file_name.c_str() );
-    if ( ifs.is_open() )
+    if ( !ifs.is_open() )
     {
-      in_text.append( ifs );
-      macro_processor::preprocess( in_text, pp_text );
-      mproc->evaluate( pp_text );
+      fatal( _( "`%1%` can not be found." ), file_name );
     }
+
+    in_text.append( ifs );
+    macro_processor::preprocess( in_text, pp_text );
+    mproc->evaluate( pp_text );
 
     if ( get_error_count() > 0 )
     {
