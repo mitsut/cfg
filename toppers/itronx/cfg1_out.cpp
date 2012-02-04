@@ -127,7 +127,8 @@ namespace toppers
               is_pp = true;
             }
 
-            std::string definition = ( iter->is_signed ? "const signed_t " : "const unsigned_t " );
+            std::string type = ( iter->is_signed ? "signed_t" : "unsigned_t" );
+            std::string definition = "const " + type + " ";
             definition += "TOPPERS_cfg_" + iter->name;
             if ( is_pp )
             {
@@ -149,7 +150,7 @@ namespace toppers
             else
             {
               definition +=
-                          " = " + iter->expression + ";\n";
+                          " = ( " + type + " )" + iter->expression + ";\n";
             }
             ofile_ << definition;
           }
@@ -527,14 +528,16 @@ namespace toppers
                 if ( ( api_iter->symbol[0] == '.' ) || ( api_iter->symbol[0] == '+' ) )
                     // 整数定数式パラメータのみ出力
                 {
+                  char const* type;
                   if ( api_iter->symbol[0] == '.' )
                   {
-                    oss << "const unsigned_t ";
+                    type = "unsigned_t";
                   }
                   else
                   {
-                    oss << "const signed_t ";
+                    type = "signed_t";
                   }
+                  oss << "const " << type << " ";
 
                   // 省略可能パラメータ情報の末尾にある ? を除去
                   std::string parameter_name( api_iter->symbol.c_str() + 1 );
@@ -543,7 +546,7 @@ namespace toppers
                     parameter_name.resize( parameter_name.size() - 1 );
                   }
 
-                  oss << "TOPPERS_cfg_valueof_" << parameter_name << "_" << serial << " = ( " << api_iter->text << " ); ";
+                  oss << "TOPPERS_cfg_valueof_" << parameter_name << "_" << serial << " = ( " << type << " )( " << api_iter->text << " ); ";
 
                   // 暫定値を設定
                   char* endptr;
