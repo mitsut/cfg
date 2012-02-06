@@ -277,10 +277,8 @@ bool cfg3_main()
     mproc->add_builtin_function( func_info );
     // ↑ 追加組み込み関数の登録
 
-//    fs::path cfg_dir( get_global< std::string >( "cfg-directory" ), fs::native );
     fs::path cfg_dir( get_global< std::string >( "cfg-directory" ) );  // filesystem3対応
     std::vector< std::string > include_paths = get_global< std::vector< std::string > >( "include-path" );
-//    include_paths.push_back( cfg_dir.empty() ? "." : cfg_dir.native_file_string() );
     include_paths.push_back( cfg_dir.empty() ? "." : cfg_dir.string() );  // filesystem3対応
 
     toppers::text in_text;

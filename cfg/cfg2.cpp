@@ -256,10 +256,8 @@ bool cfg2_main()
   // テンプレート処理
   boost::any template_file( global( "template-file" ) );
   namespace fs = boost::filesystem;
-//  fs::path cfg_dir( get_global< std::string >( "cfg-directory" ), fs::native );
   fs::path cfg_dir( get_global< std::string >( "cfg-directory" ) );  // filesystem3対応
   std::vector< std::string > include_paths = get_global< std::vector< std::string > >( "include-path" );
-//  include_paths.push_back( cfg_dir.empty() ? "." : cfg_dir.native_file_string() );
   include_paths.push_back( cfg_dir.empty() ? "." : cfg_dir.string() );  // filesystem3対応
   if ( !template_file.empty() )
   {
@@ -282,7 +280,6 @@ bool cfg2_main()
     fs::path kernel_cfg_template_file( cfg_dir/fs::path( "../../kernel/kernel.tf" ) );
     if ( !fs::exists( kernel_cfg_template_file ) )
     {
-//      error( _( "cannot open file `%1%\'" ), kernel_cfg_template_file.native_file_string() );
       error( _( "cannot open file `%1%\'" ), kernel_cfg_template_file.string() );  // filesystem3対応
     }
     else
@@ -290,9 +287,7 @@ bool cfg2_main()
       toppers::text in_text;
       toppers::text pp_text;
 
-//      in_text.set_line( kernel_cfg_template_file.native_file_string(), 1 );
       in_text.set_line( kernel_cfg_template_file.string(), 1 );  // filesystem3対応
-//      std::ifstream ifs( kernel_cfg_template_file.native_file_string().c_str() );
       std::ifstream ifs( kernel_cfg_template_file.string().c_str() );  // filesystem3対応
       in_text.append( ifs );
       macro_processor::preprocess( in_text, pp_text );
