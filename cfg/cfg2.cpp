@@ -175,38 +175,6 @@ void assign_id( toppers::itronx::cfg1_out::static_api_map& api_map )
   }
 }
 
-
-/*!
- *  \brief  マクロプロセッサに登録するID割付け関数
- *  \param[in]  line      行番号
- *  \param[in]  arg_list  マクロ実引数リスト
- *  \param[in]  p_ctx     マクロコンテキスト
- *  \retval     マクロ返却値
- */
-toppers::macro_processor::var_t bf_assignid( toppers::text_line const& line,
-                                             std::vector< toppers::macro_processor::var_t > const& arg_list,
-                                             toppers::macro_processor::context* p_ctx )
-{
-  using namespace toppers;
-  using namespace toppers::itronx;
-  using toppers::text_line;
-  typedef toppers::macro_processor::element element;
-  typedef toppers::macro_processor::var_t var_t;
-  typedef toppers::macro_processor::context context;
-
-  return var_t();
-}
-
-//! 組み込み関数ASSIGNIDを登録する
-void register_bf_assignid( toppers::macro_processor* mproc )
-{
-  // ↓ 追加組み込み関数の登録
-  toppers::macro_processor::func_t func_info = {};
-  func_info.name = "ASSIGNID";
-  func_info.f = &bf_assignid;
-  mproc->add_builtin_function( func_info );
-}
-
 /*!
  *  \brief  パス２処理
  *  \retval true  成功
