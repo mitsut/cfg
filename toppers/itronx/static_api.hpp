@@ -102,6 +102,7 @@ namespace toppers
         std::string text;     //!< 実引数の字面
         boost::optional< std::tr1::intmax_t > value;  //!< 実引数の値
         std::string string;
+        int order;            //!< リスト形式パラメータの連番
       };
       typedef std::vector< parameter > parameter_container;
       typedef parameter_container::iterator iterator;

@@ -137,7 +137,7 @@ namespace toppers
           {
             param_list = true;
             order = 0;
-            symbol.resize( symbol.size() - 3 );
+            //symbol.resize( symbol.size() - 3 );
           }
         }
         if ( symbol == "{" || symbol == "}" )
@@ -175,7 +175,8 @@ namespace toppers
           value.symbol = symbol;
           if ( param_list )
           {
-            value.symbol += boost::lexical_cast< std::string >( order++ );
+            //value.symbol += boost::lexical_cast< std::string >( order++ );
+            value.order = order++;
           }
           value.text = *iter;
           value.value = 0;

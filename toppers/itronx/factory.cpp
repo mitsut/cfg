@@ -113,15 +113,33 @@ namespace toppers
             }
 
             // 各パラメータ
+            var_t var;
+            std::string prev_name;
             for ( static_api::const_iterator api_iter( v_iter->begin() ), api_last( v_iter->end() );
                   api_iter != api_last;
                   ++api_iter )
             {
+              bool is_param_list = false;
+
               std::string name( toppers::toupper( ( boost::format( "%s.%s" ) % info->type % ( api_iter->symbol.c_str() + 1 ) ).str() ) );
               // 末尾の ? を除去
               if ( *name.rbegin() == '\?' ) 
               {
                 name.resize( name.size() - 1 );
+              }
+              // 末尾の ... を除去
+              if ( name.size() > 3 && name.substr( name.size() - 3 ) == "..." )
+              {
+                name.resize( name.size() - 3 );
+                is_param_list = true;
+              }
+
+              if (!var.empty())
+              {
+                if (prev_name != name)
+                {
+                  var.clear();
+                }
               }
 
               element e;
@@ -141,7 +159,17 @@ namespace toppers
                   continue;
                 }
               }
-              mproc.set_var( name, id, var_t( 1, e ) );
+              var.push_back(e);
+              mproc.set_var( name, id, var );
+
+              prev_name = name;
+
+              // 下位互換性のため、symbol + order 名の変数を登録
+              if (is_param_list)
+              {
+                name += boost::lexical_cast< std::string >( api_iter->order );
+                mproc.set_var( name, id, var_t( 1, e ) );
+              }
             }
 
             // 静的APIが出現した行番号
@@ -226,6 +254,12 @@ namespace toppers
             if ( *name.rbegin() == '\?' ) 
             {
               name.resize( name.size() - 1 );
+            }
+            // 末尾の ... を除去 & order を付加
+            if ( name.size() > 3 && name.substr( name.size() - 3 ) == "..." )
+            {
+              name.resize( name.size() - 3 );
+              name += boost::lexical_cast< std::string >( api_iter->order );
             }
 
             element e;

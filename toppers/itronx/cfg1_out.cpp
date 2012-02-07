@@ -54,6 +54,7 @@
 #include "toppers/itronx/preprocess.hpp"
 #include <boost/spirit/include/classic.hpp>
 #include <boost/filesystem/path.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace toppers
 {
@@ -545,6 +546,12 @@ namespace toppers
                   {
                     parameter_name.resize( parameter_name.size() - 1 );
                   }
+                  // 末尾の ... を除去 & order を付加
+                  if ( parameter_name.size() > 3 && parameter_name.substr( parameter_name.size() - 3 ) == "..." )
+                  {
+                    parameter_name.resize( parameter_name.size() - 3 );
+                    parameter_name += boost::lexical_cast< std::string >( api_iter->order );
+                  }
 
                   oss << "TOPPERS_cfg_valueof_" << parameter_name << "_" << serial << " = ( " << type << " )( " << api_iter->text << " ); ";
 
@@ -564,6 +571,12 @@ namespace toppers
                   if ( *parameter_name.rbegin() == '\?' )
                   {
                     parameter_name.resize( parameter_name.size() - 1 );
+                  }
+                  // 末尾の ... を除去 & order を付加
+                  if ( parameter_name.size() > 3 && parameter_name.substr( parameter_name.size() - 3 ) == "..." )
+                  {
+                    parameter_name.resize( parameter_name.size() - 3 );
+                    parameter_name += boost::lexical_cast< std::string >( api_iter->order );
                   }
 
                   oss << "const char TOPPERS_cfg_valueof_" << parameter_name << "_" << serial << "[] = " << api_iter->text << "; ";
