@@ -1480,7 +1480,7 @@ namespace toppers
         if ( eval_node( node.children[ 2 ], p_ctx ) )     // order_list
         {
           var_t order_list( p_ctx->stack.top() ); p_ctx->stack.pop();
-          if ( !order_list.empty() && order_list[0].i )
+          if ( !order_list.empty() )
           {
             if ( eval_node( node.children[ 3 ], p_ctx ) ) // delimitor
             {
