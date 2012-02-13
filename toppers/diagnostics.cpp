@@ -46,6 +46,7 @@ namespace toppers
     int error_abort_threshold = 100;
     int error_count = 0;
     std::string program_name( "(unknown)" );
+    std::string error_location;
   }
 
   int get_error_count()
@@ -81,39 +82,56 @@ namespace toppers
 
   void warning( const char* msg )
   {
+    if ( !error_location.empty() ) fprintf( stderr, "In function `%s`:\n", error_location.c_str() );
     fprintf( stderr, "%s: %s: %s\n", program_name.c_str(), _( "warning" ), msg );
+    error_location.clear();
   }
   void warning( text_line const& line, const char* msg )
   {
+    if ( !error_location.empty() ) fprintf( stderr, "In function `%s`:\n", error_location.c_str() );
     fprintf( stderr, "%s:%s:%ld: %s: %s\n", program_name.c_str(), line.file.c_str(), line.line, _( "warning" ), msg );
+    error_location.clear();
   }
   void error( const char* msg )
   {
+    if ( !error_location.empty() ) fprintf( stderr, "In function `%s`:\n", error_location.c_str() );
     fprintf( stderr, "%s: %s: %s\n", program_name.c_str(), _( "error" ), msg );
     ++error_count;
     if ( error_abort_threshold <= error_count )
     {
+      error_location.clear();
       throw diagnostics_error( _( "too many errors" ) );
     }
   }
   void error( text_line const& line, const char* msg )
   {
+    if ( !error_location.empty() ) fprintf( stderr, "In function `%s`:\n", error_location.c_str() );
     fprintf( stderr, "%s:%s:%ld: %s: %s\n", program_name.c_str(), line.file.c_str(), line.line, _( "error" ), msg );
     ++error_count;
     if ( error_abort_threshold <= error_count )
     {
+      error_location.clear();
       throw diagnostics_error( _( "too many errors" ) );
     }
   }
   void fatal( const char* msg )
   {
+    if ( !error_location.empty() ) fprintf( stderr, "In function `%s`:\n", error_location.c_str() );
     fprintf( stderr, "%s: %s: %s\n", program_name.c_str(), _( "error" ), msg );
+    error_location.clear();
     throw diagnostics_error( _( "fatal error" ) );
   }
   void fatal( text_line const& line, const char* msg )
   {
+    if ( !error_location.empty() ) fprintf( stderr, "In function `%s`:\n", error_location.c_str() );
     fprintf( stderr, "%s:%s:%ld: %s: %s\n", program_name.c_str(), line.file.c_str(), line.line, _( "error" ), msg );
+    error_location.clear();
     throw diagnostics_error( _( "fatal error" ) );
+  }
+
+  void set_error_location( char const* msg )
+  {
+    error_location = msg;
   }
 
 }

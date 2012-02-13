@@ -1088,6 +1088,7 @@ namespace toppers
                 p_ctx->var_map[ argv_n ] = var_t();
               }
 
+              set_error_location( func_name.c_str() );
               tree_node_t const* func_body_node = reinterpret_cast< tree_node_t const* >( iter->second.node );
               if ( !eval_node( *func_body_node, p_ctx ) )
               {

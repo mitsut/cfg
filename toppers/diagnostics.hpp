@@ -64,153 +64,154 @@ namespace toppers
   void set_program_name( char const* name );
   std::string const& get_program_name();
   int set_error_abort_threshold( int thresh );
-  void warning( const char* msg );
-  void warning( text_line const& line, const char* msg );
-  void error( const char* msg );
-  void error( text_line const& line, const char* msg );
-  void fatal( const char* msg );
-  void fatal( text_line const& line, const char* msg );
+  void warning( char const* msg );
+  void warning( text_line const& line, char const* msg );
+  void error( char const* msg );
+  void error( text_line const& line, char const* msg );
+  void fatal( char const* msg );
+  void fatal( text_line const& line, char const* msg );
+  void set_error_location( char const* msg );
 
   template < typename T1 >
-    inline void warning( const char* str, T1 const& arg1 )
+    inline void warning( char const* str, T1 const& arg1 )
   {
     warning( ( boost::format( str ) % arg1 ).str().c_str() );
   }
 
   template < typename T1, typename T2 >
-    inline void warning( const char* str, T1 const& arg1, T2 const& arg2 )
+    inline void warning( char const* str, T1 const& arg1, T2 const& arg2 )
   {
     warning( ( boost::format( str ) % arg1 % arg2 ).str().c_str() );
   }
 
   template < typename T1, typename T2, typename T3 >
-    inline void warning( const char* str, T1 const& arg1, T2 const& arg2, T3 const& arg3 )
+    inline void warning( char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3 )
   {
     warning( ( boost::format( str ) % arg1 % arg2 % arg3 ).str().c_str() );
   }
 
   template < typename T1, typename T2, typename T3, typename T4 >
-    inline void warning( const char* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4 )
+    inline void warning( char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4 )
   {
     warning( ( boost::format( str ) % arg1 % arg2 % arg3 % arg4 ).str().c_str() );
   }
 
   template < typename T1 >
-    inline void warning( text_line const& line, const char* str, T1 const& arg1 )
+    inline void warning( text_line const& line, char const* str, T1 const& arg1 )
   {
     warning( line, ( boost::format( str ) % arg1 ).str().c_str() );
   }
 
   template < typename T1, typename T2 >
-    inline void warning( text_line const& line, const char* str, T1 const& arg1, T2 const& arg2 )
+    inline void warning( text_line const& line, char const* str, T1 const& arg1, T2 const& arg2 )
   {
     warning( line, ( boost::format( str ) % arg1 % arg2 ).str().c_str() );
   }
 
   template < typename T1, typename T2, typename T3 >
-    inline void warning( text_line const& line, const char* str, T1 const& arg1, T2 const& arg2, T3 const& arg3 )
+    inline void warning( text_line const& line, char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3 )
   {
     warning( line, ( boost::format( str ) % arg1 % arg2 % arg3 ).str().c_str() );
   }
 
   template < typename T1, typename T2, typename T3, typename T4 >
-    inline void warning( text_line const& line, const char* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4 )
+    inline void warning( text_line const& line, char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4 )
   {
     warning( line, ( boost::format( str ) % arg1 % arg2 % arg3 % arg4 ).str().c_str() );
   }
 
   template < typename T1 >
-    inline void error( const char* str, T1 const& arg1 )
+    inline void error( char const* str, T1 const& arg1 )
   {
     error( ( boost::format( str ) % arg1 ).str().c_str() );
   }
 
   template < typename T1, typename T2 >
-    inline void error( const char* str, T1 const& arg1, T2 const& arg2 )
+    inline void error( char const* str, T1 const& arg1, T2 const& arg2 )
   {
     error( ( boost::format( str ) % arg1 % arg2 ).str().c_str() );
   }
 
   template < typename T1, typename T2, typename T3 >
-    inline void error( const char* str, T1 const& arg1, T2 const& arg2, T3 const& arg3 )
+    inline void error( char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3 )
   {
     error( ( boost::format( str ) % arg1 % arg2 % arg3 ).str().c_str() );
   }
 
   template < typename T1, typename T2, typename T3, typename T4 >
-    inline void error( const char* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4 )
+    inline void error( char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4 )
   {
     error( ( boost::format( str ) % arg1 % arg2 % arg3 % arg4 ).str().c_str() );
   }
 
   template < typename T1 >
-    inline void error( text_line const& line, const char* str, T1 const& arg1 )
+    inline void error( text_line const& line, char const* str, T1 const& arg1 )
   {
     error( line, ( boost::format( str ) % arg1 ).str().c_str() );
   }
 
   template < typename T1, typename T2 >
-    inline void error( text_line const& line, const char* str, T1 const& arg1, T2 const& arg2 )
+    inline void error( text_line const& line, char const* str, T1 const& arg1, T2 const& arg2 )
   {
     error( line, ( boost::format( str ) % arg1 % arg2 ).str().c_str() );
   }
 
   template < typename T1, typename T2, typename T3 >
-    inline void error( text_line const& line, const char* str, T1 const& arg1, T2 const& arg2, T3 const& arg3 )
+    inline void error( text_line const& line, char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3 )
   {
     error( line, ( boost::format( str ) % arg1 % arg2 % arg3 ).str().c_str() );
   }
 
   template < typename T1, typename T2, typename T3, typename T4 >
-    inline void error( text_line const& line, const char* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4 )
+    inline void error( text_line const& line, char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4 )
   {
     error( line, ( boost::format( str ) % arg1 % arg2 % arg3 % arg4 ).str().c_str() );
   }
 
   template < typename T1 >
-    inline void fatal( const char* str, T1 const& arg1 )
+    inline void fatal( char const* str, T1 const& arg1 )
   {
     fatal( ( boost::format( str ) % arg1 ).str().c_str() );
   }
 
   template < typename T1, typename T2 >
-    inline void fatal( const char* str, T1 const& arg1, T2 const& arg2 )
+    inline void fatal( char const* str, T1 const& arg1, T2 const& arg2 )
   {
     fatal( ( boost::format( str ) % arg1 % arg2 ).str().c_str() );
   }
 
   template < typename T1, typename T2, typename T3 >
-    inline void fatal( const char* str, T1 const& arg1, T2 const& arg2, T3 const& arg3 )
+    inline void fatal( char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3 )
   {
     fatal( ( boost::format( str ) % arg1 % arg2 % arg3 ).str().c_str() );
   }
 
   template < typename T1, typename T2, typename T3, typename T4 >
-    inline void fatal( const char* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4 )
+    inline void fatal( char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4 )
   {
     fatal( ( boost::format( str ) % arg1 % arg2 % arg3 % arg4 ).str().c_str() );
   }
 
   template < typename T1 >
-    inline void fatal( text_line const& line, const char* str, T1 const& arg1 )
+    inline void fatal( text_line const& line, char const* str, T1 const& arg1 )
   {
     fatal( line, ( boost::format( str ) % arg1 ).str().c_str() );
   }
 
   template < typename T1, typename T2 >
-    inline void fatal( text_line const& line, const char* str, T1 const& arg1, T2 const& arg2 )
+    inline void fatal( text_line const& line, char const* str, T1 const& arg1, T2 const& arg2 )
   {
     fatal( line, ( boost::format( str ) % arg1 % arg2 ).str().c_str() );
   }
 
   template < typename T1, typename T2, typename T3 >
-    inline void fatal( text_line const& line, const char* str, T1 const& arg1, T2 const& arg2, T3 const& arg3 )
+    inline void fatal( text_line const& line, char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3 )
   {
     fatal( line, ( boost::format( str ) % arg1 % arg2 % arg3 ).str().c_str() );
   }
 
   template < typename T1, typename T2, typename T3, typename T4 >
-    inline void fatal( text_line const& line, const char* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4 )
+    inline void fatal( text_line const& line, char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4 )
   {
     fatal( line, ( boost::format( str ) % arg1 % arg2 % arg3 % arg4 ).str().c_str() );
   }
