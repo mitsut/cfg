@@ -34,6 +34,19 @@
  *  の責任を負わない．
  * 
  */
+
+// Boost.Filesystem v3内でstd::locale("")が使用されているが、GCCの不具合で
+// 例外が発生する。
+// これを回避するための暫定対応
+#ifdef  __GNUC__
+#include <stdlib.h>
+namespace Ticket_83_fix
+{
+  char s_[] = "LANG=C";
+  int _ = putenv(s_);
+}
+#endif
+
 #include "cfg.hpp"
 #include <boost/program_options.hpp>
 #include <boost/spirit/include/classic.hpp>
