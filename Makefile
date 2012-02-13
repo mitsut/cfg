@@ -15,8 +15,8 @@ ifndef BOOST_DIR
 	endif
 endif
 
-# ”ñ—Í‚Èƒ}ƒVƒ“‚È‚Ç‚ÅƒRƒ“ƒpƒCƒ‹‚É”ñí‚É’·‚¢ŽžŠÔ‚ª‚©‚©‚éA‚à‚µ‚­‚ÍƒRƒ“ƒpƒCƒ‹Žž‚É
-# ƒnƒ“ƒOƒAƒbƒv‚·‚éê‡‚É‚ÍA-O0‚É•ÏX‚µ‚Ä‚Ý‚Ä‚­‚¾‚³‚¢B
+# ÈóÎÏ¤Ê¥Þ¥·¥ó¤Ê¤É¤Ç¥³¥ó¥Ñ¥¤¥ë¤ËÈó¾ï¤ËÄ¹¤¤»þ´Ö¤¬¤«¤«¤ë¡¢¤â¤·¤¯¤Ï¥³¥ó¥Ñ¥¤¥ë»þ¤Ë
+# ¥Ï¥ó¥°¥¢¥Ã¥×¤¹¤ë¾ì¹ç¤Ë¤Ï¡¢-O0¤ËÊÑ¹¹¤·¤Æ¤ß¤Æ¤¯¤À¤µ¤¤¡£
 OPTIMIZE = -O2
 
 SUBDIRS  = toppers \

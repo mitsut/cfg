@@ -2,7 +2,7 @@
 
 makefile_config="Makefile.config"
 
-# ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ˆø”‚Ìˆ—
+# ¥³¥Ş¥ó¥É¥é¥¤¥ó°ú¿ô¤Î½èÍı
 for arg in "$@"
 do
 	name=`echo $arg | cut -d "=" -f 1`
@@ -23,7 +23,7 @@ do
 	esac
 done
 
-# Boost C++ Libraries‚Ìƒwƒbƒ_ƒtƒ@ƒCƒ‹‚ª‚ ‚éƒfƒBƒŒƒNƒgƒŠ‚ğƒT[ƒ`
+# Boost C++ Libraries¤Î¥Ø¥Ã¥À¥Õ¥¡¥¤¥ë¤¬¤¢¤ë¥Ç¥£¥ì¥¯¥È¥ê¤ò¥µ¡¼¥Á
 for dir in $include_path "/usr/local/include" "/opt/local/include" "/opt/include" "/usr/include" "/mingw/include"
 do
 	ls $dir/boost* 2> /dev/null > /dev/null
@@ -40,7 +40,7 @@ do
 	fi
 done
 
-# Boost C++ Libraries‚Ìƒ‰ƒCƒuƒ‰ƒŠƒtƒ@ƒCƒ‹‚ª‚ ‚éƒfƒBƒŒƒNƒgƒŠ‚ğƒT[ƒ`
+# Boost C++ Libraries¤Î¥é¥¤¥Ö¥é¥ê¥Õ¥¡¥¤¥ë¤¬¤¢¤ë¥Ç¥£¥ì¥¯¥È¥ê¤ò¥µ¡¼¥Á
 for dir in $library_path "/usr/local/lib" "/opt/local/lib" "/opt/lib" "/usr/lib" "/lib" "/mingw/lib"
 do
 	ls $dir/libboost* 2> /dev/null > /dev/null
@@ -51,19 +51,19 @@ do
 	fi
 done
 
-##### ˆÈ‰ºAMakefile.config‚ğ¶¬‚·‚é #####
+##### °Ê²¼¡¢Makefile.config¤òÀ¸À®¤¹¤ë #####
 
 rm Makefile.config 2> /dev/null
 
-# Boost C++ Libraries‚Ìƒo[ƒWƒ‡ƒ“‚ğ’²‚×‚é
+# Boost C++ Libraries¤Î¥Ğ¡¼¥¸¥ç¥ó¤òÄ´¤Ù¤ë
 boost_version=`echo "#include <boost/version.hpp>
 echo BOOST_VERSION" | g++ -E -I$include_path -L$library_path - | sh`
 
 boost_lib_version=`echo "#include <boost/version.hpp>
 echo BOOST_LIB_VERSION" | g++ -E -I$include_path -L$library_path - | sh`
 
-# ƒ‰ƒCƒuƒ‰ƒŠƒtƒ@ƒCƒ‹‚Ì“Yš‚ğ’²‚×‚é
-# ŠÂ‹«‚É‚æ‚Á‚ÄA-gcc-mt-s, -mt-s, -gcc42-mt-s‚È‚ÇA“Yš‚ªˆÙ‚È‚é‚½‚ß
+# ¥é¥¤¥Ö¥é¥ê¥Õ¥¡¥¤¥ë¤ÎÅº»ú¤òÄ´¤Ù¤ë
+# ´Ä¶­¤Ë¤è¤Ã¤Æ¡¢-gcc-mt-s, -mt-s, -gcc42-mt-s¤Ê¤É¡¢Åº»ú¤¬°Û¤Ê¤ë¤¿¤á
 libboost_regex_filename=`ls $library_path/libboost_regex*-s.* 2> /dev/null | head -1`
 if test -z $libboost_regex_filename
 then
@@ -72,13 +72,13 @@ fi
 libboost_suffix=`echo $libboost_regex_filename | sed -e s/.*libboost_regex//g -e s/\.[a-z]*$//g`
 echo "LIBBOOST_SUFFIX=$libboost_suffix" >> $makefile_config
 
-# Šeí•Ï”‚ğo—Í
+# ³Æ¼ïÊÑ¿ô¤ò½ĞÎÏ
 echo BOOST_VERSION=$boost_lib_version >> $makefile_config
 echo BOOST_DIR=$include_path >> $makefile_config
 echo LIBBOOST_DIR=$library_path >> $makefile_config
 echo OPTIONS=$options >> $makefile_config
 
-# ¶¬Œ‹‰Ê‚ğ•\¦
+# À¸À®·ë²Ì¤òÉ½¼¨
 cat Makefile.config
 
-# I‚í‚è
+# ½ª¤ï¤ê
