@@ -655,6 +655,12 @@ namespace toppers
       set_platform_vars( cfg1out, *mproc );
       e.s = cfg1out.get_includes();
       mproc->set_var( "INCLUDES", var_t( 1, e ) );
+
+      // パス情報
+      e.s = boost::lexical_cast< std::string >(toppers::get_global< int >( "pass" ));
+      e.i = toppers::get_global< int >( "pass" );
+      mproc->set_var( "CFG_PASS", var_t( 1, e ) );
+
       return mproc;
     }
 
@@ -687,6 +693,12 @@ namespace toppers
       set_platform_vars( cfg1out, *mproc );
       e.s = cfg1out.get_includes();
       mproc->set_var( "INCLUDES", var_t( 1, e ) );
+
+      // パス情報
+      e.s = boost::lexical_cast< std::string >(toppers::get_global< int >( "pass" ));
+      e.i = toppers::get_global< int >( "pass" );
+      mproc->set_var( "CFG_PASS", var_t( 1, e ) );
+
       return mproc;
     }
 
