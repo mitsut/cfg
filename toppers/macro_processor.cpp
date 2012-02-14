@@ -379,10 +379,10 @@ namespace toppers
             ];
           warning_ =
               "$WARNING$" >> top >> "$END$" >> !eol_p
-            | "$WARNING" >> expression >> '$' >> top >> "$END$";
+            | lexeme_d[ "$WARNING" >> +space_p ] >> expression >> '$' >> top >> "$END$";
           error_ =
               "$ERROR$" >> top >> "$END$" >> !eol_p
-            | "$ERROR" >> expression >> '$' >> top >> "$END$";
+            | lexeme_d[ "$ERROR" >> +space_p ] >> expression >> '$' >> top >> "$END$";
           file_ =
               "$FILE" >> string_literal >> '$';
           expr_ =
