@@ -171,7 +171,7 @@ namespace toppers
           api_name =
               c_ident_p[ push_back_a( self.tokens_ ) ];
           parameter_list =
-              parameter % ',';
+              !( parameter % ',' );
           parameter =
               packet | cexpr;
           packet =
