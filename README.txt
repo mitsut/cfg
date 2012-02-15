@@ -1,5 +1,5 @@
 
-	TOPPERS新世代カーネル用コンフィギュレータ（Release 1.7.0）
+	TOPPERS新世代カーネル用コンフィギュレータ（Release 1.8.0）
 
 
 TOPPERS新世代カーネル用コンフィギュレータは、カーネルやソフトウェア部品
@@ -87,8 +87,11 @@ Visual Studio 2010からはプロジェクトごとにディレクトリを登録するように
 Visual C++ 2005 Express Editionを使用する場合、別途Platform SDKをインス
 トールする必要があります。
 複数のバージョンのBoost C++ Librariesがインストールされている場合（中途
-半端に案インストールされた場合を含む）、configureに失敗する可能性があり
-ます。その場合は手作業でMakefile.configを修正してください。
+半端にアンインストールされた場合を含む）、configureに失敗する可能性があ
+ります。その場合は手作業でMakefile.configを修正してください。
+また、一度コンフィギュレータの構築を行った後、コンパイラやライブラリの
+アップデートを行った場合には、make realcleanを実行し、configureからやり
+直してください。
 
 【Mekefile.configの説明】
 
