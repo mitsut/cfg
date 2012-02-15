@@ -22,7 +22,7 @@ PC等の開発用コンピュータ上で動作するコマンドラインプログラムです。したが
 あります（コンフィギュレータをバイナリで入手した場合には、このステップ
 は必要はありません）。
 コンフィギュレータの構築にはBoost C++ Libraries 1.42.0以上が必要です。
-また、開発時点でのBoost C Librariesの最新版は1.46.0であり、それ以降の
+また、開発時点でのBoost C++ Librariesの最新版は1.48.0であり、それ以降の
 バージョンについては動作確認を行っていません（まだ無いので行えません）。
 Boost C++ Librariesは、下記URLから入手することができます。
 
@@ -36,20 +36,7 @@ Boost C++ Librariesをバイナリで入手できない場合には、ソースからビルドし
 てください。
 
 ・動作確認済みの環境
-Windows 7 Home Premium(x64) SP1 + Cygwin 1.7.8-1 + GCC 4.3.4 + Boost 1.43.0
-Windows 7 Home Premium(x64) SP1 + MinGW GCC 4.5.2 + Boost 1.46.0
-Windows 7 Home Premium(x64) SP1 + MinGW64 GCC 4.5.1 + Boost 1.46.0
-Windows Vista Home Premium SP2 + Cygwin 1.7.7-1 + GCC 4.3.4 + Boost 1.43.0
-Windows Vista Home Premium SP2 + Visual Studio 2008 SP1 + Boost 1.44.0
-Windows Vista Home Premium SP2 + Visual Studio 2010 + Boost 1.44.0
-Windows XP Professional SP3 + Cygwin 1.7.7-1 + GCC 4.3.4 + Boost 1.43.0
-Windows XP Professional SP3 + Visual C++ 2010 + Boost 1.44.0
-Windows XP Professional SP3 + Visual C++ 2005 SP2 + Boost 1.44.0
-Windows XP Professional SP3 + Visual C++.net 2003 SP1 + Boost 1.44.0
-Windows XP Professional SP3 + Visual C++.net 2003 SP1 + Boost 1.43.0
-Linux Ubuntu 10.10 + GCC 4.4.5 + Boost 1.42.0a
-Mac OSX 10.6.6 + GCC 4.2.1 + Boost 1.45.0
-
+Windows 7 Home Premium(x64) SP1 + Cygwin 1.7.10 + GCC 4.5.3 + Boost 1.48.0
 
 === GNU開発環境を用いる場合 ===
 
