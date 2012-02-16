@@ -53,16 +53,16 @@
 
 #ifdef TOPPERS_HAS_TR1_LIBRARY
 
-#include <memory>
-#include <cstdint>
-
-#elif defined TOPPERS_HAS_TR1_OLD_LIBRARY
+// GCC 4.3以降では下記のヘッダでshared_ptr等を使えるが、-std=c++0x（または-std=c++11）
+// オプションが必要になる。そのため、あえて古い形式のヘッダによりTR1ライブラリとして使用する。
+//#include <memory>
+//#include <cstdint>
 
 #include <tr1/memory>
 #include <tr1/cstdint>
 
 #else
-/*
+
 #define BOOST_SP_DISABLE_THREADS  1   // shared_ptr の排他制御を抑止
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
@@ -75,7 +75,7 @@ namespace std
     using namespace boost;
   }
 }
-*/
+
 #endif
 
 #endif  // ! TOPPERS_WORKAROUND_HPP_
