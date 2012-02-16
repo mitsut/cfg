@@ -56,8 +56,13 @@
 #include <memory>
 #include <cstdint>
 
-#else
+#elif defined TOPPERS_HAS_TR1_OLD_LIBRARY
 
+#include <tr1/memory>
+#include <tr1/cstdint>
+
+#else
+/*
 #define BOOST_SP_DISABLE_THREADS  1   // shared_ptr ¤ÎÇÓÂ¾À©¸æ¤òÍÞ»ß
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
@@ -70,7 +75,7 @@ namespace std
     using namespace boost;
   }
 }
-
+*/
 #endif
 
 #endif  // ! TOPPERS_WORKAROUND_HPP_

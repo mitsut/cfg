@@ -71,6 +71,15 @@
 
 #ifdef __GNUC__
 
+# if __GNUC__ > 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ >= 1 )
+#   if __GNUC__ == 4 && __GNUC_MINOR__ < 3
+#     include <tr1/memory>
+#     define TOPPERS_HAS_TR1_OLD_LIBRARY	1
+#   else
+#     define TOPPERS_HAS_TR1_LIBRARY	1
+#   endif
+# endif
+
 # define TOPPERS_HAS_ICONV	1
 
 #endif	// __GNUC__
