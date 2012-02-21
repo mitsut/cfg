@@ -37,8 +37,6 @@ Boost C++ Librariesをバイナリで入手できない場合には、ソースからビルドし
 
 ・動作確認済みの環境
 Windows 7 Home Premium(x64) SP1 + Cygwin 1.7.10 + GCC 4.5.3 + Boost 1.48.0
-Mac OSX 10.6.8 + GCC 4.2.1 + Boost 1.48.0 
-Mac OSX 10.6.8 + GCC 4.2.1(LLVM) + Boost 1.48.0 
 
 === GNU開発環境を用いる場合 ===
 
