@@ -121,7 +121,8 @@ namespace toppers
             {
               bool is_param_list = false;
 
-              std::string name( toppers::toupper( ( boost::format( "%s.%s" ) % info->type % ( api_iter->symbol.c_str() + 1 ) ).str() ) );
+              char const* type_name = ( api_iter->symbol[0] == '*'  && info->slave ) ? info->api_name : info->type;
+              std::string name( toppers::toupper( ( boost::format( "%s.%s" ) % type_name % ( api_iter->symbol.c_str() + 1 ) ).str() ) );
               // 末尾の ? を除去
               if ( *name.rbegin() == '\?' ) 
               {
@@ -172,17 +173,20 @@ namespace toppers
               }
             }
 
+            // 静的APIの名称
+            {
+              element e;
+              e.s = info->api_name;
+              std::string type( toppers::toupper( info->type ) );
+              mproc.set_var( type + ".APINAME", id, var_t( 1, e ) );
+            }
+
             // 静的APIが出現した行番号
             {
               element e;
               e.s = v_iter->line().file;
               e.i = v_iter->line().line;
-              std::string type( toppers::toupper( info->type ) );
-
-              if ( info->slave )
-              {
-                type = info->api_name;
-              }
+              std::string type( toppers::toupper( info->slave ? info->api_name : info->type ) );
               mproc.set_var( type + ".TEXT_LINE", id, var_t( 1, e ) );
             }
           }
