@@ -658,6 +658,7 @@ namespace toppers
       set_domid_vars( cfg1out.get_domid_table(), *mproc );
       set_platform_vars( cfg1out, *mproc );
       e.s = cfg1out.get_includes();
+      e.i = boost::none;
       mproc->set_var( "INCLUDES", var_t( 1, e ) );
 
       // パス情報
@@ -696,6 +697,7 @@ namespace toppers
       set_domid_vars( cfg1out.get_domid_table(), *mproc );
       set_platform_vars( cfg1out, *mproc );
       e.s = cfg1out.get_includes();
+      e.i = boost::none;
       mproc->set_var( "INCLUDES", var_t( 1, e ) );
 
       // パス情報
