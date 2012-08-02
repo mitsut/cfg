@@ -174,7 +174,7 @@ namespace toppers
             }
 
             // ÀÅÅªAPI¤ÎÌ¾¾Î
-            {
+            if ( !info->slave ) {
               element e;
               e.s = info->api_name;
               std::string type( toppers::toupper( info->type ) );
