@@ -817,7 +817,8 @@ namespace toppers
      {
        e.s = boost::xpressive::regex_replace( get_s( arg_list[ 0 ], p_ctx ), 
                                               boost::xpressive::sregex::compile( get_s( arg_list[ 1 ], p_ctx ) ), 
-                                              get_s( arg_list[ 2 ], p_ctx ) ); 
+                                              get_s( arg_list[ 2 ], p_ctx ),
+											  boost::xpressive::regex_constants::format_perl );
      } 
      return var_t( 1, e ); 
    }
