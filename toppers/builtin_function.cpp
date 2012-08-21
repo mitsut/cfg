@@ -808,7 +808,7 @@ namespace toppers
    *  \param[in]  p_ctx     マクロコンテキスト 
    *  \retval     マクロ返却値 
    *  第1マクロ実引数で指定した文字列のうち、第2マクロ実引数で指定した正規表現にマッチする箇所を第3マクロ実引数の内容で置換する。
-   *  正規表現はECMAScript互換とする。
+   *  正規表現はECMAScript互換＋perl書式化シーケンスとする。
    */ 
    var_t bf_regex_replace( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx ) 
    { 
@@ -829,7 +829,7 @@ namespace toppers
    *  \param[in]  arg_list  マクロ実引数リスト
    *  \param[in]  p_ctx     マクロコンテキスト
    *  \retval     マクロ返却値
-	 *  第1マクロ実引数で指定した名前の配列を全削除する。
+   *  第1マクロ実引数で指定した名前の配列を全削除する。
    */
   var_t bf_clean( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
