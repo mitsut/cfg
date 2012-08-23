@@ -270,7 +270,7 @@ namespace toppers
             {
               if ( id_map[ name ] < 1 )
               {
-                fatal( iter->line(), _( "`%1%\' is undefined" ), iter->at( info->id_pos ).text );
+                fatal( iter->line(), _( "E_NOEXS: `%1%\' is undefined" ), iter->at( info->id_pos ).text );
               }
               std::set< std::string >& set = slave_id_set[ info->api_name ];
               if ( set.find( name ) != set.end() )  // DEF_TEX重複定義の判定
