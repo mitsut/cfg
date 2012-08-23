@@ -894,6 +894,13 @@ namespace toppers
               parameter_name.resize( parameter_name.size() - 1 );
             }
 
+            // 末尾の ... を除去 & order を付加
+            if ( parameter_name.size() > 3 && parameter_name.substr( parameter_name.size() - 3 ) == "..." )
+            {
+              parameter_name.resize( parameter_name.size() - 3 );
+              parameter_name += boost::lexical_cast< std::string >( api_iter->order );
+            }
+
             std::string symbol = boost::str( boost::format( "TOPPERS_cfg_valueof_%s_%d" ) % parameter_name % serial );
             nm_symbol::entry nm_entry = syms_->find( symbol );
             if ( nm_entry.type == -1 )
@@ -917,6 +924,13 @@ namespace toppers
             if ( *parameter_name.rbegin() == '\?' )
             {
               parameter_name.resize( parameter_name.size() - 1 );
+            }
+
+            // 末尾の ... を除去 & order を付加
+            if ( parameter_name.size() > 3 && parameter_name.substr( parameter_name.size() - 3 ) == "..." )
+            {
+              parameter_name.resize( parameter_name.size() - 3 );
+              parameter_name += boost::lexical_cast< std::string >( api_iter->order );
             }
 
             std::string symbol = boost::str( boost::format( "TOPPERS_cfg_valueof_%s_%d" ) % parameter_name % serial );

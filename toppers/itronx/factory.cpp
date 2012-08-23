@@ -168,8 +168,7 @@ namespace toppers
               // 下位互換性のため、symbol + order 名の変数を登録
               if (is_param_list)
               {
-                name += boost::lexical_cast< std::string >( api_iter->order );
-                mproc.set_var( name, id, var_t( 1, e ) );
+                mproc.set_var( name + boost::lexical_cast< std::string >( api_iter->order ), id, var_t( 1, e ) );
               }
             }
 
