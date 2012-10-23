@@ -709,7 +709,7 @@ namespace toppers
                         "  typedef uint32_t unsigned_t;\n"
                         "#endif\n";
 
-      pimpl_->ofile_ << "\n#include <target_cfg1_out.h>\n\n";
+      pimpl_->ofile_ << "\n#include \"target_cfg1_out.h\"\n\n";
 
       pimpl_->do_generate_cfg1_def();
       pimpl_->ofile_ << '\n' << pimpl_->domid_defs_ << '\n';
