@@ -36,6 +36,7 @@
  */
 #include <cstdio>
 #include <cstdlib>
+#include <cctype>
 #include <cerrno>
 #include <string>
 #include <vector>
@@ -886,6 +887,54 @@ namespace toppers
   }
 
   /*!
+   *  \brief  大文字への変換
+   *  \param[in]  line      行番号
+   *  \param[in]  arg_list  マクロ実引数リスト
+   *  \param[in]  p_ctx     マクロコンテキスト
+   *  \retval     マクロ返却値
+   *  第1マクロ実引数で指定した文字列中の小文字を大文字に変換します。
+   */
+  var_t bf_toupper( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
+  {
+    element e;
+    if ( macro_processor::check_arity( line, arg_list.size(), 1, "TOUPPER" ) ) 
+    {
+      std::string str = get_s( arg_list[ 0 ], p_ctx );
+      for ( std::string::iterator first( str.begin() ), last( str.end() ); first != last; ++first )
+      {
+        char c = *first;
+        *first = std::toupper( c );
+      }
+      e.s = str;
+    }
+    return var_t( 1, e );
+  }
+
+  /*!
+   *  \brief  小文字への変換
+   *  \param[in]  line      行番号
+   *  \param[in]  arg_list  マクロ実引数リスト
+   *  \param[in]  p_ctx     マクロコンテキスト
+   *  \retval     マクロ返却値
+   *  第1マクロ実引数で指定した文字列中の大文字を小文字に変換します。
+   */
+  var_t bf_tolower( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
+  {
+    element e;
+    if ( macro_processor::check_arity( line, arg_list.size(), 1, "TOLOWER" ) ) 
+    {
+      std::string str = get_s( arg_list[ 0 ], p_ctx );
+      for ( std::string::iterator first( str.begin() ), last( str.end() ); first != last; ++first )
+      {
+        char c = *first;
+        *first = std::tolower( c );
+      }
+      e.s = str;
+    }
+    return var_t( 1, e );
+  }
+
+  /*!
    *  \brief  配列の全削除
    *  \param[in]  line      行番号
    *  \param[in]  arg_list  マクロ実引数リスト
@@ -971,6 +1020,8 @@ namespace toppers
     { "REVERSE", bf_reverse },
     { "REGEX_REPLACE", bf_regex_replace }, 
     { "ATOI", bf_atoi },
+    { "TOLOWER", bf_tolower },
+    { "TOUPPER", bf_toupper },
     { "CLEAN", bf_clean },
     { "DIE", bf_die },
     { "NOOP", bf_noop },
