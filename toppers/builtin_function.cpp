@@ -331,15 +331,15 @@ namespace toppers
     if ( n < 2 )
     {
       error( line, _( "too few arguments for `%1%\'" ), "APPEND" );
-		}
-		else
-		{
-		  result = arg_list[ 0 ];
+        }
+        else
+        {
+          result = arg_list[ 0 ];
       for ( var_t::size_type i = 1; i < n; i++)
-			{
-			  result.insert( result.end(), arg_list[ i ].begin(), arg_list[ i ].end() );
-			}
-		}
+            {
+              result.insert( result.end(), arg_list[ i ].begin(), arg_list[ i ].end() );
+            }
+        }
     return result;
   }
 
@@ -418,7 +418,7 @@ namespace toppers
       std::pair< var_t const*, context const* > arg( &arg_list[i], p_ctx );
       fmt % arg;
     }
-  	e.s = fmt.str();
+    e.s = fmt.str();
     return var_t( 1, e );
   }
 
@@ -439,11 +439,11 @@ namespace toppers
     {
       var_t list( arg_list[ 0 ] );
 
-	  if ( !arg_list[ 1 ].empty() )
-	  {
+      if ( !arg_list[ 1 ].empty() )
+      {
         element key( arg_list[ 1 ].front() );
 
-        if ( !key.i )	// 整数値が設定されていなければ...
+        if ( !key.i )   // 整数値が設定されていなければ...
         {
           std::string value( key.s );
 
@@ -456,8 +456,8 @@ namespace toppers
             }
           }
         }
-		else
-		{
+        else
+        {
           std::tr1::int64_t value( key.i.get() );
 
           for ( var_t::const_iterator iter( list.begin() ), last( list.end() ); iter != last; ++iter )
@@ -469,7 +469,7 @@ namespace toppers
             }
           }
         }
-	  }
+      }
     }
     return var_t();
   }
@@ -818,10 +818,72 @@ namespace toppers
        e.s = boost::xpressive::regex_replace( get_s( arg_list[ 0 ], p_ctx ), 
                                               boost::xpressive::sregex::compile( get_s( arg_list[ 1 ], p_ctx ) ), 
                                               get_s( arg_list[ 2 ], p_ctx ),
-											  boost::xpressive::regex_constants::format_perl );
+                                              boost::xpressive::regex_constants::format_perl );
      } 
      return var_t( 1, e ); 
    }
+
+  /*!
+   *  \brief  文字列から整数への変換
+   *  \param[in]  line      行番号
+   *  \param[in]  arg_list  マクロ実引数リスト
+   *  \param[in]  p_ctx     マクロコンテキスト
+   *  \retval     マクロ返却値
+   *  第1マクロ実引数で指定した文字列を整数値に変換する。
+   *  第2マクロ実引数を指定した場合、それを基数とみなして変換を行う。
+   *  第2マクロ実引数に0を指定した場合、接頭辞に応じて、8進、10進、16進を判別する。
+   *  第2マクロ実引数に1を指定した場合、接頭辞に応じて、8進、10進、16進を判別する。
+   */
+  var_t bf_atoi( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
+  {
+    std::size_t arity = arg_list.size();
+
+    if ( arity < 1 )
+    {
+      error( line, _( "too few arguments for `%1%\'" ), "ATOI" );
+    }
+    else if ( arity > 2 )
+    {
+      error( line, _( "too many arguments for `%1%\'" ), "ATOI" );
+    }
+
+    std::string str( get_s( arg_list[ 0 ], p_ctx ) );
+    int radix = 10;
+
+    if ( arity == 2 )
+    {
+      std::tr1::int64_t t = get_i( arg_list[ 1 ], p_ctx );
+      if ( t < 0 || 36 < t )
+      {
+        error( line, _( "illegal_radix `%1%\' in function `%2%\'" ), radix, "ATOI" );
+      }
+      radix = static_cast< int >( t );
+    }
+    if ( radix == 1 )
+    {
+      std::string::size_type const pos = str.find_first_of( "0123456789" );
+      if ( pos != std::string::npos && str[ pos ] == '0' )
+      {
+        char c = str[ pos + 1 ];
+        if ( c != 'x' && c != 'X' )
+        {
+          radix = 10;
+        }
+      }
+    }
+
+    element e;
+    char* endptr;
+    errno = 0;
+    using namespace std;
+    e.i = strtoll( str.c_str(), &endptr, static_cast< int >( radix ) );
+    if ( errno != 0 || *endptr != '\0')
+    {
+      error( line, _( "conversion error in function `%2%\'" ), "ATOI" );
+    }
+
+    return var_t( 1, e ); 
+  }
 
   /*!
    *  \brief  配列の全削除
@@ -908,6 +970,7 @@ namespace toppers
     { "ISFUNCTION", bf_isfunction },
     { "REVERSE", bf_reverse },
     { "REGEX_REPLACE", bf_regex_replace }, 
+    { "ATOI", bf_atoi },
     { "CLEAN", bf_clean },
     { "DIE", bf_die },
     { "NOOP", bf_noop },
