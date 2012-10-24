@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2011 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2012 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -306,6 +306,11 @@ namespace toppers
       // クラスIDリストをマクロプロセッサの変数として設定する。
       void set_clsid_vars( std::vector< std::pair< std::string, long > > const& table, cfg1_out const& cfg1out, macro_processor& mproc )
       {
+        if ( cfg1out.get_def_table() == 0 )
+        {
+          return;
+        }
+
         typedef macro_processor::element element;
         macro_processor::var_t var;
 
@@ -368,6 +373,10 @@ namespace toppers
         typedef macro_processor::var_t var_t;
 
         cfg1_out::cfg1_def_table const* def_table = cfg1out.get_def_table();
+        if ( def_table == 0 )
+        {
+          return;
+        }
         std::size_t sizeof_signed_t;
         std::size_t sizeof_pointer;
 
@@ -574,8 +583,14 @@ namespace toppers
         init_t()
         {
           boost::any t = global( "cfg1-def-table" );
-          if ( !t.empty() )
+          if ( t.empty() )
           {
+            without_def_table_ = true;
+          }
+          else
+          {
+            without_def_table_ = false;
+
             std::vector< std::string > cfg1_def_table = boost::any_cast< std::vector< std::string >& >( t );
             for ( std::vector< std::string >::const_iterator iter( cfg1_def_table.begin() ), last( cfg1_def_table.end() );
                   iter != last;
@@ -615,9 +630,10 @@ namespace toppers
           }
         }
         cfg1_out::cfg1_def_table cfg1_def_table_;
+        bool without_def_table_;
       };
       static init_t init;
-      cfg1_out::cfg1_def_table const* result = &init.cfg1_def_table_;
+      cfg1_out::cfg1_def_table const* result = init.without_def_table_ ? 0 : &init.cfg1_def_table_;
       return result;
     }
 

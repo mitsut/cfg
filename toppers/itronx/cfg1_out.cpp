@@ -764,6 +764,12 @@ namespace toppers
      */
     void cfg1_out::load_srec()
     {
+      if ( pimpl_->def_table_ == 0 )
+      {
+        pimpl_->little_endian_ = false; // 値が不定になることを回避
+        return;
+      }
+
       std::ifstream srec_ifs( ( pimpl_->ofile_.file_name() + ".srec" ).c_str() );
       if ( !srec_ifs.is_open() )
       {
