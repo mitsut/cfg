@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2011 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2012 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -1096,6 +1096,7 @@ namespace toppers
                 p_ctx->var_map[ argv_n ] = var_t();
               }
 
+              std::string prev_location( get_error_location() );
               set_error_location( func_name.c_str() );
               tree_node_t const* func_body_node = reinterpret_cast< tree_node_t const* >( iter->second.node );
               if ( !eval_node( *func_body_node, p_ctx ) )
@@ -1104,6 +1105,7 @@ namespace toppers
                 p_ctx->stack.push( result );
                 return false;
               }
+              set_error_location( prev_location.c_str() );
 
               result = p_ctx->var_map[ "RESULT" ];
               p_ctx->var_map[ "RESULT" ] = var_t(); // 変数$RESULT$をクリア
