@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2011 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2012 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -105,13 +105,13 @@ namespace toppers
         ofile_ << "const uint32_t TOPPERS_cfg_magic_number = 0x12345678;\n"
                   "const uint32_t TOPPERS_cfg_sizeof_signed_t = sizeof(signed_t);\n"
                   "const uint32_t TOPPERS_cfg_sizeof_pointer = sizeof(const volatile void*);\n"
-                  "const unsigned_t TOPPERS_cfg_CHAR_BIT = CHAR_BIT;\n"
-                  "const unsigned_t TOPPERS_cfg_CHAR_MAX = CHAR_MAX;\n"
-                  "const unsigned_t TOPPERS_cfg_CHAR_MIN = CHAR_MIN;\n"
-                  "const unsigned_t TOPPERS_cfg_SCHAR_MAX = SCHAR_MAX;\n"
-                  "const unsigned_t TOPPERS_cfg_SHRT_MAX = SHRT_MAX;\n"
-                  "const unsigned_t TOPPERS_cfg_INT_MAX = INT_MAX;\n"
-                  "const unsigned_t TOPPERS_cfg_LONG_MAX = LONG_MAX;\n"
+                  "const unsigned_t TOPPERS_cfg_CHAR_BIT = ((unsigned char)~0u == 0xff ? 8 : 16);\n"  // CHAR_BITが8または16ビットであることを仮定
+                  "const unsigned_t TOPPERS_cfg_CHAR_MAX = ((char)-1 < 0 ? (char)((unsigned char)~0u >> 1) : (unsigned char)~0u);\n"
+                  "const unsigned_t TOPPERS_cfg_CHAR_MIN = ((char)-1 < 0 ? -((unsigned char)~0u >> 1) - 1 : 0);\n"
+                  "const unsigned_t TOPPERS_cfg_SCHAR_MAX = (signed char)((unsigned char)~0u >> 1);\n"
+                  "const unsigned_t TOPPERS_cfg_SHRT_MAX = (short)((unsigned short)~0u >> 1);\n"
+                  "const unsigned_t TOPPERS_cfg_INT_MAX = (int)(~0u >> 1);\n"
+                  "const unsigned_t TOPPERS_cfg_LONG_MAX = (long)(~0ul >> 1);\n"
                   "\n";
 
         if ( def_table_ != 0 )	// 「値取得シンボルテーブル」
