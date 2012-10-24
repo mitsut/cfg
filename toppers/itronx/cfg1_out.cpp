@@ -998,7 +998,7 @@ namespace toppers
 
         if ( id_map.find( name ) != id_map.end() )
         {
-          fatal( _( "`%1%\' is duplicated" ), name );
+          fatal( _( "E_OBJ: `%1%\' is duplicated" ), name );
         }
         else
         {

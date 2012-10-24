@@ -194,7 +194,7 @@ namespace toppers
               id_map_t::iterator it = id_map.find( args.at( info.id_pos ).s );
               if ( it == id_map.end() )
               {
-                fatal( line, _( "`%1%\' is undefined" ), args[ info.id_pos ].s );
+                fatal( line, _( "E_NOEXS: `%1%\' is undefined" ), args[ info.id_pos ].s );
               }
               args.at( info.id_pos ).i = it->second;
             }

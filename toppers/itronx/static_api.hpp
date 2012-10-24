@@ -211,7 +211,7 @@ namespace toppers
                     std::string name( iter->at( info->id_pos ).text );
                     if ( !id_res[ id ].empty() )
                     {
-                      fatal( _( "%1% `%2%\' in %3% is duplicated" ), iter->at( info->id_pos ).symbol.c_str() + 1, id, info->api_name );
+                      fatal( _( "E_OBJ: %1% `%2%\' in %3% is duplicated" ), iter->at( info->id_pos ).symbol.c_str() + 1, id, info->api_name );
                     }
                     id_res[ id ] = name;
                   }
