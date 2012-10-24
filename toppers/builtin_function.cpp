@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2011 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2012 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -51,6 +51,7 @@
 #include <boost/utility.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/xpressive/xpressive.hpp>
+#include <boost/algorithm/string.hpp> 
 
 namespace toppers
 {
@@ -934,6 +935,35 @@ namespace toppers
     return var_t( 1, e );
   }
 
+  /*!  
+   *  \brief  文字列の分割 
+   *  \param[in]  line      行番号  
+   *  \param[in]  arg_list  マクロ実引数リスト  
+   *  \param[in]  p_ctx     マクロコンテキスト  
+   *  \retval     マクロ返却値  
+   *  第1マクロ実引数で指定した文字列のうち、第2マクロ実引数で指定した文字種separatorの文字で分割し，新しい順序付きリストを生成する。 
+   */  
+  var_t bf_split( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx ) 
+  { 
+    var_t result; 
+    if ( macro_processor::check_arity( line, arg_list.size(), 2, "SPLIT" ) ) 
+    { 
+      std::list<std::string> split_results; 
+      std::string heystack = get_s( arg_list[ 0 ], p_ctx ); 
+      boost::split(split_results, heystack, boost::is_any_of( get_s( arg_list[ 1 ], p_ctx ) ) );  
+
+      std::list<std::string>::iterator it = split_results.begin(); 
+      while ( it != split_results.end() ) 
+      { 
+        element e; 
+        e.s = *it; 
+        result.push_back( e ); 
+        ++it; 
+      } 
+    } 
+    return result; 
+  } 
+
   /*!
    *  \brief  配列の全削除
    *  \param[in]  line      行番号
@@ -1022,6 +1052,7 @@ namespace toppers
     { "ATOI", bf_atoi },
     { "TOLOWER", bf_tolower },
     { "TOUPPER", bf_toupper },
+    { "SPLIT", bf_split },
     { "CLEAN", bf_clean },
     { "DIE", bf_die },
     { "NOOP", bf_noop },
