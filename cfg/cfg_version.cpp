@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2011 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2012 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -41,7 +41,7 @@
 #include <sys/stat.h>
 
 //! cfgのバージョン情報
-extern char const cfg_version[] = "1.8.1";
+extern char const cfg_version[] = "1.8.2";
 
 /*!
  *  \brief  プログラムファイル(cfg or cfg.exe)のタイムスタンプを取得する。

@@ -810,7 +810,7 @@ namespace toppers
    *  \param[in]  p_ctx     マクロコンテキスト 
    *  \retval     マクロ返却値 
    *  第1マクロ実引数で指定した文字列のうち、第2マクロ実引数で指定した正規表現にマッチする箇所を第3マクロ実引数の内容で置換する。
-   *  正規表現はECMAScript互換＋perl書式化シーケンスとする。
+   *  正規表現はECMAScript互換とする。
    */ 
    var_t bf_regex_replace( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx ) 
    { 
@@ -819,8 +819,7 @@ namespace toppers
      {
        e.s = boost::xpressive::regex_replace( get_s( arg_list[ 0 ], p_ctx ), 
                                               boost::xpressive::sregex::compile( get_s( arg_list[ 1 ], p_ctx ) ), 
-                                              get_s( arg_list[ 2 ], p_ctx ),
-                                              boost::xpressive::regex_constants::format_perl );
+                                              get_s( arg_list[ 2 ], p_ctx ));
      } 
      return var_t( 1, e ); 
    }
