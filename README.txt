@@ -1,5 +1,5 @@
 
-	TOPPERS新世代カーネル用コンフィギュレータ（Release 1.8.0）
+	TOPPERS新世代カーネル用コンフィギュレータ（Release 1.9.0）
 
 
 TOPPERS新世代カーネル用コンフィギュレータは、カーネルやソフトウェア部品
@@ -36,8 +36,7 @@ Boost C++ Librariesをバイナリで入手できない場合には、ソースからビルドし
 てください。
 
 ・動作確認済みの環境
-Windows 7 Home Premium(x64) SP1 + Cygwin 1.7.10 + GCC 4.5.3 + Boost 1.48.0
-Windows 7 Home Premium(x64) SP1 + GCC 4.6.2(MinGW) + Boost 1.49.0
+Windows 7 Home Premium(x64) SP1 + Cygwin 1.7.17 + GCC 4.5.3 + Boost 1.48.0
 
 === GNU開発環境を用いる場合 ===
 
