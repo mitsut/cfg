@@ -35,7 +35,7 @@
  * 
  */
 /*!
- *  \file   toppers/itronx/cfg1_out.hpp
+ *  \file   toppers/oil/cfg1_out.hpp
  *  \brief  cfg1_out.c/.srec ファイルを扱うための宣言定義
  *
  *  このファイルで定義されるクラス
@@ -43,15 +43,15 @@
  *  class cfg1_out;
  *  \endcode
  */
-#ifndef TOPPERS_ITRONX_CFG1_OUT_HPP_
-#define TOPPERS_ITRONX_CFG1_OUT_HPP_
+#ifndef TOPPERS_OIL_CFG1_OUT_HPP_
+#define TOPPERS_OIL_CFG1_OUT_HPP_
 
 #include <string>
 #include <vector>
 #include <map>
 #include "toppers/workaround.hpp"
 #include "toppers/codeset.hpp"
-#include "toppers/itronx/static_api.hpp"
+#include "toppers/oil/oil_object.hpp"
 
 namespace toppers
 {
@@ -60,11 +60,12 @@ namespace toppers
   class s_record;
   class nm_symbol;
 
-  namespace itronx
+  namespace oil
   {
+	  using namespace toppers::oil::oil_definition;
 
     /*!
-     *  \class  cfg1_out  cfg1_out.hpp  "toppers/itronx/cfg1_out.hpp"
+     *  \class  cfg1_out  cfg1_out.hpp  "toppers/oil/cfg1_out.hpp"
      *  \brief  cfg1_out.c/.srec ファイル管理クラス
      */
     class cfg1_out
@@ -78,8 +79,8 @@ namespace toppers
         std::string value1;
         std::string value2;
       };
-      typedef std::map< std::string, std::vector< static_api > > static_api_map;
-      typedef static_api_map cfg_element_map;
+      typedef std::map< std::string, std::vector< object_definition* > > cfg_obj_map;
+      typedef cfg_obj_map cfg_element_map;
       typedef std::vector< cfg1_def_t > cfg1_def_table;
 
       explicit cfg1_out( std::string const& filename, cfg1_def_table const* def_table = 0 );
@@ -92,18 +93,15 @@ namespace toppers
         return *this;
       }
 
-      void load_cfg( std::string const& input_file, codeset_t codeset, std::map< std::string, static_api::info > const& info_map );
+      void load_cfg( std::string const& input_file, codeset_t codeset, std::vector<std::string> const& obj_info );
       void generate( char const* type = 0 ) const;
-      std::vector< static_api > const& get_static_api_array() const;
-      std::vector< std::pair< std::string, long > > const& get_domid_table() const;
-      std::vector< std::pair< std::string, long > > const& get_clsid_table() const;
       std::string const& get_includes() const;
 
       void load_srec();
       std::tr1::shared_ptr< s_record > get_srec() const;
       std::tr1::shared_ptr< nm_symbol > get_syms() const;
       cfg1_def_table const* get_def_table() const;
-      static_api_map merge() const;
+      cfg_obj_map merge(void) const;
       bool is_little_endian() const;
 
       void swap( cfg1_out& other )
@@ -111,6 +109,10 @@ namespace toppers
         implementation* t = pimpl_;
         pimpl_ = other.pimpl_;
         other.pimpl_ = t;
+      }
+      void swap(cfg_obj_map& other)
+      {
+
       }
 
       static std::tr1::int32_t make_signed( std::tr1::uint32_t value )
@@ -139,4 +141,4 @@ namespace toppers
   }
 }
 
-#endif  // ! TOPPERS_ITRONX_CFG1_OUT_HPP_
+#endif  // ! TOPPERS_OIL_CFG1_OUT_HPP_

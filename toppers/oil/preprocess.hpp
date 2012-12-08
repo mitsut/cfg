@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2012 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2008 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -34,55 +34,27 @@
  *  の責任を負わない．
  * 
  */
-#ifndef CFG_HPP_
-#define CFG_HPP_
+/*!
+ *  \file   toppers/oil/preprocess.hpp
+ *  \brief  システムコンフィギュレーションファイルの前処理に関する宣言定義
+ */
+#ifndef TOPPERS_OIL__PREPROCESSOR_HPP_
+#define TOPPERS_OIL__PREPROCESSOR_HPP_
 
-#include <cctype>
-#include <cstdio>
-#include <cstdlib>
 #include <string>
-#include <vector>
-#include <map>
-#include <sstream>
-#include <iostream>
-#include <algorithm>
-#include "toppers/workaround.hpp"
-#include "toppers/codeset.hpp"
-#include "toppers/global.hpp"
-#include "toppers/diagnostics.hpp"
+#include <set>
 #include "toppers/text.hpp"
-#include "toppers/misc.hpp"
-#include "toppers/itronx/preprocess.hpp"
-#include "toppers/itronx/static_api.hpp"
-#include "toppers/itronx/factory.hpp"
-#include "toppers/itronx/cfg1_out.hpp"
-#include "toppers/oil/preprocess.hpp"
-#include "toppers/oil/factory.hpp"
-#include "toppers/oil/cfg1_out.hpp"
-#include <boost/utility.hpp>
-#include <boost/format.hpp>
+#include "toppers/cpp.hpp"
 
-#define CFG_VERSION cfg_version
-
-bool cfg0_main();
-bool cfg1_main();
-bool cfg2_main();
-bool cfg3_main();
-bool cfg4_main();
-void cfg_init();
-
-extern char const cfg_version[];
-
-std::tr1::int64_t cfg_timestamp();
-
-bool read_cfg_file( std::map< std::string, toppers::itronx::static_api::info > const info_map,
-                    std::string& cfg1_list, std::string& includes,
-                    std::vector< toppers::itronx::static_api >& static_api_array );
-
-void assign_id( toppers::itronx::cfg1_out::static_api_map& api_map );
-template < class T >
-inline void assign_id( T& )
+namespace toppers
 {
+  namespace oil
+  {
+
+    void expand_include( text const& in, text& out, codeset_t codeset = ascii, std::set< std::string >* dependencies = 0, std::set< std::string >* onces = 0 );
+    void preprocess( std::string const& file, text& result, codeset_t codeset = ascii, std::set< std::string >* dependencies = 0, std::set< std::string >* onces = 0 );
+
+  }
 }
 
-#endif  // ! CFG_HPP_
+#endif  // ! TOPPERS_OIL__PREPROCESSOR_HPP_

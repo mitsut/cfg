@@ -3,6 +3,7 @@
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
  *  Copyright (C) 2007-2012 by TAKAGI Nobuhisa
+ *  Copyright (C) 2010 by Meika Sugimoto
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -35,7 +36,7 @@
  * 
  */
 /*!
- *  \file   toppers/itronx/factory.hpp
+ *  \file   toppers/oil/factory.hpp
  *  \brief  カーネルまたはモジュールに応じた処理オブジェクト生成に関する宣言定義
  *
  *  このファイルで定義されるクラス
@@ -43,40 +44,36 @@
  *  class factory;
  *  \endcode
  */
-#ifndef TOPPERS_ITRONX_FACTORY_HPP_
-#define TOPPERS_ITRONX_FACTORY_HPP_
+#ifndef TOPPERS_OIL_FACTORY_HPP_
+#define TOPPERS_OIL_FACTORY_HPP_
 
 #include <memory>
 #include <string>
 #include <vector>
 #include "toppers/macro_processor.hpp"
-#include "toppers/itronx/static_api.hpp"
-#include "toppers/itronx/cfg1_out.hpp"
-#include "toppers/itronx/checker.hpp"
-#include "toppers/itronx/component.hpp"
+#include "toppers/oil/checker.hpp"
+#include "toppers/oil/cfg1_out.hpp"
 
 namespace toppers
 {
-
-  namespace itronx
+  namespace oil
   {
-
     /*!
-     *  \class  factory factory.hpp "toppers/itronx/factory.hpp"
+     *  \class  factory factory.hpp "toppers/oil/factory.hpp"
      *  \brief  カーネルまたはモジュールに応じた処理オブジェクト生成クラス
      */
     class factory
     {
     public:
-      typedef itronx::cfg1_out cfg1_out;
-      typedef itronx::checker checker;
-      typedef std::map< std::string, static_api::info > cfg_info;
-      typedef itronx::component component;
-      static bool const is_itronx = true;
+      typedef oil::cfg1_out cfg1_out;
+      typedef oil::checker checker;
+      typedef std::vector<std::string> cfg_info;
+      typedef struct {} component;  // ダミー
+      static bool const is_itronx = false;
 
       explicit factory( std::string const& kernel );
       virtual ~factory();
-      std::map< std::string, static_api::info > const* get_static_api_info_map() const;
+      std::vector<std::string> const* get_object_definition_info() const;
       cfg1_out::cfg1_def_table const* get_cfg1_def_table() const;
       std::auto_ptr< cfg1_out > create_cfg1_out( std::string const& filename ) const
       {
@@ -86,30 +83,29 @@ namespace toppers
       {
         return do_create_checker();
       }
-      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, cfg1_out::static_api_map const& api_map ) const
+      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, cfg1_out::cfg_obj_map const& obj_def_map ) const
       {
-        return do_create_macro_processor( cfg1out, api_map );
+        return do_create_macro_processor( cfg1out, obj_def_map );
       }
-      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, std::vector< static_api > const& api_array ) const
+      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, std::vector< object_definition* > const& obj_array ) const
       {
-        return do_create_macro_processor( cfg1out, api_array );
+        return do_create_macro_processor( cfg1out, obj_array );
       }
-      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, std::auto_ptr< component >& component_ptr ) const
+      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, std::auto_ptr< component >& cmponent_ptr ) const
       {
-        std::auto_ptr< macro_processor > mproc( create_macro_processor( cfg1out, cfg1out.get_static_api_array() ) );
-        component_ptr.reset( new component( mproc.get() ) );
-        return mproc;
+        error( _( "with-software-components is not supported." ) );
+        return std::auto_ptr< macro_processor >();
       }
       void swap( factory& other ) { do_swap( other ); }
 
       cfg_info const& get_cfg_info() const
       {
-        return *get_static_api_info_map();
+        return *get_object_definition_info();
       }
     protected:
       virtual void do_swap( factory& other );
-      virtual std::auto_ptr< macro_processor > do_create_macro_processor( cfg1_out const& cfg1out, cfg1_out::static_api_map const& api_map ) const;
-      virtual std::auto_ptr< macro_processor > do_create_macro_processor( cfg1_out const& cfg1out, std::vector< static_api > const& api_array ) const;
+      virtual std::auto_ptr< macro_processor > do_create_macro_processor( cfg1_out const& cfg1out, cfg1_out::cfg_obj_map const& obj_def_map ) const;
+      virtual std::auto_ptr< macro_processor > do_create_macro_processor( cfg1_out const& cfg1out, std::vector< object_definition* > const& obj_array ) const;
     private:
       virtual std::auto_ptr< cfg1_out > do_create_cfg1_out( std::string const& filename ) const;
       virtual std::auto_ptr< checker > do_create_checker() const;
@@ -120,4 +116,4 @@ namespace toppers
   }
 }
 
-#endif  // ! TOPPERS_ITRONX_FACTORY_HPP_
+#endif  // ! TOPPERS_OIL_FACTORY_HPP_

@@ -1,8 +1,9 @@
 /*
- *  TOPPERS Software
- *      Toyohashi Open Platform for Embedded Real-Time Systems
+ *  TOPPERS/ASP Kernel
+ *      Toyohashi Open Platform for Embedded Real-Time Systems/
+ *      Advanced Standard Profile Kernel
  *
- *  Copyright (C) 2007-2012 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2008 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -34,55 +35,57 @@
  *  の責任を負わない．
  * 
  */
-#ifndef CFG_HPP_
-#define CFG_HPP_
+#ifndef TOPPERS_OIL_CHECKER_HPP_
+#define TOPPERS_OIL_CHECKER_HPP_
 
-#include <cctype>
-#include <cstdio>
-#include <cstdlib>
+#include <cstddef>
 #include <string>
-#include <vector>
-#include <map>
-#include <sstream>
-#include <iostream>
-#include <algorithm>
 #include "toppers/workaround.hpp"
-#include "toppers/codeset.hpp"
-#include "toppers/global.hpp"
-#include "toppers/diagnostics.hpp"
-#include "toppers/text.hpp"
-#include "toppers/misc.hpp"
-#include "toppers/itronx/preprocess.hpp"
-#include "toppers/itronx/static_api.hpp"
-#include "toppers/itronx/factory.hpp"
-#include "toppers/itronx/cfg1_out.hpp"
-#include "toppers/oil/preprocess.hpp"
-#include "toppers/oil/factory.hpp"
-#include "toppers/oil/cfg1_out.hpp"
-#include <boost/utility.hpp>
-#include <boost/format.hpp>
+#include "toppers/nm_symbol.hpp"
 
-#define CFG_VERSION cfg_version
-
-bool cfg0_main();
-bool cfg1_main();
-bool cfg2_main();
-bool cfg3_main();
-bool cfg4_main();
-void cfg_init();
-
-extern char const cfg_version[];
-
-std::tr1::int64_t cfg_timestamp();
-
-bool read_cfg_file( std::map< std::string, toppers::itronx::static_api::info > const info_map,
-                    std::string& cfg1_list, std::string& includes,
-                    std::vector< toppers::itronx::static_api >& static_api_array );
-
-void assign_id( toppers::itronx::cfg1_out::static_api_map& api_map );
-template < class T >
-inline void assign_id( T& )
+namespace toppers
 {
+  namespace oil
+  {
+
+    class cfg1_out;
+
+    /*!
+     *  \class  checker checker.hpp "toppers/oil/checker.hpp"
+     *  \brief  全体リンク後のパラメータチェック処理クラス
+     */
+    class checker
+    {
+    public:
+      checker();
+      checker( checker const& other );
+      virtual ~checker();
+      checker& operator=( checker const& other )
+      {
+        checker t( other );
+        swap( t );
+        return *this;
+      }
+
+      void load_rom_image( std::string const& srec_file, std::string const& nm_file );
+      bool check( cfg1_out& cfg1out ) const;
+      nm_symbol::entry find( std::string const& symbol ) const;
+      std::tr1::uintmax_t get( std::size_t address, std::size_t size, bool little_endian ) const;
+
+      void swap( checker& other )
+      {
+        implementation* t = pimpl_;
+        pimpl_ = other.pimpl_;
+        other.pimpl_ = t;
+      }
+    protected:
+      struct implementation;
+      explicit checker( implementation* pimpl ) : pimpl_( pimpl ) {}
+    private:
+      implementation* pimpl_;
+    };
+
+  }
 }
 
-#endif  // ! CFG_HPP_
+#endif  // ! TOPPERS_OIL_CHECKER_HPP_

@@ -175,6 +175,99 @@ void assign_id( toppers::itronx::cfg1_out::static_api_map& api_map )
   }
 }
 
+namespace
+{
+  template < class Factory >
+  inline bool cfg2_main_implementation( std::string const& kernel )
+  {
+    using namespace toppers;
+    typedef typename Factory::cfg1_out Cfg1_out;
+
+    Factory factory( kernel );
+    global( "factory" ) = &factory;
+
+    // *.cfgとcfg1_out.srecの読み込み
+    std::string input_file;
+    try
+    {
+      input_file = get_global< std::string >( "input-file" );
+    }
+    catch ( boost::bad_any_cast& )
+    {
+      fatal( _( "no input files" ) );
+    }
+    std::string cfg1_out_name( get_global< std::string >( "cfg1_out" ) );
+    std::auto_ptr< Cfg1_out > cfg1_out( factory.create_cfg1_out( cfg1_out_name ) );
+
+    codeset_t codeset = get_global< codeset_t >( "codeset" );
+    cfg1_out->load_cfg( input_file, codeset, factory.get_cfg_info() );
+    cfg1_out->load_srec();
+
+    std::auto_ptr< macro_processor > mproc;
+    std::auto_ptr< typename Factory::component > component_ptr;
+
+    if ( get_global< bool >( "with-software-components" ) )
+    {
+      mproc = factory.create_macro_processor( *cfg1_out, component_ptr );
+    }
+    else  // 従来仕様（ソフトウェア部品非対応）
+    {
+      typename Cfg1_out::cfg_element_map api_map( cfg1_out->merge() );
+      assign_id( api_map ); // ID番号の割付け
+      mproc = factory.create_macro_processor( *cfg1_out, api_map );
+    }
+
+    // テンプレート処理
+    boost::any template_file( global( "template-file" ) );
+    namespace fs = boost::filesystem;
+    fs::path cfg_dir( get_global< std::string >( "cfg-directory" ) );  // filesystem3対応
+    std::vector< std::string > include_paths = get_global< std::vector< std::string > >( "include-path" );
+    include_paths.push_back( cfg_dir.empty() ? "." : cfg_dir.string() );  // filesystem3対応
+    if ( !template_file.empty() )
+    {
+      toppers::text in_text;
+      toppers::text pp_text;
+      std::string file_name( boost::any_cast< std::string& >( template_file ) );
+
+      in_text.set_line( file_name, 1 );
+      std::ifstream ifs( file_name.c_str() );
+      if ( !ifs.is_open() )
+      {
+        fatal( _( "`%1%` can not be found." ), file_name );
+      }
+      in_text.append( ifs );
+      macro_processor::preprocess( in_text, pp_text );
+      mproc->evaluate( pp_text );
+    }
+    else  // テンプレートファイルが指定されていないので、共通部分（kernel.tf）のみを処理
+    {
+      fs::path kernel_cfg_template_file( cfg_dir/fs::path( "../../kernel/kernel.tf" ) );
+      if ( !fs::exists( kernel_cfg_template_file ) )
+      {
+        error( _( "cannot open file `%1%\'" ), kernel_cfg_template_file.string() );  // filesystem3対応
+      }
+      else
+      {
+        toppers::text in_text;
+        toppers::text pp_text;
+
+        in_text.set_line( kernel_cfg_template_file.string(), 1 );  // filesystem3対応
+        std::ifstream ifs( kernel_cfg_template_file.string().c_str() );  // filesystem3対応
+        in_text.append( ifs );
+        macro_processor::preprocess( in_text, pp_text );
+        mproc->evaluate( pp_text );
+      }
+    }
+
+    if ( get_error_count() > 0 )
+    {
+      return false;
+    }
+    output_file::save();
+    return true;
+  }
+}
+
 /*!
  *  \brief  パス２処理
  *  \retval true  成功
@@ -182,91 +275,15 @@ void assign_id( toppers::itronx::cfg1_out::static_api_map& api_map )
  */
 bool cfg2_main()
 {
-  using namespace toppers;
-  using namespace toppers::itronx;
-
-  std::string kernel( get_global< std::string >( "kernel" ) );
-  itronx::factory factory( kernel );
-  global( "factory" ) = &factory;
-
-  // *.cfgとcfg1_out.srecの読み込み
-  std::string input_file;
-  try
+  std::string kernel;
+  toppers::get_global( "kernel", kernel );
+  if ( kernel == "atk1" )
   {
-    input_file = get_global< std::string >( "input-file" );
+    return cfg2_main_implementation< toppers::oil::factory >( kernel );
   }
-  catch ( boost::bad_any_cast& )
+  else
   {
-    fatal( _( "no input files" ) );
+    return cfg2_main_implementation< toppers::itronx::factory >( kernel );
   }
-  std::string cfg1_out_name( get_global< std::string >( "cfg1_out" ) );
-  std::auto_ptr< cfg1_out > cfg1_out( factory.create_cfg1_out( cfg1_out_name ) );
-
-  codeset_t codeset = get_global< codeset_t >( "codeset" );
-  cfg1_out->load_cfg( input_file, codeset, *factory.get_static_api_info_map() );
-  cfg1_out->load_srec();
-
-  std::auto_ptr< macro_processor > mproc;
-  std::auto_ptr< component > component_ptr;
-
-  if ( get_global< bool >( "with-software-components" ) )
-  {
-    mproc = factory.create_macro_processor( *cfg1_out, cfg1_out->get_static_api_array() );
-    component_ptr.reset( new component( mproc.get() ) );
-  }
-  else  // 従来仕様（ソフトウェア部品非対応）
-  {
-    cfg1_out::static_api_map api_map( cfg1_out->merge() );
-    assign_id( api_map ); // ID番号の割付け
-    mproc = factory.create_macro_processor( *cfg1_out, api_map );
-  }
-
-  // テンプレート処理
-  boost::any template_file( global( "template-file" ) );
-  namespace fs = boost::filesystem;
-  fs::path cfg_dir( get_global< std::string >( "cfg-directory" ) );  // filesystem3対応
-  std::vector< std::string > include_paths = get_global< std::vector< std::string > >( "include-path" );
-  include_paths.push_back( cfg_dir.empty() ? "." : cfg_dir.string() );  // filesystem3対応
-  if ( !template_file.empty() )
-  {
-    toppers::text in_text;
-    toppers::text pp_text;
-    std::string file_name( boost::any_cast< std::string& >( template_file ) );
-
-    in_text.set_line( file_name, 1 );
-    std::ifstream ifs( file_name.c_str() );
-    if ( !ifs.is_open() )
-    {
-      fatal( _( "`%1%` can not be found." ), file_name );
-    }
-    in_text.append( ifs );
-    macro_processor::preprocess( in_text, pp_text );
-    mproc->evaluate( pp_text );
-  }
-  else  // テンプレートファイルが指定されていないので、共通部分（kernel.tf）のみを処理
-  {
-    fs::path kernel_cfg_template_file( cfg_dir/fs::path( "../../kernel/kernel.tf" ) );
-    if ( !fs::exists( kernel_cfg_template_file ) )
-    {
-      error( _( "cannot open file `%1%\'" ), kernel_cfg_template_file.string() );  // filesystem3対応
-    }
-    else
-    {
-      toppers::text in_text;
-      toppers::text pp_text;
-
-      in_text.set_line( kernel_cfg_template_file.string(), 1 );  // filesystem3対応
-      std::ifstream ifs( kernel_cfg_template_file.string().c_str() );  // filesystem3対応
-      in_text.append( ifs );
-      macro_processor::preprocess( in_text, pp_text );
-      mproc->evaluate( pp_text );
-    }
-  }
-
-  if ( get_error_count() > 0 )
-  {
-    return false;
-  }
-  output_file::save();
-  return true;
 }
+

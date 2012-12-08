@@ -51,12 +51,12 @@
 #define TOPPERS_S_RECORD_HPP_
 
 #include "toppers/config.hpp"
+#include "toppers/workaround.hpp"
 #include <iosfwd>
 #include <string>
 #include <vector>
 #include <utility>
 #include <stdexcept>
-#include <boost/cstdint.hpp>
 
 namespace toppers
 {

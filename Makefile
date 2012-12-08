@@ -21,6 +21,7 @@ OPTIMIZE = -O2
 
 SUBDIRS  = toppers \
 	toppers/itronx \
+	toppers/oil \
 	cfg
 
 all: $(SUBDIRS)

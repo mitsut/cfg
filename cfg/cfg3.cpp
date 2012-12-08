@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2011 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2012 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -60,6 +60,7 @@ namespace
    *  \param[in]  p_ctx     マクロコンテキスト
    *  \retval     マクロ返却値
    */
+  template < class Checker >
   var_t bf_symbol( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     using namespace toppers;
@@ -68,7 +69,7 @@ namespace
     if ( macro_processor::check_arity( line, arg_list.size(), 1, "SYMBOL" ) )
     {
       std::string symbol( macro_processor::to_string( arg_list[0], p_ctx ) );
-      std::tr1::shared_ptr< checker > chk = get_global< std::tr1::shared_ptr< checker > >( "checker" );
+      std::tr1::shared_ptr< Checker > chk = get_global< std::tr1::shared_ptr< Checker > >( "checker" );
       nm_symbol::entry entry = chk->find( symbol );
       if ( entry.type >= 0 )
       {
@@ -92,6 +93,7 @@ namespace
    *
    *  第1引数にアドレスを、第2引数に読み込むバイト数を指定します。
    */
+  template < class Checker >
   var_t bf_peek( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     using namespace toppers;
@@ -101,7 +103,7 @@ namespace
     {
       std::size_t address = static_cast< std::size_t >( macro_processor::to_integer( arg_list[0], p_ctx ) );
       std::size_t size = static_cast< std::size_t >( macro_processor::to_integer( arg_list[1], p_ctx ) );
-      std::tr1::shared_ptr< checker > chk = get_global< std::tr1::shared_ptr< checker > >( "checker" );
+      std::tr1::shared_ptr< Checker > chk = get_global< std::tr1::shared_ptr< Checker > >( "checker" );
 
       std::map< std::string, var_t >::const_iterator le_iter( p_ctx->var_map.find( "LITTLE_ENDIAN" ) );
       if ( le_iter != p_ctx->var_map.end() )
@@ -172,6 +174,7 @@ namespace
    *  \attention  この組み込み関数は、LMAからVMAへのアドレス変換を想定しているため、頻繁に転送を
    *              繰り返すような状況には対応していません（メモリ不足が発生します）。
    */
+  template < class Checker >
   var_t bf_bcopy( text_line const& line, std::vector< var_t > const& arg_list, context* p_ctx )
   {
     using namespace toppers;
@@ -182,7 +185,7 @@ namespace
       std::size_t src = static_cast< std::size_t >( macro_processor::to_integer( arg_list[0], p_ctx ) );
       std::size_t dst = static_cast< std::size_t >( macro_processor::to_integer( arg_list[1], p_ctx ) );
       std::size_t size = static_cast< std::size_t >( macro_processor::to_integer( arg_list[2], p_ctx ) );
-      std::tr1::shared_ptr< checker > chk = get_global< std::tr1::shared_ptr< checker > >( "checker" );
+      std::tr1::shared_ptr< Checker > chk = get_global< std::tr1::shared_ptr< Checker > >( "checker" );
 
       std::pair< std::tr1::int64_t, std::vector< unsigned char > > block;
       block.first = dst;
@@ -198,119 +201,137 @@ namespace
 
 }
 
-bool cfg3_main()
+namespace
 {
-  using namespace toppers;
-  using namespace toppers::itronx;
-
-  std::string kernel( get_global< std::string >( "kernel" ) );
-  itronx::factory factory( kernel );
-  global( "factory" ) = &factory;
-
-  // *.cfgとcfg1_out.srecの読み込み
-  std::string input_file;
-  try
+  template < class Factory>
+  inline bool cfg3_main_implementation( std::string const& kernel )
   {
-    input_file = get_global< std::string >( "input-file" );
-  }
-  catch ( boost::bad_any_cast& )
-  {
-    fatal( _( "no input files" ) );
-  }
-  std::string cfg1_out_name( get_global< std::string >( "cfg1_out" ) );
-  std::auto_ptr< cfg1_out > cfg1_out( factory.create_cfg1_out( cfg1_out_name ) );
+    using namespace toppers;
+    typedef typename Factory::cfg1_out Cfg1_out;
 
-  codeset_t codeset = get_global< codeset_t >( "codeset" );
-  cfg1_out->load_cfg( input_file, codeset, *factory.get_static_api_info_map() );
-  cfg1_out->load_srec();
+    Factory factory( kernel );
+    global( "factory" ) = &factory;
 
-  std::auto_ptr< checker > p_checker( factory.create_checker() );
-  std::tr1::shared_ptr< checker > chk( p_checker );
-  global( "checker" ) = chk;
-  std::string rom_image( get_global< std::string >( "rom-image" ) );
-  std::string symbol_table( get_global< std::string >( "symbol-table" ) );
-  chk->load_rom_image( rom_image, symbol_table );
-
-  // テンプレートファイル
-  boost::any template_file( global( "template-file" ) );
-  if ( template_file.empty() )
-  {
-    // テンプレートファイルが指定されていなければ最低限のチェックのみ（後方互換性のため）
-    // パラメータチェック
-    if ( !chk->check( *cfg1_out ) )
+    // *.cfgとcfg1_out.srecの読み込み
+    std::string input_file;
+    try
     {
-      return false;
+      get_global( "input-file", input_file );
     }
-  }
-  else
-  {
-    namespace fs = boost::filesystem;
-
-    // テンプレート処理
-    std::auto_ptr< macro_processor > mproc;
-    std::auto_ptr< component > component_ptr;
-
-    if ( get_global< bool >( "with-software-components" ) )
+    catch ( boost::bad_any_cast& )
     {
-      mproc = factory.create_macro_processor( *cfg1_out, cfg1_out->get_static_api_array() );
-      component_ptr.reset( new component( mproc.get() ) );
+      fatal( _( "no input files" ) );
+    }
+    std::string cfg1_out_name;
+    get_global( "cfg1_out", cfg1_out_name );
+    std::auto_ptr< Cfg1_out > cfg1_out( factory.create_cfg1_out( cfg1_out_name ) );
+
+    codeset_t codeset = get_global< codeset_t >( "codeset" );
+    cfg1_out->load_cfg( input_file, codeset, factory.get_cfg_info() );
+    cfg1_out->load_srec();
+
+    std::auto_ptr< typename Factory::checker > p_checker( factory.create_checker() );
+    std::tr1::shared_ptr< typename Factory::checker > chk( p_checker );
+    global( "checker" ) = chk;
+    std::string rom_image( get_global< std::string >( "rom-image" ) );
+    std::string symbol_table( get_global< std::string >( "symbol-table" ) );
+    chk->load_rom_image( rom_image, symbol_table );
+
+    // テンプレートファイル
+    boost::any template_file( global( "template-file" ) );
+    if ( template_file.empty() )
+    {
+      // テンプレートファイルが指定されていなければ最低限のチェックのみ（後方互換性のため）
+      // パラメータチェック
+      if ( !chk->check( *cfg1_out ) )
+      {
+        return false;
+      }
     }
     else
     {
-      cfg1_out::static_api_map api_map( cfg1_out->merge() );
-      assign_id( api_map ); // ID番号の割付け
-      mproc = factory.create_macro_processor( *cfg1_out, api_map );
+      namespace fs = boost::filesystem;
+
+      // テンプレート処理
+      std::auto_ptr< macro_processor > mproc;
+      std::auto_ptr< typename Factory::component > component_ptr;
+
+      if ( get_global< bool >( "with-software-components" ) )
+      {
+        mproc = factory.create_macro_processor( *cfg1_out, component_ptr );
+      }
+      else
+      {
+        typename Cfg1_out::cfg_element_map api_map( cfg1_out->merge() );
+        assign_id( api_map ); // ID番号の割付け
+        mproc = factory.create_macro_processor( *cfg1_out, api_map );
+      }
+
+      // ↓ 追加組み込み関数の登録
+      toppers::macro_processor::func_t func_info = {};
+      func_info.name = "SYMBOL";
+      func_info.f = &bf_symbol< typename Factory::checker >;
+      mproc->add_builtin_function( func_info );
+
+      func_info.name = "PEEK";
+      func_info.f = &bf_peek< typename Factory::checker >;
+      mproc->add_builtin_function( func_info );
+
+      func_info.name = "BCOPY";
+      func_info.f = &bf_bcopy< typename Factory::checker >;
+      mproc->add_builtin_function( func_info );
+      // ↑ 追加組み込み関数の登録
+
+      fs::path cfg_dir( get_global< std::string >( "cfg-directory" ) );  // filesystem3対応
+      std::vector< std::string > include_paths = get_global< std::vector< std::string > >( "include-path" );
+      include_paths.push_back( cfg_dir.empty() ? "." : cfg_dir.string() );  // filesystem3対応
+
+      toppers::text in_text;
+      toppers::text pp_text;
+      std::string file_name( boost::any_cast< std::string& >( template_file ) );
+
+      in_text.set_line( file_name, 1 );
+      std::ifstream ifs( file_name.c_str() );
+      if ( !ifs.is_open() )
+      {
+        fatal( _( "`%1%` can not be found." ), file_name );
+      }
+
+      in_text.append( ifs );
+      macro_processor::preprocess( in_text, pp_text );
+      mproc->evaluate( pp_text );
+
+      if ( get_error_count() > 0 )
+      {
+        return false;
+      }
+      // 出力ファイルがあるかどうか分からないが、一応セーブする。
+      output_file::save();
     }
 
-    // ↓ 追加組み込み関数の登録
-    toppers::macro_processor::func_t func_info = {};
-    func_info.name = "SYMBOL";
-    func_info.f = &bf_symbol;
-    mproc->add_builtin_function( func_info );
-
-    func_info.name = "PEEK";
-    func_info.f = &bf_peek;
-    mproc->add_builtin_function( func_info );
-
-    func_info.name = "BCOPY";
-    func_info.f = &bf_bcopy;
-    mproc->add_builtin_function( func_info );
-    // ↑ 追加組み込み関数の登録
-
-    fs::path cfg_dir( get_global< std::string >( "cfg-directory" ) );  // filesystem3対応
-    std::vector< std::string > include_paths = get_global< std::vector< std::string > >( "include-path" );
-    include_paths.push_back( cfg_dir.empty() ? "." : cfg_dir.string() );  // filesystem3対応
-
-    toppers::text in_text;
-    toppers::text pp_text;
-    std::string file_name( boost::any_cast< std::string& >( template_file ) );
-
-    in_text.set_line( file_name, 1 );
-    std::ifstream ifs( file_name.c_str() );
-    if ( !ifs.is_open() )
+    // パス4以降からも流用されるため、現在処理中のパスを調べる。
+    int pass = get_global< int >( "pass" );
+    int max_pass = get_global< int >( "max-pass" );
+    if ( max_pass == pass ) // 最終段階のパスが成功したときに"check complete"メッセージを出す。
     {
-      fatal( _( "`%1%` can not be found." ), file_name );
+      std::cerr << _( "check complete" ) << std::endl;
     }
 
-    in_text.append( ifs );
-    macro_processor::preprocess( in_text, pp_text );
-    mproc->evaluate( pp_text );
-
-    if ( get_error_count() > 0 )
-    {
-      return false;
-    }
-    // 出力ファイルがあるかどうか分からないが、一応セーブする。
-    output_file::save();
+    return true;
   }
+}
 
-  // パス4以降からも流用されるため、現在処理中のパスを調べる。
-  int pass = get_global< int >( "pass" );
-  int max_pass = get_global< int >( "max-pass" );
-  if ( max_pass == pass ) // 最終段階のパスが成功したときに"check complete"メッセージを出す。
+bool cfg3_main()
+{
+  std::string kernel;
+  toppers::get_global( "kernel", kernel );
+
+  if ( kernel == "atk1" )
   {
-    std::cerr << _( "check complete" ) << std::endl;
+    return cfg3_main_implementation< toppers::oil::factory >( kernel );
   }
-
-  return true;
+  else
+  {
+    return cfg3_main_implementation< toppers::itronx::factory >( kernel );
+  }
 }

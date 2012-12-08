@@ -121,6 +121,12 @@ namespace toppers
     warning( line, ( boost::format( str ) % arg1 % arg2 % arg3 % arg4 ).str().c_str() );
   }
 
+  template < typename T1, typename T2, typename T3, typename T4, typename T5 >
+    inline void warning( text_line const& line, char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4, T5 const& arg5 )
+  {
+    warning( line, ( boost::format( str ) % arg1 % arg2 % arg3 % arg4 % arg5 ).str().c_str() );
+  }
+
   template < typename T1 >
     inline void error( char const* str, T1 const& arg1 )
   {
@@ -143,6 +149,12 @@ namespace toppers
     inline void error( char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4 )
   {
     error( ( boost::format( str ) % arg1 % arg2 % arg3 % arg4 ).str().c_str() );
+  }
+
+  template < typename T1, typename T2, typename T3, typename T4, typename T5 >
+    inline void error( char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4, T5 const& arg5 )
+  {
+    error( ( boost::format( str ) % arg1 % arg2 % arg3 % arg4 % arg5 ).str().c_str() );
   }
 
   template < typename T1 >
@@ -169,6 +181,12 @@ namespace toppers
     error( line, ( boost::format( str ) % arg1 % arg2 % arg3 % arg4 ).str().c_str() );
   }
 
+  template < typename T1, typename T2, typename T3, typename T4, typename T5 >
+    inline void error( text_line const& line, char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4, T5 const& arg5 )
+  {
+    error( line, ( boost::format( str ) % arg1 % arg2 % arg3 % arg4 % arg5 ).str().c_str() );
+  }
+
   template < typename T1 >
     inline void fatal( char const* str, T1 const& arg1 )
   {
@@ -193,6 +211,12 @@ namespace toppers
     fatal( ( boost::format( str ) % arg1 % arg2 % arg3 % arg4 ).str().c_str() );
   }
 
+  template < typename T1, typename T2, typename T3, typename T4, typename T5 >
+    inline void fatal( char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4, T5 const& arg5 )
+  {
+    fatal( ( boost::format( str ) % arg1 % arg2 % arg3 % arg4 % arg5 ).str().c_str() );
+  }
+
   template < typename T1 >
     inline void fatal( text_line const& line, char const* str, T1 const& arg1 )
   {
@@ -215,6 +239,12 @@ namespace toppers
     inline void fatal( text_line const& line, char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4 )
   {
     fatal( line, ( boost::format( str ) % arg1 % arg2 % arg3 % arg4 ).str().c_str() );
+  }
+
+  template < typename T1, typename T2, typename T3, typename T4, typename T5 >
+    inline void fatal( text_line const& line, char const* str, T1 const& arg1, T2 const& arg2, T3 const& arg3, T4 const& arg4, T5 const& arg5 )
+  {
+    fatal( line, ( boost::format( str ) % arg1 % arg2 % arg3 % arg4 % arg5 ).str().c_str() );
   }
 
   inline void exit()

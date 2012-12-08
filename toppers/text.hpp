@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2005-2008 by TAKAGI Nobuhisa
+ *  Copyright (C) 2005-2012 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -314,6 +314,45 @@ namespace toppers
     {
       return iterator( container_.begin() );
     }
+
+    /*!
+     *  \brief  行数の取得
+     *  \param  pos  先頭文字からのオフセット
+     *  \return posで指定されたオフセットから行数を求め，イテレータを返す
+     */
+    const_iterator line_at(size_type pos) const
+    {
+        // modified by takuya
+        //typedef text::container::const_iterator const_row_iterator;
+        typedef typename container::const_iterator const_row_iterator;
+        const_iterator first( container_.begin() ), last( container_.end() );
+        int count = 0 , buf_size , i;
+        size_type sum = 0;
+
+        while((sum < pos) && (first != last))
+        {
+            const_row_iterator current( first.get_row() );
+            buf_size = current->buf.size();
+            sum += buf_size;
+            i = 0;
+            while(i < buf_size)
+            {
+                i++;
+                first++;
+            }
+            count += 1;
+        }
+        
+        if(first < last)
+        {
+            first -= buf_size;
+            return const_iterator(first);
+        }
+        else
+        {
+            return const_iterator( --last );
+        }
+    }   
 
     /*!
      *  \brief  終端位置+1の取得

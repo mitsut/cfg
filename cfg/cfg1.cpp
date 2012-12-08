@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007-2009 by TAKAGI Nobuhisa
+ *  Copyright (C) 2007-2012 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -38,6 +38,42 @@
 #include "toppers/output_file.hpp"
 #include "cfg.hpp"
 
+namespace
+{
+  template < class Factory >
+  inline bool cfg1_main_implementation( std::string const& kernel )
+  {
+    using namespace toppers;
+
+    Factory factory( kernel );
+
+    std::string input_file;
+    try
+    {
+      get_global( "input-file", input_file );
+    }
+    catch ( boost::bad_any_cast& )
+    {
+      fatal( _( "no input files" ) );
+    }
+    codeset_t codeset;
+    get_global( "codeset", codeset );
+
+    std::string cfg1_out_name;
+    get_global( "cfg1_out", cfg1_out_name );
+    std::auto_ptr< typename Factory::cfg1_out > cfg1_out( factory.create_cfg1_out( cfg1_out_name + ".c" ) );
+    cfg1_out->load_cfg( input_file, codeset, factory.get_cfg_info() );
+    cfg1_out->generate();
+
+    if ( get_error_count() > 0 )
+    {
+      return false;
+    }
+    output_file::save();
+    return true;
+  }
+}
+
 /*!
  *  \brief  パス１処理
  *  \retval true  成功
@@ -45,32 +81,14 @@
  */
 bool cfg1_main()
 {
-  using namespace toppers;
-  using namespace toppers::itronx;
-
-  std::string kernel( get_global< std::string >( "kernel" ) );
-  itronx::factory factory( kernel );
-
-  std::string input_file;
-  try
+  std::string kernel;
+  toppers::get_global( "kernel", kernel );
+  if ( kernel == "atk1" )
   {
-    input_file = get_global< std::string >( "input-file" );
+    return cfg1_main_implementation< toppers::oil::factory >( kernel );
   }
-  catch ( boost::bad_any_cast& )
+  else
   {
-    fatal( _( "no input files" ) );
+    return cfg1_main_implementation< toppers::itronx::factory >( kernel );
   }
-  codeset_t codeset = get_global< codeset_t >( "codeset" );
-
-  std::string cfg1_out_name( get_global< std::string >( "cfg1_out" ) );
-  std::auto_ptr< cfg1_out > cfg1_out( factory.create_cfg1_out( cfg1_out_name + ".c" ) );
-  cfg1_out->load_cfg( input_file, codeset, *factory.get_static_api_info_map() );
-  cfg1_out->generate();
-
-  if ( get_error_count() > 0 )
-  {
-    return false;
-  }
-  output_file::save();
-  return true;
 }

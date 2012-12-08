@@ -5,6 +5,11 @@ WORKDIR = $(PROJDIR)/cfg
 
 CPPFLAGS := $(CPPFLAGS) -I$(BOOST_DIR) -I$(PROJDIR)
 CXXFLAGS := $(CXXFLAGS) -O2 -g
+LDFLAGS := $(CXXFLAGS)
+
+ifeq ($(OSTYPE), msys)
+	LDFLAGS := $(LDFLAGS) -static-libgcc -static-libstdc++
+endif
 
 CXXFILES = \
 	cfg.cpp \
@@ -17,19 +22,16 @@ CXXFILES = \
 
 OBJFILES := $(CXXFILES:%.cpp=%.o)
 
-ifeq ($(OSTYPE),msys)
-BOOST_LIBFILES = /mingw/lib/libboost_system-mgw-mt-s.lib /mingw/lib/libboost_filesystem-mgw-mt-s.lib /mingw/lib/libboost_program_options-mgw-mt-s.lib
-else
-BOOST_LIBFILES := $(BOOST_LIBFILES) -lboost_system$(LIBBOOST_SUFFIX) -lboost_filesystem$(LIBBOOST_SUFFIX) -lboost_program_options$(LIBBOOST_SUFFIX)
-endif
+BOOST_LIBFILES := $(BOOST_LIBFILES) -lboost_system$(LIBBOOST_SUFFIX) -lboost_filesystem$(LIBBOOST_SUFFIX) -lboost_program_options$(LIBBOOST_SUFFIX) -lboost_regex$(LIBBOOST_SUFFIX)
 
 LIBFILES = $(PROJDIR)/toppers/itronx/libitronx.a \
+	$(PROJDIR)/toppers/oil/liboil.a \
 	$(PROJDIR)/toppers/libtoppers.a \
 
 all: cfg
 
 cfg: $(OBJFILES) $(LIBFILES)
-	$(CXX) $(CXXFLAGS) -static-libgcc -static-libstdc++ -o cfg $(OBJFILES) -L$(LIBBOOST_DIR) $(LIBFILES) $(BOOST_LIBFILES)
+	$(CXX) $(LDFLAGS) -o cfg $(OBJFILES) -L$(LIBBOOST_DIR) $(LIBFILES) $(BOOST_LIBFILES)
 
 depend:
 	$(CXX) $(CPPFLAGS) -M $(CXXFILES) > Makefile.depend

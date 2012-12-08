@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2005-2011 by TAKAGI Nobuhisa
+ *  Copyright (C) 2005-2012 by TAKAGI Nobuhisa
  * 
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -50,7 +50,7 @@
 #define TOPPERS_C_EXPR_HPP_
 
 #include "toppers/c_parser.hpp"
-#include <boost/cstdint.hpp>
+#include "toppers/workaround.hpp"
 
 namespace toppers
 {
