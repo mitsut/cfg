@@ -233,8 +233,8 @@ namespace
     std::auto_ptr< typename Factory::checker > p_checker( factory.create_checker() );
     std::tr1::shared_ptr< typename Factory::checker > chk( p_checker );
     global( "checker" ) = chk;
-    std::string rom_image( get_global< std::string >( "rom-image" ) );
-    std::string symbol_table( get_global< std::string >( "symbol-table" ) );
+    std::string rom_image( get_global_string( "rom-image" ) );
+    std::string symbol_table( get_global_string( "symbol-table" ) );
     chk->load_rom_image( rom_image, symbol_table );
 
     // テンプレートファイル
@@ -256,15 +256,13 @@ namespace
       std::auto_ptr< macro_processor > mproc;
       std::auto_ptr< typename Factory::component > component_ptr;
 
-      if ( get_global< bool >( "with-software-components" ) )
+      if ( get_global_bool( "with-software-components" ) )
       {
         mproc = factory.create_macro_processor( *cfg1_out, component_ptr );
       }
       else
       {
-        typename Cfg1_out::cfg_element_map api_map( cfg1_out->merge() );
-        assign_id( api_map ); // ID番号の割付け
-        mproc = factory.create_macro_processor( *cfg1_out, api_map );
+        mproc = factory.create_macro_processor( *cfg1_out );
       }
 
       // ↓ 追加組み込み関数の登録
@@ -282,7 +280,7 @@ namespace
       mproc->add_builtin_function( func_info );
       // ↑ 追加組み込み関数の登録
 
-      fs::path cfg_dir( get_global< std::string >( "cfg-directory" ) );  // filesystem3対応
+      fs::path cfg_dir( get_global_string( "cfg-directory" ) );  // filesystem3対応
       std::vector< std::string > include_paths = get_global< std::vector< std::string > >( "include-path" );
       include_paths.push_back( cfg_dir.empty() ? "." : cfg_dir.string() );  // filesystem3対応
 
@@ -326,10 +324,16 @@ bool cfg3_main()
   std::string kernel;
   toppers::get_global( "kernel", kernel );
 
-  if ( kernel == "atk1" )
+  if ( toppers::get_global_bool( "oil" ) )
   {
     return cfg3_main_implementation< toppers::oil::factory >( kernel );
   }
+#ifdef  HAS_CFG_XML
+  else if ( toppers::get_global_bool( "xml" ) )
+  {
+    return cfg3_main_implementation< toppers::xml::factory >( kernel );
+  }
+#endif
   else
   {
     return cfg3_main_implementation< toppers::itronx::factory >( kernel );

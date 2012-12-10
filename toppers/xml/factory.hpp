@@ -1,10 +1,21 @@
-/*
- *  TOPPERS Software
+/* 
+ *  TOPPERS ATK2
  *      Toyohashi Open Platform for Embedded Real-Time Systems
- *
+ *      Automotive Kernel Version 2
+ *  
  *  Copyright (C) 2007-2012 by TAKAGI Nobuhisa
  *  Copyright (C) 2010 by Meika Sugimoto
- * 
+ *  Copyright (C) 2011-2012 by Center for Embedded Computing Systems
+ *              Graduate School of Information Science, Nagoya Univ., JAPAN
+ *  Copyright (C) 2011-2012 by FUJISOFT INCORPORATED, JAPAN
+ *  Copyright (C) 2011-2012 by FUJITSU VLSI LIMITED, JAPAN
+ *  Copyright (C) 2011-2012 by NEC Communication Systems, Ltd., JAPAN
+ *  Copyright (C) 2011-2012 by Panasonic Advanced Technology Development Co., Ltd., JAPAN
+ *  Copyright (C) 2011-2012 by Renesas Electronics Corporation, JAPAN
+ *  Copyright (C) 2011-2012 by Sunny Giken Inc., JAPAN
+ *  Copyright (C) 2011-2012 by TOSHIBA CORPOTATION, JAPAN
+ *  Copyright (C) 2011-2012 by Witz Corporation, JAPAN
+ *  
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
@@ -27,16 +38,18 @@
  *      また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
  *      由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
  *      免責すること．
- * 
+ *  
  *  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
  *  よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
  *  に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
  * 
+ *  $Id: factory.hpp 4000 2012-04-09 12:49:58Z fujitsu-wada $
  */
+
 /*!
- *  \file   toppers/oil/factory.hpp
+ *  \file   toppers/xml/factory.hpp
  *  \brief  カーネルまたはモジュールに応じた処理オブジェクト生成に関する宣言定義
  *
  *  このファイルで定義されるクラス
@@ -44,36 +57,38 @@
  *  class factory;
  *  \endcode
  */
-#ifndef TOPPERS_OIL_FACTORY_HPP_
-#define TOPPERS_OIL_FACTORY_HPP_
+#ifndef TOPPERS_XML_FACTORY_HPP_
+#define TOPPERS_XML_FACTORY_HPP_
 
 #include <memory>
 #include <string>
 #include <vector>
 #include "toppers/macro_processor.hpp"
-#include "toppers/oil/checker.hpp"
-#include "toppers/oil/cfg1_out.hpp"
+#include "toppers/xml/cfg1_out.hpp"
+#include "toppers/xml/checker.hpp"
 
 namespace toppers
 {
-  namespace oil
+
+  namespace xml
   {
+
     /*!
-     *  \class  factory factory.hpp "toppers/oil/factory.hpp"
+     *  \class  factory factory.hpp "toppers/xml/factory.hpp"
      *  \brief  カーネルまたはモジュールに応じた処理オブジェクト生成クラス
      */
     class factory
     {
     public:
-      typedef oil::cfg1_out cfg1_out;
-      typedef oil::checker checker;
-      typedef std::vector<std::string> cfg_info;
+      typedef xml::cfg1_out cfg1_out;
+      typedef xml::checker checker;
+      typedef std::map< std::string, toppers::xml::info > cfg_info;
       typedef struct {} component;  // ダミー
       static bool const is_itronx = false;
 
       explicit factory( std::string const& kernel );
       virtual ~factory();
-      std::vector<std::string> const* get_object_definition_info() const;
+      std::map< std::string, toppers::xml::info > const* get_container_info_map() const;
       cfg1_out::cfg1_def_table const* get_cfg1_def_table() const;
       std::auto_ptr< cfg1_out > create_cfg1_out( std::string const& filename ) const
       {
@@ -85,11 +100,12 @@ namespace toppers
       }
       std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out ) const
       {
-        return do_create_macro_processor( cfg1out, cfg1out.merge() );
+        cfg1_out::xml_obj_map xml_map( cfg1out.merge( *get_container_info_map() ) );
+        return do_create_macro_processor( cfg1out, xml_map );
       }
-      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, cfg1_out::cfg_obj_map const& obj_def_map ) const
+      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, cfg1_out::xml_obj_map const& xml_map ) const
       {
-        return do_create_macro_processor( cfg1out, obj_def_map );
+        return do_create_macro_processor( cfg1out, xml_map );
       }
       std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, std::auto_ptr< component >& cmponent_ptr ) const
       {
@@ -100,12 +116,11 @@ namespace toppers
 
       cfg_info const& get_cfg_info() const
       {
-        return *get_object_definition_info();
+        return *get_container_info_map();
       }
     protected:
       virtual void do_swap( factory& other );
-      virtual std::auto_ptr< macro_processor > do_create_macro_processor( cfg1_out const& cfg1out, cfg1_out::cfg_obj_map const& obj_def_map ) const;
-      virtual std::auto_ptr< macro_processor > do_create_macro_processor( cfg1_out const& cfg1out, std::vector< object_definition* > const& obj_array ) const;
+      virtual std::auto_ptr< macro_processor > do_create_macro_processor( cfg1_out const& cfg1out, cfg1_out::xml_obj_map const& xml_map ) const;
     private:
       virtual std::auto_ptr< cfg1_out > do_create_cfg1_out( std::string const& filename ) const;
       virtual std::auto_ptr< checker > do_create_checker() const;
@@ -116,4 +131,4 @@ namespace toppers
   }
 }
 
-#endif  // ! TOPPERS_OIL_FACTORY_HPP_
+#endif  /* TOPPERS_XML_FACTORY_HPP_ */

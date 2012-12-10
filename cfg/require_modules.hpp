@@ -50,6 +50,12 @@ namespace toppers
   {
     REQUIRE_MODULE( atk1 )
   }
+#ifdef  HAS_CFG_XML
+  namespace xml
+  {
+    REQUIRE_MODULE( atk2 )
+  }
+#endif
   namespace itronx
   {
     REQUIRE_MODULE( asp )

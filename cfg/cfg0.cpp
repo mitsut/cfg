@@ -43,7 +43,7 @@ bool cfg0_main()
 
   try
   {
-    if ( global( "pass0" ).empty() && !get_global< bool >( "pass0" ) )
+    if ( global( "pass0" ).empty() && !get_global_bool( "pass0" ) )
     {
       goto failure;
     }

@@ -23,15 +23,23 @@ CXXFILES = \
 OBJFILES := $(CXXFILES:%.cpp=%.o)
 
 BOOST_LIBFILES := $(BOOST_LIBFILES) -lboost_system$(LIBBOOST_SUFFIX) -lboost_filesystem$(LIBBOOST_SUFFIX) -lboost_program_options$(LIBBOOST_SUFFIX) -lboost_regex$(LIBBOOST_SUFFIX)
+ifdef HAS_CFG_XML
+	XERCES_LIBSFILE := $(XERCES_LIBSFILE) -lxerces-c -licui18n -licuuc -licudata
+endif
 
 LIBFILES = $(PROJDIR)/toppers/itronx/libitronx.a \
-	$(PROJDIR)/toppers/oil/liboil.a \
-	$(PROJDIR)/toppers/libtoppers.a \
+	$(PROJDIR)/toppers/oil/liboil.a
+
+ifdef HAS_CFG_XML
+	LIBFILES := $(LIBFILES) $(PROJDIR)/toppers/xml/libxml.a
+endif
+
+LIBFILES := $(LIBFILES) $(PROJDIR)/toppers/libtoppers.a \
 
 all: cfg
 
 cfg: $(OBJFILES) $(LIBFILES)
-	$(CXX) $(LDFLAGS) -o cfg $(OBJFILES) -L$(LIBBOOST_DIR) $(LIBFILES) $(BOOST_LIBFILES)
+	$(CXX) $(LDFLAGS) -o cfg $(OBJFILES) -L$(LIBBOOST_DIR) -L$(LIBXERCES_DIR) $(LIBFILES) $(BOOST_LIBFILES) $(XERCES_LIBSFILE)
 
 depend:
 	$(CXX) $(CPPFLAGS) -M $(CXXFILES) > Makefile.depend

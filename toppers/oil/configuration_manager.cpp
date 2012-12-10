@@ -93,7 +93,7 @@ namespace toppers
       {
         std::string kernel_type;
         // APPMODEが定義されていない時はOSDEFAULTAPPMODEを挿入
-        toppers::get_global("kernel" , kernel_type);
+        toppers::get_global( "kernel", kernel_type );
         if((kernel_type == "atk1")
           && (oil_def->end() == 
             (find_if(oil_def->begin() , oil_def->end() , find_appmode_object))))

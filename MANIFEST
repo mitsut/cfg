@@ -96,3 +96,18 @@ toppers/oil/oil_parser.hpp
 toppers/oil/preprocess.cpp
 toppers/oil/preprocess.hpp
 
+toppers/xml/cfg1_out.cpp
+toppers/xml/cfg1_out.hpp
+toppers/xml/checker.cpp
+toppers/xml/checker.hpp
+toppers/xml/component.hpp
+toppers/xml/factory.cpp
+toppers/xml/factory.hpp
+toppers/xml/Makefile
+toppers/xml/preprocess.cpp
+toppers/xml/preprocess.hpp
+toppers/xml/xml_object.hpp
+toppers/xml/xml_parser.cpp
+toppers/xml/xml_parser.hpp
+toppers/xml/xml_xerces.cpp
+

@@ -11,6 +11,7 @@ do
 	case $name in
 		--with-headers)		include_path=$value ;;
 		--with-libraries)	library_path=$value ;;
+		--without-xml)		without_xml=1 ;;
 		--help)				echo "configure options:"
 							echo "--help"
 							echo "	display this information"
@@ -75,8 +76,14 @@ echo "LIBBOOST_SUFFIX=$libboost_suffix" >> $makefile_config
 # 各種変数を出力
 echo BOOST_VERSION=$boost_lib_version >> $makefile_config
 echo BOOST_DIR=$include_path >> $makefile_config
+echo XERCES_DIR=$include_path >> $makefile_config
 echo LIBBOOST_DIR=$library_path >> $makefile_config
+echo LIBXERCES_DIR=$library_path >> $makefile_config
 echo OPTIONS=$options >> $makefile_config
+if test -z $without_xml
+then
+	echo HAS_CFG_XML=1 >> $makefile_config
+fi
 
 # 生成結果を表示
 cat Makefile.config

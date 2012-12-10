@@ -88,10 +88,10 @@ namespace toppers
       bool little_endian_;
       std::size_t base_;
       cfg1_def_table const* def_table_;
-	  config_manage oil_configuration;
+      config_manage oil_configuration;
 
       implementation( std::string const& filename, std::ios_base::openmode omode, cfg1_def_table const* def_table = 0 )
-		  : ofile_( filename, omode ), little_endian_( true ), base_( 1 ), def_table_( def_table )
+        : ofile_( filename, omode ), little_endian_( true ), base_( 1 ), def_table_( def_table )
       {
       }
       virtual ~implementation()
@@ -238,22 +238,22 @@ namespace toppers
      *  \param[in]  obj_info    オブジェクト情報の連想配列
      */
     void cfg1_out::implementation::do_load_cfg( std::string const& input_file, 
-    			codeset_t codeset, std::vector<std::string> const& obj_info )
+                codeset_t codeset, std::vector<std::string> const& obj_info )
     {
-	  
-	  text txt;
+
+      text txt;
       // システムコンフィギュレーションファイルの解析
       std::ostringstream oss, includes_oss;
 
       preprocess( input_file, codeset, txt );
-	  
-	  // OIL情報の読み出し
-	  if(oil_configuration.read_configuration(&txt , obj_info) == true)
-	  {
-		  oil_def_array = oil_configuration.get_obj_def();
-		  oil_configuration.validate_and_assign_default_configuration();
-	  }
-		
+
+      // OIL情報の読み出し
+      if(oil_configuration.read_configuration(&txt , obj_info) == true)
+      {
+        oil_def_array = oil_configuration.get_obj_def();
+        oil_configuration.validate_and_assign_default_configuration();
+      }
+
       // データメンバへの反映
       std::string cfg1_list_temp( oss.str() );
       std::string includes_temp( includes_oss.str() );
@@ -383,14 +383,11 @@ namespace toppers
      *
      *  この関数は、"tsk"や"sem"といった種別をキーとして、その種別に分類される静的API情報の連想配列を生成する。
      */
-	cfg1_out::cfg_obj_map cfg1_out::merge() const
+    cfg1_out::cfg_obj_map cfg1_out::merge() const
     {
-	  cfg_obj_map result;
-	  
-	  result = oil_definition::merge(pimpl_->oil_def_array , result);
-
-	  return result;
-
+      cfg_obj_map result;
+      result = oil_definition::merge(pimpl_->oil_def_array , result);
+      return result;
     }
 
     /*!
@@ -417,7 +414,7 @@ namespace toppers
      */
     void cfg1_out::load_id_input_file( std::map< std::string, std::pair< long, bool > >& id_map )
     {
-      std::string id_input_file( get_global< std::string >( "id-input-file" ) );
+      std::string id_input_file( get_global_string( "id-input-file" ) );
       if ( id_input_file.empty() )
       {
         return;

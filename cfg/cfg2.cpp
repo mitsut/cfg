@@ -45,136 +45,6 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 
-/*!
- *  \brief  オブジェクトID番号の割付け
- *  \param[in]  api_map   ソースに記述された静的APIを登録したコンテナ
- */
-void assign_id( toppers::itronx::cfg1_out::static_api_map& api_map )
-{
-  using namespace toppers;
-  using namespace toppers::itronx;
-
-  std::string id_input_file( get_global< std::string >( "id-input-file" ) );
-  if ( id_input_file.empty() )  // --id-input-file オプションが指定されていない場合...
-  {
-    for ( cfg1_out::static_api_map::iterator iter( api_map.begin() ), last( api_map.end() );
-          iter != last;
-          ++iter )
-    {
-      static_api::assign_id( iter->second.begin(), iter->second.end() );
-    }
-  }
-  else  // --id-input-file オプションが指定されている場合...
-  {
-    typedef std::map< std::string, std::pair< long, bool > > id_map_t;
-    id_map_t id_map;
-    std::ifstream ifs( id_input_file.c_str() );
-    while ( ifs )
-    {
-      std::string linebuf;
-      std::getline( ifs, linebuf );
-      if ( ifs.bad() )
-      {
-        fatal( _( "I/O error" ) );
-      }
-      if ( linebuf.empty() || linebuf == "\r" )
-      {
-        break;
-      }
-
-      std::istringstream iss( linebuf );
-      std::string name;
-      iss >> name;
-      if ( iss.fail() )
-      {
-        fatal( _( "id file `%1%\' is invalid" ), id_input_file );
-      }
-
-      long value;
-      iss >> value;
-      if ( iss.fail() )
-      {
-        fatal( _( "id file `%1%\' is invalid" ), id_input_file );
-      }
-
-      if ( id_map.find( name ) != id_map.end() )
-      {
-        fatal( _( "E_OBJ: `%1%\' is duplicated" ), name );
-      }
-      else
-      {
-        id_map[ name ] = std::make_pair( value, false );
-      }
-    }
-
-    for ( cfg1_out::static_api_map::iterator iter( api_map.begin() ), last( api_map.end() );
-          iter != last;
-          ++iter )
-    {
-      for ( std::vector< static_api >::iterator iter2( iter->second.begin() ), last2( iter->second.end() );
-            iter2 != last2;
-            ++iter2 )
-      {
-        static_api::info const* info = iter2->get_info();
-        if ( info->id_pos >= 0 )
-        {
-          std::string name( iter2->at( info->id_pos ).text );
-          std::string symbol( iter2->at( info->id_pos ).symbol );
-          if ( !info->slave && symbol[0] == '#' )
-          {
-            id_map_t::iterator hit( id_map.find( name ) );
-            if ( hit != id_map.end() )
-            {
-              long id_value = hit->second.first;
-              if ( id_value > 0 )
-              {
-                iter2->at( info->id_pos ).value = id_value;
-                hit->second.second = true;
-              }
-            }
-          }
-        }
-      }
-      static_api::assign_id( iter->second.begin(), iter->second.end() );
-    }
-
-    for ( id_map_t::const_iterator iter( id_map.begin() ), last( id_map.end() ); iter != last; ++iter )  // 残り物があれば...
-    {
-      if ( !iter->second.second )
-      {
-        warning( _( "object identifier `%1%\' is not used" ), iter->first );
-      }
-    }
-  }
-
-  // --id-output-file オプションが指定されている場合
-  std::string id_output_file( get_global< std::string >( "id-output-file" ) );
-  if ( !id_output_file.empty() )
-  {
-    std::ofstream ofs( id_output_file.c_str() );
-    for ( cfg1_out::static_api_map::iterator iter( api_map.begin() ), last( api_map.end() );
-      iter != last;
-      ++iter )
-    {
-      for ( std::vector< static_api >::const_iterator iter2( iter->second.begin() ), last2( iter->second.end() );
-            iter2 != last2;
-            ++iter2 )
-      {
-        static_api::info const* info = iter2->get_info();
-        if ( info->id_pos >= 0 )
-        {
-          std::string name( iter2->at( info->id_pos ).text );
-          std::string symbol( iter2->at( info->id_pos ).symbol );
-          if ( !info->slave && symbol[0] == '#' )
-          {
-            ofs << name << '\t' << iter2->at( info->id_pos ).value.get() << std::endl;
-          }
-        }
-      }
-    }
-  }
-}
-
 namespace
 {
   template < class Factory >
@@ -190,13 +60,13 @@ namespace
     std::string input_file;
     try
     {
-      input_file = get_global< std::string >( "input-file" );
+      get_global( "input-file", input_file );
     }
     catch ( boost::bad_any_cast& )
     {
       fatal( _( "no input files" ) );
     }
-    std::string cfg1_out_name( get_global< std::string >( "cfg1_out" ) );
+    std::string cfg1_out_name( get_global_string( "cfg1_out" ) );
     std::auto_ptr< Cfg1_out > cfg1_out( factory.create_cfg1_out( cfg1_out_name ) );
 
     codeset_t codeset = get_global< codeset_t >( "codeset" );
@@ -206,21 +76,19 @@ namespace
     std::auto_ptr< macro_processor > mproc;
     std::auto_ptr< typename Factory::component > component_ptr;
 
-    if ( get_global< bool >( "with-software-components" ) )
+    if ( get_global_bool( "with-software-components" ) )
     {
       mproc = factory.create_macro_processor( *cfg1_out, component_ptr );
     }
     else  // 従来仕様（ソフトウェア部品非対応）
     {
-      typename Cfg1_out::cfg_element_map api_map( cfg1_out->merge() );
-      assign_id( api_map ); // ID番号の割付け
-      mproc = factory.create_macro_processor( *cfg1_out, api_map );
+      mproc = factory.create_macro_processor( *cfg1_out );
     }
 
     // テンプレート処理
     boost::any template_file( global( "template-file" ) );
     namespace fs = boost::filesystem;
-    fs::path cfg_dir( get_global< std::string >( "cfg-directory" ) );  // filesystem3対応
+    fs::path cfg_dir( get_global_string( "cfg-directory" ) );  // filesystem3対応
     std::vector< std::string > include_paths = get_global< std::vector< std::string > >( "include-path" );
     include_paths.push_back( cfg_dir.empty() ? "." : cfg_dir.string() );  // filesystem3対応
     if ( !template_file.empty() )
@@ -277,10 +145,16 @@ bool cfg2_main()
 {
   std::string kernel;
   toppers::get_global( "kernel", kernel );
-  if ( kernel == "atk1" )
+  if ( toppers::get_global_bool( "oil" ) )
   {
     return cfg2_main_implementation< toppers::oil::factory >( kernel );
   }
+#ifdef  HAS_CFG_XML
+  else if ( toppers::get_global_bool( "xml" ) )
+  {
+    return cfg2_main_implementation< toppers::xml::factory >( kernel );
+  }
+#endif
   else
   {
     return cfg2_main_implementation< toppers::itronx::factory >( kernel );

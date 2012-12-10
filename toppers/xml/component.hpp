@@ -1,9 +1,20 @@
-/*
- *  TOPPERS Software
+/* 
+ *  TOPPERS ATK2
  *      Toyohashi Open Platform for Embedded Real-Time Systems
- *
- *  Copyright (C) 2007-2012 by TAKAGI Nobuhisa
- * 
+ *      Automotive Kernel Version 2
+ *  
+ *  Copyright (C) 2010 by TAKAGI Nobuhisa
+ *  Copyright (C) 2011-2012 by Center for Embedded Computing Systems
+ *              Graduate School of Information Science, Nagoya Univ., JAPAN
+ *  Copyright (C) 2011-2012 by FUJISOFT INCORPORATED, JAPAN
+ *  Copyright (C) 2011-2012 by FUJITSU VLSI LIMITED, JAPAN
+ *  Copyright (C) 2011-2012 by NEC Communication Systems, Ltd., JAPAN
+ *  Copyright (C) 2011-2012 by Panasonic Advanced Technology Development Co., Ltd., JAPAN
+ *  Copyright (C) 2011-2012 by Renesas Electronics Corporation, JAPAN
+ *  Copyright (C) 2011-2012 by Sunny Giken Inc., JAPAN
+ *  Copyright (C) 2011-2012 by TOSHIBA CORPOTATION, JAPAN
+ *  Copyright (C) 2011-2012 by Witz Corporation, JAPAN
+ *  
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
@@ -26,75 +37,51 @@
  *      また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
  *      由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
  *      免責すること．
- * 
+ *  
  *  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
  *  よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
  *  に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
  * 
+ *  $Id: component.hpp 4000 2012-04-09 12:49:58Z fujitsu-wada $
  */
-#include <fstream>
-#include "toppers/output_file.hpp"
-#include "cfg.hpp"
-
-namespace
-{
-  template < class Factory >
-  inline bool cfg1_main_implementation( std::string const& kernel )
-  {
-    using namespace toppers;
-
-    Factory factory( kernel );
-
-    std::string input_file;
-    try
-    {
-      get_global( "input-file", input_file );
-    }
-    catch ( boost::bad_any_cast& )
-    {
-      fatal( _( "no input files" ) );
-    }
-    codeset_t codeset;
-    get_global( "codeset", codeset );
-
-    std::string cfg1_out_name;
-    get_global( "cfg1_out", cfg1_out_name );
-    std::auto_ptr< typename Factory::cfg1_out > cfg1_out( factory.create_cfg1_out( cfg1_out_name + ".c" ) );
-    cfg1_out->load_cfg( input_file, codeset, factory.get_cfg_info() );
-    cfg1_out->generate();
-
-    if ( get_error_count() > 0 )
-    {
-      return false;
-    }
-    output_file::save();
-    return true;
-  }
-}
 
 /*!
- *  \brief  パス１処理
- *  \retval true  成功
- *  \retval false 失敗
+ *  \file   toppers/itronx/component.hpp
+ *  \brief  ソフトウェア部品用のコンフィギュレーションを扱うための宣言定義
+ *
+ *  このファイルで定義されるクラス
+ *  \code
+ *  class component;
+ *  \endcode
  */
-bool cfg1_main()
+#ifndef TOPPERS_XML_COMPONENT_HPP_
+#define TOPPERS_XML_COMPONENT_HPP_
+
+namespace toppers
 {
-  std::string kernel;
-  toppers::get_global( "kernel", kernel );
-  if ( toppers::get_global_bool( "oil" ) )
+
+  class macro_processor;
+
+  namespace xml
   {
-    return cfg1_main_implementation< toppers::oil::factory >( kernel );
-  }
-#ifdef  HAS_CFG_XML
-  else if ( toppers::get_global_bool( "xml" ) )
-  {
-    return cfg1_main_implementation< toppers::xml::factory >( kernel );
-  }
-#endif
-  else
-  {
-    return cfg1_main_implementation< toppers::itronx::factory >( kernel );
+
+    /*!
+     *  \class  component component.hpp "toppers/itronx/component.hpp"
+     *  \brief  ソフトウェア部品用のコンフィギュレーションを扱うためのクラス
+     *  \note   現状ではコンストラクタ以外のメンバ関数を持たない。将来の拡張用にクラスにする。
+     */
+    class component
+    {
+    public:
+      explicit component( macro_processor* mproc );
+      // 現状ではメンバ無し
+    private:
+      macro_processor* mproc_;
+    };
+
   }
 }
+
+#endif  // !TOPPERS_XML_COMPONENT_HPP_

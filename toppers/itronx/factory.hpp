@@ -86,17 +86,14 @@ namespace toppers
       {
         return do_create_checker();
       }
+      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out ) const;
       std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, cfg1_out::static_api_map const& api_map ) const
       {
         return do_create_macro_processor( cfg1out, api_map );
       }
-      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, std::vector< static_api > const& api_array ) const
-      {
-        return do_create_macro_processor( cfg1out, api_array );
-      }
       std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, std::auto_ptr< component >& component_ptr ) const
       {
-        std::auto_ptr< macro_processor > mproc( create_macro_processor( cfg1out, cfg1out.get_static_api_array() ) );
+        std::auto_ptr< macro_processor > mproc( do_create_macro_processor( cfg1out, cfg1out.get_static_api_array() ) );
         component_ptr.reset( new component( mproc.get() ) );
         return mproc;
       }

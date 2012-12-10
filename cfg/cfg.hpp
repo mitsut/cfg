@@ -59,6 +59,11 @@
 #include "toppers/oil/preprocess.hpp"
 #include "toppers/oil/factory.hpp"
 #include "toppers/oil/cfg1_out.hpp"
+#ifdef  HAS_CFG_XML
+#include "toppers/xml/preprocess.hpp"
+#include "toppers/xml/factory.hpp"
+#include "toppers/xml/cfg1_out.hpp"
+#endif
 #include <boost/utility.hpp>
 #include <boost/format.hpp>
 
@@ -78,11 +83,5 @@ std::tr1::int64_t cfg_timestamp();
 bool read_cfg_file( std::map< std::string, toppers::itronx::static_api::info > const info_map,
                     std::string& cfg1_list, std::string& includes,
                     std::vector< toppers::itronx::static_api >& static_api_array );
-
-void assign_id( toppers::itronx::cfg1_out::static_api_map& api_map );
-template < class T >
-inline void assign_id( T& )
-{
-}
 
 #endif  // ! CFG_HPP_

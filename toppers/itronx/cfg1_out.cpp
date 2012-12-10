@@ -337,14 +337,14 @@ namespace toppers
 
             if ( block_type == "CLASS" )
             {
-              if ( !get_global< bool >( "has-class" ) )
+              if ( !get_global_bool( "has-class" ) )
               {
                 error( "cannot use `%1%'", "CLASS" );
               }
             }
             if ( block_type == "DOMAIN" || block_type == "KERNEL_DOMAIN"  )
             {
-              if ( !get_global< bool >( "has-domain" ) )
+              if ( !get_global_bool( "has-domain" ) )
               {
                 error( "cannot use `%1%'", block_type );
               }
@@ -613,7 +613,7 @@ namespace toppers
 
       std::string domid_defs_temp;
 
-      if ( get_global< bool >( "has-domain" ) )
+      if ( get_global_bool( "has-domain" ) )
       {
         load_id_input_file( id_map ); // --id-input-fileによるドメインIDの読み込み
 

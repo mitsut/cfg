@@ -192,9 +192,7 @@ namespace toppers
     {
       return filename;
     }
-//    fs::path dir( get_global< std::string >( "output-directory" ), fs::native  );
-    fs::path dir( get_global< std::string >( "output-directory" )  );  // filesystem3対応
-//    return ( dir/filename ).native_file_string();
+    fs::path dir( get_global_string( "output-directory" )  );  // filesystem3対応
     return ( dir/filename ).string();  // filesystem3対応
   }
 

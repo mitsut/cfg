@@ -83,6 +83,15 @@ namespace toppers
     return storage;
   }
 
+  inline bool get_global_bool( std::string const& key )
+  {
+    return get_global< bool >( key );
+  }
+
+  inline std::string const& get_global_string( std::string const& key )
+  {
+    return get_global< std::string >( key );
+  }
 }
 
 #endif  // ! TOPPERS_GLOBAL_HPP_

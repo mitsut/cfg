@@ -62,7 +62,7 @@ std::tr1::int64_t cfg_timestamp()
 
   try
   {
-    std::string program_name = toppers::get_global< std::string >( "argv0" );
+    std::string program_name = toppers::get_global_string( "argv0" );
 
     struct stat sb;
     stat( program_name.c_str(), &sb );
