@@ -101,6 +101,7 @@ namespace
       ( "external-id", _( "output ID numbers as external `const\' object" ) )
       ( "print-dependencies,M", po::value< std::string >(), _( "output dependencies of source file (for `make\')" ) )
       ( "with-software-components", _( "with software components" ) )
+      ( "ini-file", po::value< std::string >()->default_value( std::string() ), _( "configuration file for XML" ) )
       ;
 
     // 非表示オプション
@@ -147,6 +148,7 @@ namespace
     {
       std::string kernel = toppers::tolower( vm[ "kernel" ].as< std::string >() );
       toppers::global( "kernel" ) = kernel;
+      int atk = -1;
       bool has_class = false;
       bool has_domain = false;
       bool oil = false;
@@ -164,6 +166,7 @@ namespace
       if ( kernel.compare( 0, 4, "atk1" ) == 0 )
       {
         oil = true;
+        atk = 1;
       }
       else if ( kernel.compare( 0, 4, "atk2" ) == 0 )
       {
@@ -177,6 +180,7 @@ namespace
         {
           xml = true;
         }
+        atk = 2;
       }
 
       toppers::global( "max-pass" ) = ( has_domain ? 4 : 3 );
@@ -184,6 +188,7 @@ namespace
       toppers::global( "has-domain" ) = has_domain;
       toppers::global( "oil" ) = oil;
       toppers::global( "xml" ) = xml;
+      toppers::global( "atk" ) = atk;
     }
     if ( vm.count( "include-path" ) )
     {
@@ -307,6 +312,10 @@ namespace
       toppers::global( "help" ) = boost::lexical_cast< std::string >( visible );
       std::cout << visible << std::endl;
       toppers::global( "pass0" ) = true;
+    }
+    if ( vm.count( "ini-file" ) )
+    {
+      toppers::global( "ini-file" ) = slashes_to_single_slash( vm[ "ini-file" ].as< std::string >() );
     }
     return pass;
   }

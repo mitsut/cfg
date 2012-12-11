@@ -120,7 +120,7 @@ namespace toppers
       xml_obj_map do_merge(std::vector< toppers::xml::container::object* >, std::map<std::string, toppers::xml::info> const& info_map ) const;
       void do_sub_merge(std::vector< toppers::xml::container::object* > objects, xml_obj_map & xml_map, std::map<std::string, toppers::xml::info> const& info_map ) const;
       string replase_xml_pathname(std::vector< toppers::xml::container::object* >::iterator pObj, std::map<std::string, toppers::xml::info> const& info_map ) const;
-	  string search_info_pathname(string shortname) const;
+      string search_info_pathname(string shortname) const;
 
       bool is_little_endian() const;
 

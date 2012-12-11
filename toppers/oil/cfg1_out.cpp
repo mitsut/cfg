@@ -106,13 +106,13 @@ namespace toppers
         ofile_ << "const uint32_t TOPPERS_cfg_magic_number = 0x12345678;\n"
                   "const uint32_t TOPPERS_cfg_sizeof_signed_t = sizeof(signed_t);\n"
                   "const uint32_t TOPPERS_cfg_sizeof_pointer = sizeof(const volatile void*);\n"
-                  "const unsigned_t TOPPERS_cfg_CHAR_BIT = CHAR_BIT;\n"
-                  "const unsigned_t TOPPERS_cfg_CHAR_MAX = CHAR_MAX;\n"
-                  "const unsigned_t TOPPERS_cfg_CHAR_MIN = CHAR_MIN;\n"
-                  "const unsigned_t TOPPERS_cfg_SCHAR_MAX = SCHAR_MAX;\n"
-                  "const unsigned_t TOPPERS_cfg_SHRT_MAX = SHRT_MAX;\n"
-                  "const unsigned_t TOPPERS_cfg_INT_MAX = INT_MAX;\n"
-                  "const unsigned_t TOPPERS_cfg_LONG_MAX = LONG_MAX;\n"
+                  "const unsigned_t TOPPERS_cfg_CHAR_BIT = ((unsigned char)~0u == 0xff ? 8 : 16);\n"  // CHAR_BITが8または16ビットであることを仮定
+                  "const unsigned_t TOPPERS_cfg_CHAR_MAX = ((char)-1 < 0 ? (char)((unsigned char)~0u >> 1) : (unsigned char)~0u);\n"
+                  "const unsigned_t TOPPERS_cfg_CHAR_MIN = ((char)-1 < 0 ? -((unsigned char)~0u >> 1) - 1 : 0);\n"
+                  "const unsigned_t TOPPERS_cfg_SCHAR_MAX = (signed char)((unsigned char)~0u >> 1);\n"
+                  "const unsigned_t TOPPERS_cfg_SHRT_MAX = (short)((unsigned short)~0u >> 1);\n"
+                  "const unsigned_t TOPPERS_cfg_INT_MAX = (int)(~0u >> 1);\n"
+                  "const unsigned_t TOPPERS_cfg_LONG_MAX = (long)(~0ul >> 1);\n"
                   "\n";
 
         if ( def_table_ != 0 )	// 「値取得シンボルテーブル」
@@ -281,15 +281,28 @@ namespace toppers
 
       // int128_tは故意に無視
       // int128_tに揃えると処理が重くなりすぎるため
-      pimpl_->ofile_ << "\n#ifdef INT64_MAX\n"
-                        "  typedef int64_t signed_t;\n"
-                        "  typedef uint64_t unsigned_t;\n"
-                        "#else\n"
-                        "  typedef int32_t signed_t;\n"
-                        "  typedef uint32_t unsigned_t;\n"
-                        "#endif\n";
+      if ( get_global< int >( "atk" ) < 2 )
+      {
+        pimpl_->ofile_ << "\n#ifdef INT64_MAX\n"
+                          "  typedef int64_t signed_t;\n"
+                          "  typedef uint64_t unsigned_t;\n"
+                          "#else\n"
+                          "  typedef int32_t signed_t;\n"
+                          "  typedef uint32_t unsigned_t;\n"
+                          "#endif\n";
+      }
+      else
+      {
+        pimpl_->ofile_ << "\n#ifdef INT64_MAX\n"
+                          "  typedef sint64 signed_t;\n"
+                          "  typedef uint64 unsigned_t;\n"
+                          "#else\n"
+                          "  typedef sint32 signed_t;\n"
+                          "  typedef uint32 unsigned_t;\n"
+                          "#endif\n";
+      }
 
-      pimpl_->ofile_ << "\n#include <target_cfg1_out.h>\n\n";
+      pimpl_->ofile_ << "\n#include \"target_cfg1_out.h\"\n\n";
 
       pimpl_->do_generate_cfg1_def();
       pimpl_->ofile_ << pimpl_->cfg1_out_list_ << '\n';

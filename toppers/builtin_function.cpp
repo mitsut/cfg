@@ -415,12 +415,19 @@ namespace toppers
       toppers::trace("%s", debug_str.c_str() );
 #endif
     boost::format fmt( format_str );
-    for ( std::size_t i = 1; i < arity; i++ )
+    try
     {
-      std::pair< var_t const*, context const* > arg( &arg_list[i], p_ctx );
-      fmt % arg;
+      for ( std::size_t i = 1; i < arity; i++ )
+      {
+        std::pair< var_t const*, context const* > arg( &arg_list[i], p_ctx );
+        fmt % arg;
+      }
+      e.s = fmt.str();
     }
-    e.s = fmt.str();
+    catch ( ... )
+    {
+      error( line, _( "illegal argument value in `%1%\'" ), "FORMAT" );
+    }
     return var_t( 1, e );
   }
 
