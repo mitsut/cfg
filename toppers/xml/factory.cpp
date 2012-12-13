@@ -278,6 +278,11 @@ namespace toppers
               e.i = (*q)->getLine() + 1;
 
               mproc.set_var( (*p).first + ".TEXT_LINE", obj_id, var_t( 1, e ) );
+
+              // コンテナの兄弟コンテナ数
+              e.s = (*q)->getSiblings();
+              e.i = (*q)->getSiblings();
+              mproc.set_var( (*p).first + ".SIBLINGS", obj_id, var_t( 1, e ) );
             }
 
           }

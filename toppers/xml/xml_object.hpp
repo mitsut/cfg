@@ -140,6 +140,7 @@ namespace toppers
 					id = undefined;
 					line = undefined;
 					parent = NULL;
+					siblings = undefined;
 				}
 				~object()
 				{
@@ -153,6 +154,7 @@ namespace toppers
 				std::vector<parameter*>* getParams() { return &params; }
 				std::vector<object*>* getSubcontainers() { return &subcontainers; }
 				object* getParent() { return parent; }
+				int getSiblings() { return siblings; }
 
 				void setId( int id_ )
 				{
@@ -186,6 +188,10 @@ namespace toppers
 				{
 					parent = p;
 				}
+				void setSiblings( int siblings_ )
+				{
+					siblings = siblings_;
+				}
 			protected:
 				int id;									/* コンテナオブジェクトのID */
 				string define_name;						/* コンテナ名 */
@@ -195,6 +201,7 @@ namespace toppers
 				object* parent;							/* 親コンテナへのポインタ */
 				string file_name;						/* パースファイル名 */
 				int line;                               /* パース行番号 */
+				int siblings;                           /* 兄弟コンテナの数 */
 			};
 
 			// コンテナパラメータに関する情報

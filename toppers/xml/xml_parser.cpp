@@ -128,29 +128,28 @@ void SAX2Handlers::startElement(const XMLCh* const uri
     }
   }
 
-  // "ECUC-MODULE-CONFIGURATION-VALUES"タグがフラグをあげて，DEFINITION-FERタグをパースする
   if(localname == ecucmodule) {
     fEcuModuleConfigurationValues_++;
-  }
 
-  // 新しいコンテナが追加される
-  if(fEcuModuleConfigurationValues_ && localname == ecuccontainer) {
+    obj_temp = new toppers::xml::container::object();
+    object_array.push_back(obj_temp);
+    obj_temp->setParent( obj_temp );
+    obj_temp->setLine( get_line() );
+    obj_temp->setId( 1 );
+
+  } else if(localname == ecuccontainer) {
     fEcucContainerValue_++;
 
     toppers::xml::container::object *old_obj = obj_temp;
     obj_temp = new toppers::xml::container::object();
-
     obj_temp->setLine( get_line() );
-    if(fSubcontainers_ <= 0)
-    {
-      object_array.push_back(obj_temp);
-    }
-    else if(fSubcontainers_ > fSubcontainers_old_)
+
+    if(fSubcontainers_ > fSubcontainers_old_) // old_objのサブコンテナの場合
     {
       old_obj->getSubcontainers()->push_back(obj_temp);
       obj_temp->setParent( old_obj );
     }
-    else if(fSubcontainers_ <= fSubcontainers_old_)
+    else
     {
       while(fSubcontainers_ < fSubcontainers_old_)
       {
@@ -163,13 +162,12 @@ void SAX2Handlers::startElement(const XMLCh* const uri
 
     fSubcontainers_old_ = fSubcontainers_;
   }
-  else if( atk2header == localname )
-  {
+  else if(localname == atk2header) {
     fAtk2HeaderFile_++;
   }
 
   // コンテナ内のタグ情報をパースする
-  if(fEcuModuleConfigurationValues_ && fEcucContainerValue_)
+  if(fEcuModuleConfigurationValues_ || fEcucContainerValue_)
   {
     
     if(localname == subcontainer)
@@ -296,13 +294,6 @@ void SAX2Handlers::endElement( const XMLCh* const uri, const XMLCh *const localn
 
   static XercesString oscontainer   = fromNative("/AUTOSAR/EcucDefs/Os");
 
-  // "ECUC-MODULE-CONFIGURATION-VALUES"タグが来た場合はパース終了
-  if(localname == ecucmodule)
-  {
-    fEcuModuleConfigurationValues_ = 0;
-    return;
-  }
-
   // "ATK2-HEADER-FILE"タグが来た場合はパース終了
   if(localname == atk2header)
   {
@@ -324,7 +315,7 @@ void SAX2Handlers::endElement( const XMLCh* const uri, const XMLCh *const localn
 */
 
   // パース中のタグの処理
-  if(fEcuModuleConfigurationValues_ && fEcucContainerValue_)
+  if(fEcuModuleConfigurationValues_ || fEcucContainerValue_)
   {
     // xml:space要素はデフォルトでスペースを削除する
     if(fAttrXmlSpace_ == true)
@@ -357,6 +348,10 @@ void SAX2Handlers::endElement( const XMLCh* const uri, const XMLCh *const localn
     }
 
 
+    else if(localname == ecucmodule)
+    {
+      fEcuModuleConfigurationValues_--;
+    }
     else if(localname == ecuccontainer)
     {
       fEcucContainerValue_--;

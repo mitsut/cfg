@@ -315,7 +315,24 @@ namespace
     }
     if ( vm.count( "ini-file" ) )
     {
-      toppers::global( "ini-file" ) = slashes_to_single_slash( vm[ "ini-file" ].as< std::string >() );
+      std::string ini_file( slashes_to_single_slash( vm[ "ini-file" ].as< std::string >() ) );
+      toppers::global( "ini-file" ) = ini_file;
+      std::ifstream ifs( ini_file.c_str() );
+      if ( ifs.is_open() )
+      {
+        while ( ifs )
+        {
+          std::string buf;
+          std::getline( ifs, buf );
+          if ( buf.empty() || buf[0] == ';' )
+            continue;
+          std::string::size_type pos = buf.find( '=' );
+          if ( pos != std::string::npos )
+          {
+            toppers::global( "XML_" + buf.substr( 0, pos ) ) = buf.substr( pos + 1 );
+          }
+        }
+      }
     }
     return pass;
   }

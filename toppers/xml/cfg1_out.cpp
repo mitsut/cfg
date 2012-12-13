@@ -384,6 +384,11 @@ namespace toppers
       return stream.str();
     }
 
+    /*! 
+     *  \brief  多重度情報を検証する 
+     *  \param[in]  objects  XMLでパースしたコンテナの連想配列 
+     *  \param[in]  info_map ATK2で指定するコンテナ情報の連想配列 
+     */ 
     void cfg1_out::implementation::validate_multiplicity( toppers::xml::container::object* object,
       std::map<std::string, toppers::xml::info> const& info_map )
     {
@@ -391,18 +396,17 @@ namespace toppers
       std::map<std::string, toppers::xml::info> search_map;
       std::map<std::string, unsigned int> multi_map;
 
-      // 自コンテナのパラメータとサブコンテナの多重度定義情報を取得する
-      if( objPath.empty() )
-      {
-        objPath = "/AUTOSAR/EcucDefs/Os";
-      }
+      // 自コンテナのパラメータとサブコンテナの多重度定義情報をinfo_mapから取得する
       for( std::map<std::string, toppers::xml::info>::const_iterator pInfo = info_map.begin() ;
         pInfo != info_map.end() ;
         ++pInfo )
       {
+        // objPathと同じ文字列がある場合（後につづくパスがあってもよい）
         if( pInfo->first.find(objPath) != string::npos )
         {
+          // objPathのあとに続く文字列を取得
           std::string str( pInfo->first.substr(objPath.size()) );
+          // strのパス情報が1つしかない場合は自コンテナのパラメータかサブコンテナである
           if( 0 == (int)str.rfind("/") )
           {
             search_map.insert(make_pair(pInfo->first, pInfo->second ));
@@ -410,7 +414,7 @@ namespace toppers
         }
       }
 
-      // 自コンテナのパラメータとサブコンテナの多重度情報を集計する
+      // 自コンテナのパラメータの多重度を集計する
       for ( std::vector<toppers::xml::container::parameter*>::const_iterator pPara = object->getParams()->begin() ;
         pPara != object->getParams()->end();
         ++pPara )
@@ -425,6 +429,7 @@ namespace toppers
           pMulti->second++;
         }
       }
+      // 自コンテナのサブコンテナの多重度を集計する
       for ( std::vector< toppers::xml::container::object* >::iterator pObj = object->getSubcontainers()->begin() ;
         pObj != object->getSubcontainers()->end();
         ++pObj )
@@ -450,14 +455,14 @@ namespace toppers
         {
           if( pSearch->second.multimin > 0)
           {
-            fatal( _("`%1%\' is not exist. Parent container is `%2%\'(%3%:%4%).") ,pSearch->first ,objPath ,object->getFileName() ,object->getLine() );
+            fatal( _("`%1%\' is not exist.") ,pSearch->first );
           }
         }
         else
         {
           if( pSearch->second.multimin > pMulti->second  || pSearch->second.multimax < pMulti->second )
           {
-            fatal( _("`%1%\' multiplicity is out of range. Parent container is `%2%\'(%3%:%4%).") ,pSearch->first ,objPath ,object->getFileName() ,object->getLine() );
+            fatal( _("`%1%\' multiplicity is out of range. This multiplicity is `%2%'.") ,pSearch->first ,pMulti->second );
           }
         }
       }
@@ -470,7 +475,12 @@ namespace toppers
         validate_multiplicity(*pSub, info_map);
       }
     }
-      
+
+    /*!
+     *  \brief  コンテナのパラメータの型情報を検証する
+     *  \param[in]  objects  XMLでパースしたコンテナの連想配列
+     *  \param[in]  info_map ATK2で指定するコンテナ情報の連想配列
+     */
     void cfg1_out::implementation::validate_type(std::vector< toppers::xml::container::object* > objects,
       std::map<std::string, toppers::xml::info> const& info_map )
     {
@@ -557,20 +567,29 @@ namespace toppers
       std::vector< toppers::xml::container::object*> container_array_temp( xml_parser_init(input_file, &incstr) );
 
       // ATK2-HEADER-FILEタグの展開
-        std::ostringstream oss, includes_oss;
+      std::ostringstream oss, includes_oss;
       std::list< string >::iterator pIncStr = incstr.begin();
       while( pIncStr != incstr.end() )
       {
         oss << "/* #include \"" << *pIncStr << "\" */\n";
         includes_oss << "#include \"" << *pIncStr << "\"\n";
 
-      ++pIncStr;
+        ++pIncStr;
       }
 
-      // パースしたXMLの型情報、多重度のチェックを行う
+      // 多重度の検証
+      toppers::xml::container::object *obj = new toppers::xml::container::object();
+      obj->setSubcontainers(container_array_temp);
+      std::string container_path( get_global_string( "XML_ContainerPath" ) );
+      if ( container_path.empty() )
+        container_path = "/AUTOSAR/EcucDefs";
+      obj->setDefName( container_path );
+      validate_multiplicity(obj, info_map);
+
+      // 型情報の検証
       validate_type(container_array_temp, info_map);
 
-      // api-tableの短縮名とURI名のmapを作成
+      // api-tableの短縮名とURI名の連想配列(info_rmap_)を作成
       for( std::map<std::string, toppers::xml::info>::const_iterator pInfo = info_map.begin() ;
         pInfo != info_map.end() ;
         ++pInfo)
@@ -578,20 +597,16 @@ namespace toppers
         info_rmap_.insert( pair<std::string, std::string>(pInfo->second.tfname, pInfo->first));
       }
 
-      toppers::xml::container::object *obj = new toppers::xml::container::object();
-      obj->setSubcontainers(container_array_temp);
-      validate_multiplicity(obj, info_map);
-
       // XMLパースのパラメータでマクロになっているものを出力する
       oss << do_search_macro(container_array_temp, info_map);
           
-        // データメンバへの反映
-        std::string cfg1_list_temp( oss.str() );
-        std::string includes_temp( includes_oss.str() );
+      // データメンバへの反映
+      std::string cfg1_list_temp( oss.str() );
+      std::string includes_temp( includes_oss.str() );
 
-        cfg1_out_list_.swap( cfg1_list_temp );
+      cfg1_out_list_.swap( cfg1_list_temp );
       container_array_.swap(container_array_temp);
-        includes_.swap( includes_temp );
+      includes_.swap( includes_temp );
     }
 
     /*!
@@ -732,39 +747,80 @@ namespace toppers
         {
           do_sub_merge( *(*pObj)->getSubcontainers(), xml_map, info_map);
         }
+        // XMLのフルパス情報を短縮文字列へ置き換える
         string str = replase_xml_pathname(pObj, info_map);
         xml_map[ str ].push_back( *pObj );
       }
     }
 
+    void cfg1_out::do_sub_siblings(std::vector< toppers::xml::container::object* > objects, int siblings) const
+    {
+        for ( std::vector< toppers::xml::container::object* >::iterator pObj = objects.begin() ;
+            pObj != objects.end();
+            ++pObj )
+        {
+            int SubcontinersSiblings = (*pObj)->getSubcontainers()->size();
+            if( SubcontinersSiblings != 0)
+            {
+                do_sub_siblings( *(*pObj)->getSubcontainers(), SubcontinersSiblings );
+            }
+            (*pObj)->setSiblings(siblings);
+        }
+    }
+
     cfg1_out::xml_obj_map cfg1_out::do_merge(std::vector< toppers::xml::container::object* > objects,
       std::map<std::string, toppers::xml::info> const& info_map ) const
     {
-      xml_obj_map result;
+      xml_obj_map result; // コンテナの連想配列
 
-      for ( std::vector< toppers::xml::container::object* >::iterator pObj = objects.begin() ;
-        pObj != objects.end();
-        ++pObj )
+      for ( std::vector< toppers::xml::container::object* >::iterator pModule = objects.begin() ;
+          pModule != objects.end();
+          ++pModule )
       {
+        for ( std::vector< toppers::xml::container::object* >::iterator pObj = (*pModule)->getSubcontainers()->begin() ;
+            pObj != (*pModule)->getSubcontainers()->end();
+            ++pObj )
         {
-          string str = replase_xml_pathname(pObj, info_map);
-          result[ str ].push_back( *pObj );
+          {
+            string str = replase_xml_pathname(pObj, info_map);
+            result[ str ].push_back( *pObj );
+          }
         }
-      }
-
-      // サブコンテナを連想配列へ登録
-      for ( std::vector< toppers::xml::container::object* >::iterator pObj = objects.begin() ;
-        pObj != objects.end();
-        ++pObj )
-      {
-        if( (*pObj)->getSubcontainers()->size() != 0)
+        // サブコンテナを連想配列へ登録
+        for ( std::vector< toppers::xml::container::object* >::iterator pObj = (*pModule)->getSubcontainers()->begin() ;
+              pObj != (*pModule)->getSubcontainers()->end();
+              ++pObj )
         {
-          do_sub_merge( *(*pObj)->getSubcontainers(), result, info_map);
+          if( (*pObj)->getSubcontainers()->size() != 0)
+          {
+            do_sub_merge( *(*pObj)->getSubcontainers(), result, info_map);
+          }
         }
       }
 
       // ID番号の割付け
       assign_id(result);
+
+      // 兄弟コンテナの数を抽出
+      int SiblingsNumber = 0;
+      for ( std::map< std::string, std::vector<toppers::xml::container::object*> >::iterator pObj = result.begin() ;
+          pObj != result.end();
+          ++pObj )
+      {
+        SiblingsNumber = pObj->second.size();
+        for ( std::vector< toppers::xml::container::object* >::iterator p = pObj->second.begin() ;
+            p != pObj->second.end();
+            ++p )
+        {
+          // サブコンテナの兄弟コンテナ数を抽出
+          int SubcontinersSiblings = (*p)->getSubcontainers()->size();
+          if( SubcontinersSiblings != 0)
+          {
+            do_sub_siblings( *(*p)->getSubcontainers(), SubcontinersSiblings );
+          }
+          (*p)->setSiblings(SiblingsNumber);
+        }
+      }
 
       return result;
     }

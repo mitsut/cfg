@@ -117,6 +117,7 @@ namespace toppers
       std::tr1::shared_ptr< nm_symbol > get_syms() const;
       cfg1_def_table const* get_def_table() const;
       xml_obj_map merge(std::map<std::string, toppers::xml::info> const& info_map ) const;
+      void do_sub_siblings(std::vector< toppers::xml::container::object* > objects, int siblings) const;
       xml_obj_map do_merge(std::vector< toppers::xml::container::object* >, std::map<std::string, toppers::xml::info> const& info_map ) const;
       void do_sub_merge(std::vector< toppers::xml::container::object* > objects, xml_obj_map & xml_map, std::map<std::string, toppers::xml::info> const& info_map ) const;
       string replase_xml_pathname(std::vector< toppers::xml::container::object* >::iterator pObj, std::map<std::string, toppers::xml::info> const& info_map ) const;

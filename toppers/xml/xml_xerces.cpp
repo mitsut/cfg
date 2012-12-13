@@ -160,7 +160,14 @@ namespace toppers
       }
       else
       {
-        ostream << "http://autosar.org/schema/r4.0 " << get_global_string( "cfg-directory" ) << "/AUTOSAR_4-0-3-atk2.xsd";
+        std::string schema( get_global_string( "XML_Schema" ) );
+        if ( schema.empty() )
+          schema = "/AUTOSAR_4-0-3-atk2.xsd";
+        std::string schema_location( get_global_string( "XML_schemaLocation" ) );
+        if ( schema_location.empty() )
+          schema_location = "http://autosar.org/schema/r4.0 ";
+
+        ostream << schema_location << get_global_string( "cfg-directory" ) << schema;
       }
       XMLCh* str (XMLString::transcode (ostream.str().c_str()));
 
