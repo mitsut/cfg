@@ -154,11 +154,11 @@ namespace
       bool oil = false;
       bool xml = false;
 
-      if ( kernel == "fmp" || kernel == "fmp+hrp2" || kernel == "hrp2+fmp" || kernel == "atk2-sc3" )
+      if ( kernel == "fmp" || kernel == "fmp+hrp2" || kernel == "hrp2+fmp" )
       {
         has_class = true;
       }
-      if ( kernel == "hrp2" || kernel == "fmp+hrp2" || kernel == "hrp2+fmp" || kernel == "atk2-sc3" || kernel == "atk2_osap" )
+      if ( kernel == "hrp2" || kernel == "fmp+hrp2" || kernel == "hrp2+fmp" || kernel == "atk2_osap" )
       {
         has_domain = true;
       }
