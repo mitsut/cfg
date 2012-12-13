@@ -158,7 +158,7 @@ namespace
       {
         has_class = true;
       }
-      if ( kernel == "hrp2" || kernel == "fmp+hrp2" || kernel == "hrp2+fmp" || kernel == "atk2-sc3" )
+      if ( kernel == "hrp2" || kernel == "fmp+hrp2" || kernel == "hrp2+fmp" || kernel == "atk2-sc3" || kernel == "atk2_osap" )
       {
         has_domain = true;
       }
@@ -172,11 +172,12 @@ namespace
       {
         std::string input_file = toppers::get_global_string( "input-file" );
         std::string::size_type pos = input_file.rfind( '.' );
-        if ( pos != std::string::npos && input_file.compare( pos, std::string::npos, ".oil" ) == 0 )
+        std::string suffix( input_file.substr( pos ) );
+        if ( pos != std::string::npos && suffix == ".oil" )
         {
           oil = true;
         }
-        else
+        else if ( suffix != ".cfg" && kernel != "atk2_no_osap" && kernel != "atk2_osap" )
         {
           xml = true;
         }
