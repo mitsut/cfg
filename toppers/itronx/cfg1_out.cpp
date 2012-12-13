@@ -701,13 +701,26 @@ namespace toppers
 
       // int128_tは故意に無視
       // int128_tに揃えると処理が重くなりすぎるため
-      pimpl_->ofile_ << "\n#ifdef INT64_MAX\n"
-                        "  typedef int64_t signed_t;\n"
-                        "  typedef uint64_t unsigned_t;\n"
-                        "#else\n"
-                        "  typedef int32_t signed_t;\n"
-                        "  typedef uint32_t unsigned_t;\n"
-                        "#endif\n";
+      if ( get_global< int >( "atk" ) < 2 )
+      {
+        pimpl_->ofile_ << "\n#ifdef INT64_MAX\n"
+                          "  typedef int64_t signed_t;\n"
+                          "  typedef uint64_t unsigned_t;\n"
+                          "#else\n"
+                          "  typedef int32_t signed_t;\n"
+                          "  typedef uint32_t unsigned_t;\n"
+                          "#endif\n";
+      }
+      else
+      {
+        pimpl_->ofile_ << "\n#ifdef INT64_MAX\n"
+                          "  typedef sint64 signed_t;\n"
+                          "  typedef uint64 unsigned_t;\n"
+                          "#else\n"
+                          "  typedef sint32 signed_t;\n"
+                          "  typedef uint32 unsigned_t;\n"
+                          "#endif\n";
+      }
 
       pimpl_->ofile_ << "\n#include \"target_cfg1_out.h\"\n\n";
 
