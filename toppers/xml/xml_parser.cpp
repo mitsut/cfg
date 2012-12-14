@@ -74,7 +74,6 @@ fEcuModuleConfigurationValues_(0)
 , fReferenceValues_(0)
 , fSubcontainers_(0)
 , fSubcontainers_old_(0)
-, fAtk2HeaderFile_(0)
 , fAttrXmlSpace_(true)
 /*
 , fEcucReferenceValue_(0)
@@ -97,7 +96,6 @@ void SAX2Handlers::startElement(const XMLCh* const uri
                    , const Attributes& attrs)
 {
   static XercesString ecucmodule    = fromNative("ECUC-MODULE-CONFIGURATION-VALUES");
-  static XercesString atk2header    = fromNative("ATK2-HEADER-FILE");
   static XercesString ecuccontainer = fromNative("ECUC-CONTAINER-VALUE");
   static XercesString subcontainer  = fromNative("SUB-CONTAINERS");
   static XercesString parameter     = fromNative("PARAMETER-VALUES");
@@ -161,9 +159,6 @@ void SAX2Handlers::startElement(const XMLCh* const uri
     }
 
     fSubcontainers_old_ = fSubcontainers_;
-  }
-  else if(localname == atk2header) {
-    fAtk2HeaderFile_++;
   }
 
   // コンテナ内のタグ情報をパースする
@@ -260,13 +255,9 @@ void SAX2Handlers::characters(  const   XMLCh* const   chars
   XERCES_STD_QUALIFIER cerr << "contents : " << toNative(chars) << "(" << get_line() << ")" << XERCES_STD_QUALIFIER endl;
 #endif
 
-  if(fEcuModuleConfigurationValues_ && !fAtk2HeaderFile_)
+  if(fEcuModuleConfigurationValues_)
   {
     currentText_.append(chars, length);
-  }
-  else if(fAtk2HeaderFile_)
-  {
-    includeText_.push_back( toNative(chars) );
   }
 }
 
@@ -278,7 +269,6 @@ void SAX2Handlers::endElement( const XMLCh* const uri, const XMLCh *const localn
 #endif
 
   static XercesString ecucmodule    = fromNative("ECUC-MODULE-CONFIGURATION-VALUES");
-  static XercesString atk2header    = fromNative("ATK2-HEADER-FILE");
   static XercesString ecuccontainer = fromNative("ECUC-CONTAINER-VALUE");
   static XercesString subcontainer  = fromNative("SUB-CONTAINERS");
   static XercesString parameter     = fromNative("PARAMETER-VALUES");
@@ -293,26 +283,6 @@ void SAX2Handlers::endElement( const XMLCh* const uri, const XMLCh *const localn
   static XercesString value         = fromNative("VALUE");
 
   static XercesString oscontainer   = fromNative("/AUTOSAR/EcucDefs/Os");
-
-  // "ATK2-HEADER-FILE"タグが来た場合はパース終了
-  if(localname == atk2header)
-  {
-    fAtk2HeaderFile_ = 0;
-    return;
-  }
-
-  // Osコンテナのフルパス情報が異なっている場合はパース終了
-/*
-  if(localname == definitionref)
-  {
-    if(fEcuModuleConfigurationValues_ && !fEcucContainerValue_ && (oscontainer != currentText_))
-    {
-      fEcuModuleConfigurationValues_ = 0;
-      currentText_.clear();
-      return;
-    }
-  }
-*/
 
   // パース中のタグの処理
   if(fEcuModuleConfigurationValues_ || fEcucContainerValue_)

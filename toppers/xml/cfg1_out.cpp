@@ -165,6 +165,7 @@ namespace toppers
       virtual void validate_multiplicity( toppers::xml::container::object* object ,std::map<std::string, toppers::xml::info> const& info_map );
       virtual string do_out_macro_name(std::vector<toppers::xml::container::parameter*>::const_iterator r, int serial, std::map<std::string, toppers::xml::info> const& info_map);
       virtual string do_search_macro(std::vector< toppers::xml::container::object* > objects ,std::map<std::string, toppers::xml::info> const& info_map );
+      virtual void do_search_includes(std::vector< toppers::xml::container::object* > objects ,std::string include_container, std::list< string > *incstr );
       virtual void do_load_cfg( std::string const& input_file, codeset_t codeset, std::map<std::string, toppers::xml::info> const& info_map );
       virtual void do_generate_includes() const
       {
@@ -384,6 +385,35 @@ namespace toppers
       return stream.str();
     }
 
+    /*!
+     *  \brief  インクルードコンテナ情報を抽出する
+     *  \param[in]  objects  XMLでパースしたコンテナの連想配列
+     *  \param[in]  include_container 抽出するコンテナのフルパス名
+     */
+    void cfg1_out::implementation::do_search_includes(std::vector< toppers::xml::container::object* > objects,
+        std::string include_container, std::list< string > *incstr )
+    {
+        ostringstream stream;
+
+        for ( std::vector< toppers::xml::container::object* >::iterator pObj = objects.begin() ;
+            pObj != objects.end();
+            ++pObj )
+        {
+            if( (*pObj)->getSubcontainers()->size() != 0)
+            {
+                do_search_includes( *(*pObj)->getSubcontainers(), include_container, incstr );
+            }
+            for( std::vector< toppers::xml::container::parameter* >::iterator pPara = (*pObj)->getParams()->begin() ;
+                pPara != (*pObj)->getParams()->end();
+                ++pPara )
+            {
+                if( (*pPara)->getDefName() == include_container )
+                    (*incstr).push_back( (*pPara)->getValue() );
+            }
+        }
+        return ;
+    }
+
     /*! 
      *  \brief  多重度情報を検証する 
      *  \param[in]  objects  XMLでパースしたコンテナの連想配列 
@@ -492,6 +522,7 @@ namespace toppers
       type_map.insert(pair<std::string, toppers::xml::container::PARAMETER_TYPE>("ENUM",     toppers::xml::container::TYPE_ENUM));
       type_map.insert(pair<std::string, toppers::xml::container::PARAMETER_TYPE>("REF",      toppers::xml::container::TYPE_REF));
       type_map.insert(pair<std::string, toppers::xml::container::PARAMETER_TYPE>("FUNCTION", toppers::xml::container::TYPE_FUNCTION));
+      type_map.insert(pair<std::string, toppers::xml::container::PARAMETER_TYPE>("INCLUDE",  toppers::xml::container::TYPE_INCLUDE));
 
       for ( std::vector< toppers::xml::container::object* >::iterator pObj = objects.begin() ;
         pObj != objects.end();
@@ -563,10 +594,26 @@ namespace toppers
       preprocess( input_file, codeset, txt );
 
       // XMLファイルのパース処理
-      std::list< string > incstr;
-      std::vector< toppers::xml::container::object*> container_array_temp( xml_parser_init(input_file, &incstr) );
+      std::vector< toppers::xml::container::object*> container_array_temp( xml_parser_init(input_file) );
 
-      // ATK2-HEADER-FILEタグの展開
+      // インクルードコンテナのフルパス名を取得
+      std::string include_container;
+      std::string s1;
+      for( std::map<std::string, toppers::xml::info>::const_iterator pInfo = info_map.begin() ;
+          pInfo != info_map.end() ;
+          ++pInfo)
+      {
+          s1 = pInfo->second.type;
+          if(s1.find("INCLUDE", 0 ) != string::npos)
+              include_container = pInfo->first;
+      }
+      if ( include_container.empty() )
+        include_container = "/AUTOSAR/EcucDefs/Os/OsInclude/OsIncludeFileName";
+
+      //インクルードコンテナ情報を取得
+      std::list< string > incstr;
+      do_search_includes( container_array_temp, include_container, &incstr );
+
       std::ostringstream oss, includes_oss;
       std::list< string >::iterator pIncStr = incstr.begin();
       while( pIncStr != incstr.end() )

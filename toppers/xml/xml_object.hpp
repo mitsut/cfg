@@ -128,6 +128,7 @@ namespace toppers
 				TYPE_ENUM , 
 				TYPE_REF ,
 				TYPE_FUNCTION,
+				TYPE_INCLUDE,
 			};
 
 			/* オブジェクト定義のクラス */
@@ -291,10 +292,8 @@ public:
     void resetErrors();
 
 	string filename;
-	std::list < string > includeText_;
 
 private:
-	int fAtk2HeaderFile_;
 	int fEcuModuleConfigurationValues_;
 	int fEcucContainerValue_;
 	int fSubcontainers_;

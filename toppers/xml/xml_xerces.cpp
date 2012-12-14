@@ -79,7 +79,7 @@ namespace toppers
 {
   namespace xml
   {
-    std::vector< toppers::xml::container::object* > cfg1_out::xml_parser_init(std::string input_file, std::list< string > *incstr)
+    std::vector< toppers::xml::container::object* > cfg1_out::xml_parser_init( std::string input_file )
     {
       SAX2XMLReader::ValSchemes    valScheme    = SAX2XMLReader::Val_Auto;
       bool                         doNamespaces = true;
@@ -207,7 +207,6 @@ namespace toppers
 
       XMLPlatformUtils::Terminate();
 
-      handler.includeText_.swap( *incstr );
       return handler.object_array;
     }
   }

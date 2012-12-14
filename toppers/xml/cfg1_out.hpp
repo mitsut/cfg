@@ -149,7 +149,7 @@ namespace toppers
         return result;
       }
 
-      static std::vector< toppers::xml::container::object* > xml_parser_init(std::string input_file, std::list< string > *incstr);
+      static std::vector< toppers::xml::container::object* > xml_parser_init(std::string input_file);
 
     protected:
       struct implementation;
