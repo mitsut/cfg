@@ -21,24 +21,21 @@ PC等の開発用コンピュータ上で動作するコマンドラインプログラムです。したが
 カーネルを構築する前に、まず、コンフィギュレータをコンパイルする必要が
 あります（コンフィギュレータをバイナリで入手した場合には、このステップ
 は必要はありません）。
-コンフィギュレータの構築にはBoost C++ Libraries 1.42.0以上が必要です。
-また、開発時点でのBoost C++ Librariesの最新版は1.49.0であり、それ以降の
-バージョンについては動作確認を行っていません（まだ無いので行えません）。
-Boost C++ Librariesは、下記URLから入手することができます。
+コンフィギュレータの構築にはBoost C++ Libraries 1.42.0以上およびXerces C++
+3.1.1以上が必要です。
+開発時点でのBoost C++ Librariesの最新版は1.52.0、Xerces C++の最新版は3.1.1
+であり、それ以降のバージョンについては動作確認を行っていません。
 
+Boost C++ Librariesは、下記URLから入手することができます。
 http://www.boost.org/
 
-Windowsの場合、Visual C++用のバイナリが下記URLのサイトから入手可能です。
-
-http://www.boostpro.com/
-
-Boost C++ Librariesをバイナリで入手できない場合には、ソースからビルドし
-てください。
+Xerces C++は、下記URLから入手することができます。
 
 ・動作確認済みの環境
 Windows 7 Home Premium(x64) SP1 + Cygwin 1.7.17 + GCC 4.5.3 + Boost 1.48.0
++ Xerces C++ 3.1.1
 
-=== GNU開発環境を用いる場合 ===
+=== GNU開発環境を用いた構築方法 ===
 
 コンフィギュレータ（cfgプログラム）を構築するには、cfgディレクトリに移動
 し、configureおよびmakeコマンドを実行します。
@@ -55,30 +52,16 @@ Windows 7 Home Premium(x64) SP1 + Cygwin 1.7.17 + GCC 4.5.3 + Boost 1.48.0
 きないことが知られています。そのような場合には、最適化レベルを下げるか、
 最適化を抑止するように、Makefileを修正する必要があります。
 
-=== Microsoft Visual Studioを用いる場合 ===
-
-コンフィギュレータ（cfgプログラム）を構築するには、cfgディレクトリ中の
-cfg.slnをVisual Studio（またはVisual C++ Express Edition）で開いてくだ
-さい。cfg.slnはVisual Studio.NET 2003用のものですが、上位のバージョンを
-使用する場合にはソリューションを変換して使用してください。
-ソリューションを開いた後、Release版としてビルドを実行してださい。
-cfg/cfg/Releaseディレクトリにcfg.exeが生成されますので、必要なフォルダ
-にコピーまたは移動してください。
-
-・注意事項
-
-Boost C++ Librariesをインストールした後、インクルードおよびライブラリの
-ディレクトリをVisual Studioに登録してからビルドを実行してください。
-Visual Studio 2010からはプロジェクトごとにディレクトリを登録するように
-仕様変更されているので注意してください。
-Visual C++ 2005 Express Editionを使用する場合、別途Platform SDKをインス
-トールする必要があります。
 複数のバージョンのBoost C++ Librariesがインストールされている場合（中途
 半端にアンインストールされた場合を含む）、configureに失敗する可能性があ
 ります。その場合は手作業でMakefile.configを修正してください。
 また、一度コンフィギュレータの構築を行った後、コンパイラやライブラリの
 アップデートを行った場合には、make realcleanを実行し、configureからやり
 直してください。
+
+configureに--without-xmlを指定することで、XML対応機能を省略することができ
+ます。これにより、Xerces C++が不要になります。
+
 
 【Mekefile.configの説明】
 
@@ -104,9 +87,19 @@ Boost C++ Librariesのライブラリファイルがあるディレクトリ
 自分でBoost C++ Librariesをインストールした場合、通常/usr/local/libが設定
 されます。
 
+・XERCES_DIR
+Xerces C++のヘッダファイルがあるディレクトリ
+
+・LIBXERCES_DIR
+Xerces C++のライブラリファイルがあるディレクトリ
+
 ・OPTIONS
 コンパイラの追加オプション
 普通は何も設定されません。
+
+・HAS_CFG_XML
+XML対応の有無
+configureに--without-xmlを指定した場合は0、それ以外は1に定義されます。
 
 
 【コンフィギュレータの使い方】
@@ -165,6 +158,9 @@ Boost C++ Librariesのライブラリファイルがあるディレクトリ
 	-M［--print-dependencies］<ターゲットシンボル>
 		システムコンフィギュレーションファイルの依存関係を出力する。
 		Makefile中の依存関係を生成する際に用いる。
+
+	--ini-file <設定ファイル名>
+		XML使用時において、設定ファイルを指定する。
 
 コンフィギュレータの詳細仕様については、別途PDFファイルの形で配布してい
 る「TOPPERS新世代カーネル用コンフィギュレータ仕様」を参照してください。

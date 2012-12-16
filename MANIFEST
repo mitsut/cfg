@@ -1,7 +1,6 @@
 PACKAGE cfg
 VERSION 1.9.0
 
-cfg.sln
 configure
 Makefile
 MANIFEST
@@ -9,7 +8,6 @@ README.txt
 
 cfg/cfg.cpp
 cfg/cfg.hpp
-cfg/cfg.vcproj
 cfg/cfg0.cpp
 cfg/cfg1.cpp
 cfg/cfg2.cpp
@@ -58,7 +56,6 @@ toppers/s_record.cpp
 toppers/s_record.hpp
 toppers/text.hpp
 toppers/text_line.hpp
-toppers/toppers.vcproj
 toppers/ucn_parser.cpp
 toppers/workaround.hpp
 
@@ -71,7 +68,6 @@ toppers/itronx/component.hpp
 toppers/itronx/factory.cpp
 toppers/itronx/factory.hpp
 toppers/itronx/init_helper.hpp
-toppers/itronx/itronx.vcproj
 toppers/itronx/kernel_chk.hpp
 toppers/itronx/Makefile
 toppers/itronx/preprocess.cpp
@@ -104,8 +100,6 @@ toppers/xml/component.hpp
 toppers/xml/factory.cpp
 toppers/xml/factory.hpp
 toppers/xml/Makefile
-toppers/xml/preprocess.cpp
-toppers/xml/preprocess.hpp
 toppers/xml/xml_object.hpp
 toppers/xml/xml_parser.cpp
 toppers/xml/xml_parser.hpp
