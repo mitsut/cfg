@@ -450,6 +450,25 @@ namespace toppers
                   s = new char[ ( *d_iter )[ 2 ].size() + 1 ];
                   std::strcpy( s, ( *d_iter )[ 2 ].c_str() );
                   xml_info.type = s;
+                  if( strlen(s) )
+                  {
+                    if( !strcmp( s, "INT" ) )
+                        xml_info.type_enum = toppers::xml::container::TYPE_INT;
+                    else if( !strcmp( s, "FLOAT" ) )
+                        xml_info.type_enum = toppers::xml::container::TYPE_FLOAT;
+                    else if( !strcmp( s, "STRING" ) || !strcmp( s, "+STRING" ) )
+                        xml_info.type_enum = toppers::xml::container::TYPE_STRING;
+                    else if( !strcmp( s, "BOOLEAN" ) )
+                        xml_info.type_enum = toppers::xml::container::TYPE_BOOLEAN;
+                    else if( !strcmp( s, "ENUM" ) )
+                        xml_info.type_enum = toppers::xml::container::TYPE_ENUM;
+                    else if( !strcmp( s, "REF" ) )
+                        xml_info.type_enum = toppers::xml::container::TYPE_REF;
+                    else if( !strcmp( s, "FUNCTION" ) )
+                        xml_info.type_enum = toppers::xml::container::TYPE_FUNCTION;
+                    else if( !strcmp( s, "INCLUDE" ) || !strcmp( s, "+INCLUDE" ))
+                        xml_info.type_enum = toppers::xml::container::TYPE_INCLUDE;
+                  }
 
                   if ( len >= 4 && !( *d_iter )[ 3 ].empty() )
                   {

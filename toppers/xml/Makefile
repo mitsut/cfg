@@ -57,7 +57,6 @@ CXXFILES = \
 	cfg1_out.cpp \
 	checker.cpp \
 	factory.cpp \
-	preprocess.cpp \
 	xml_parser.cpp \
 	xml_xerces.cpp
 

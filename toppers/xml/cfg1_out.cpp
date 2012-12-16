@@ -65,7 +65,6 @@
 #include "toppers/nm_symbol.hpp"
 #include "toppers/misc.hpp"
 #include "toppers/xml/cfg1_out.hpp"
-#include "toppers/xml/preprocess.hpp"
 #include "toppers/xml/xml_parser.hpp"
 #include <boost/spirit/include/classic.hpp>
 #include <boost/filesystem/path.hpp>
@@ -282,29 +281,6 @@ namespace toppers
       return pimpl_->do_load_cfg( input_file, codeset, info_map );
     }
 
-    //! 前処理
-    void cfg1_out::implementation::preprocess( std::string const& input_file, codeset_t codeset, text& txt )
-    {
-      boost::any print_depend = global( "print-dependencies" );
-      if ( !print_depend.empty() )
-      {
-        std::set< std::string > depend, onces;
-        xml::preprocess( input_file, txt, codeset, &depend, &onces );
-
-        // 依存関係の出力（GNU makeに適した形式）
-        std::string target_file = boost::any_cast< std::string& >( print_depend );
-        std::cout << target_file << ": " << input_file << ' ';
-        std::copy( depend.begin(), depend.end(), std::ostream_iterator< std::string >( std::cout, " " ) );
-        std::cout << std::endl;
-        exit();
-      }
-      else
-      {
-        std::set< std::string > onces;
-        xml::preprocess( input_file, txt, codeset, 0, &onces );
-      }
-    }
-
     // パラメータの型がECUC-NUMERICAL-PARAM-VALUEなのに整数・浮動小数点でない場合はマクロ名として、cfg_out.cへ出力する
     string cfg1_out::implementation::do_out_macro_name( std::vector< toppers::xml::container::parameter* >::const_iterator pPara, int serial,
       std::map<std::string, toppers::xml::info> const& info_map )
@@ -514,16 +490,6 @@ namespace toppers
     void cfg1_out::implementation::validate_type(std::vector< toppers::xml::container::object* > objects,
       std::map<std::string, toppers::xml::info> const& info_map )
     {
-      std::map< std::string, toppers::xml::container::PARAMETER_TYPE> type_map;
-      type_map.insert(pair<std::string, toppers::xml::container::PARAMETER_TYPE>("INT",      toppers::xml::container::TYPE_INT));
-      type_map.insert(pair<std::string, toppers::xml::container::PARAMETER_TYPE>("FLOAT",    toppers::xml::container::TYPE_FLOAT));
-      type_map.insert(pair<std::string, toppers::xml::container::PARAMETER_TYPE>("STRING",   toppers::xml::container::TYPE_STRING));
-      type_map.insert(pair<std::string, toppers::xml::container::PARAMETER_TYPE>("BOOLEAN",  toppers::xml::container::TYPE_BOOLEAN));
-      type_map.insert(pair<std::string, toppers::xml::container::PARAMETER_TYPE>("ENUM",     toppers::xml::container::TYPE_ENUM));
-      type_map.insert(pair<std::string, toppers::xml::container::PARAMETER_TYPE>("REF",      toppers::xml::container::TYPE_REF));
-      type_map.insert(pair<std::string, toppers::xml::container::PARAMETER_TYPE>("FUNCTION", toppers::xml::container::TYPE_FUNCTION));
-      type_map.insert(pair<std::string, toppers::xml::container::PARAMETER_TYPE>("INCLUDE",  toppers::xml::container::TYPE_INCLUDE));
-
       for ( std::vector< toppers::xml::container::object* >::iterator pObj = objects.begin() ;
         pObj != objects.end();
         ++pObj )
@@ -540,34 +506,16 @@ namespace toppers
           }
           else
           {
-            std::map< std::string, toppers::xml::container::PARAMETER_TYPE>::const_iterator pType;
             // 型の上書き
             if('+' == pInfo->second.type[0])
             {
-              pType = type_map.find(&(pInfo->second.type[1]));
-              if(pType != type_map.end())
-              {
-                (*pPara)->setType( pType->second) ;
-              }
-              else
-              {
-                warning( _( "Unknown Parameter(%1%:%2%) : `%3%\'. " ), (*pPara)->getFileName(), (*pPara)->getLine(), (*pPara)->getDefName() );
-                (*pPara)->setType( toppers::xml::container::TYPE_UNKNOWN );
-              }
+                (*pPara)->setType( pInfo->second.type_enum ) ;
             }
             // パラメータの型チェック
-            else
+            else if( (*pPara)->getType() != pInfo->second.type_enum )
             {
-              pType = type_map.find( &(pInfo->second.type[0]) );
-              if(pType == type_map.end())
-              {
-                fatal( _( "Parameter type unmuch(%1%:%2%) : `%3%\'. " ), (*pPara)->getFileName(), (*pPara)->getLine(), (*pPara)->getDefName() );
-              }
-              if( pType->second != (*pPara)->getType() )
-              {
-                int line = (*pPara)->getLine();
-                fatal( _( "Parameter type miss much(%1%:%2%) : `%3%\' is not `%4%\' type. " ), (*pPara)->getFileName(), (*pPara)->getLine(), (*pPara)->getDefName(), pType->first );
-              }
+              int line = (*pPara)->getLine();
+              fatal( _( "Parameter type miss match(%1%:%2%) : `%3%\' is not `%4%\' type. " ), (*pPara)->getFileName(), (*pPara)->getLine(), (*pPara)->getDefName(), pInfo->second.type );
             }
           }
         }
@@ -590,9 +538,6 @@ namespace toppers
     void cfg1_out::implementation::do_load_cfg( std::string const& input_file, 
                 codeset_t codeset, std::map<std::string, toppers::xml::info> const& info_map )
     {
-      text txt;
-      preprocess( input_file, codeset, txt );
-
       // XMLファイルのパース処理
       std::vector< toppers::xml::container::object*> container_array_temp( xml_parser_init(input_file) );
 
@@ -634,7 +579,12 @@ namespace toppers
       validate_multiplicity(obj, info_map);
 
       // 型情報の検証
-      validate_type(container_array_temp, info_map);
+      for ( std::vector< toppers::xml::container::object* >::iterator pObj = container_array_temp.begin() ;
+        pObj != container_array_temp.end();
+        ++pObj )
+      {
+        validate_type(*(*pObj)->getSubcontainers(), info_map);
+      }
 
       // api-tableの短縮名とURI名の連想配列(info_rmap_)を作成
       for( std::map<std::string, toppers::xml::info>::const_iterator pInfo = info_map.begin() ;

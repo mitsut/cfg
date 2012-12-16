@@ -61,7 +61,6 @@
 #include "toppers/oil/factory.hpp"
 #include "toppers/oil/cfg1_out.hpp"
 #ifdef  HAS_CFG_XML
-#include "toppers/xml/preprocess.hpp"
 #include "toppers/xml/factory.hpp"
 #include "toppers/xml/cfg1_out.hpp"
 #endif

@@ -13,6 +13,7 @@
  *  Copyright (C) 2011-2012 by Sunny Giken Inc., JAPAN
  *  Copyright (C) 2011-2012 by TOSHIBA CORPOTATION, JAPAN
  *  Copyright (C) 2011-2012 by Witz Corporation, JAPAN
+ *  Copyright (C) 2012 by TAKAGI Nobuhisa
  *  
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -72,244 +73,238 @@ typedef std::basic_string<XMLCh> XercesString;
 
 inline XercesString fromNative(const char* str)
 {
-	boost::scoped_array<XMLCh> ptr(xercesc::XMLString::transcode(str));
-	return XercesString(ptr.get());
+  boost::scoped_array<XMLCh> ptr(xercesc::XMLString::transcode(str));
+  return XercesString(ptr.get());
 }
 
 inline XercesString fromNative(const std::string& str)
 {
-	return fromNative(str.c_str());
+  return fromNative(str.c_str());
 }
 
 inline std::string toNative(const XMLCh* str)
 {
-	boost::scoped_array<char> ptr(xercesc::XMLString::transcode(str));
-	return std::string(ptr.get());
+  boost::scoped_array<char> ptr(xercesc::XMLString::transcode(str));
+  return std::string(ptr.get());
 }
 
 inline std::string toNative(const XercesString& str)
 {
-	return toNative(str.c_str());
+  return toNative(str.c_str());
 }
 
 namespace toppers
 {
-	namespace xml
-	{
-		/*
-		 * \class
-		 * ARXMLファイルに記述されたXMLの情報を管理するためのクラス
-		 */
-		namespace container
-		{
-			/* クラスの前方宣言 */
-			class object;
-			class parameter;
-		}
+  namespace xml
+  {
+    /*
+     * \class
+     * ARXMLファイルに記述されたXMLの情報を管理するためのクラス
+     */
+    namespace container
+    {
+      /* クラスの前方宣言 */
+      class object;
+      class parameter;
+    }
 
-		struct info
-		{
-			char const* tfname;		/* tfで使用するときに置き換える名前 */
-			char const* type;		/* 型情報 */
-			unsigned int multimin;  /* 多重度最小値 */
-			unsigned int multimax;  /* 多重度最大値 */
-		};
+    namespace container
+    {
+      /* パラメータタイプ */
+      enum PARAMETER_TYPE
+      {
+        TYPE_UNKNOWN = 0,
+        TYPE_INT ,
+        TYPE_FLOAT ,
+        TYPE_STRING ,
+        TYPE_BOOLEAN ,
+        TYPE_ENUM , 
+        TYPE_REF ,
+        TYPE_FUNCTION,
+        TYPE_INCLUDE,
+      };
 
-		namespace container
-		{
-			/* パラメータタイプ */
-			enum PARAMETER_TYPE
-			{
-				TYPE_UNKNOWN = 0,
-				TYPE_INT ,
-				TYPE_FLOAT ,
-				TYPE_STRING ,
-				TYPE_BOOLEAN ,
-				TYPE_ENUM , 
-				TYPE_REF ,
-				TYPE_FUNCTION,
-				TYPE_INCLUDE,
-			};
+      /* オブジェクト定義のクラス */
+      class object
+      {
+      public:
+        static const int undefined = -1;  /*  オブジェクトの未定義定数  */
+        object()
+        {
+          id = undefined;
+          line = undefined;
+          parent = NULL;
+          siblings = undefined;
+        }
+        ~object()
+        {
+        }
 
-			/* オブジェクト定義のクラス */
-			class object
-			{
-			public:
-				static const int undefined = -1;	/*  オブジェクトの未定義定数  */
-				object()
-				{
-					id = undefined;
-					line = undefined;
-					parent = NULL;
-					siblings = undefined;
-				}
-				~object()
-				{
-				}
+        int getId() { return id; }
+        int getLine() { return line; }
+        std::string getFileName() { return file_name; }
+        std::string getDefName()  { return define_name; }
+        std::string getObjName() { return object_name; }
+        std::vector<parameter*>* getParams() { return &params; }
+        std::vector<object*>* getSubcontainers() { return &subcontainers; }
+        object* getParent() { return parent; }
+        int getSiblings() { return siblings; }
 
-				int getId() { return id; }
-				int getLine() { return line; }
-				std::string getFileName() { return file_name; }
-				std::string getDefName()	{ return define_name; }
-				std::string getObjName() { return object_name; }
-				std::vector<parameter*>* getParams() { return &params; }
-				std::vector<object*>* getSubcontainers() { return &subcontainers; }
-				object* getParent() { return parent; }
-				int getSiblings() { return siblings; }
+        void setId( int id_ )
+        {
+          id = id_;
+        }
+        void setLine( int line_ )
+        {
+          line = line_;
+        }
+        void setFileName( std::string str )
+        {
+          file_name = str;
+        }
+        void setDefName( std::string str )
+        {
+          define_name = str;
+        }
+        void setObjName( std::string str )
+        {
+          object_name = str;
+        }
+        void setParams( std::vector<parameter*> p )
+        {
+          params = p;
+        }
+        void setSubcontainers( std::vector<object*> p )
+        {
+          subcontainers = p;
+        }
+        void setParent( object* p )
+        {
+          parent = p;
+        }
+        void setSiblings( int siblings_ )
+        {
+          siblings = siblings_;
+        }
+      protected:
+        int id;                 /* コンテナオブジェクトのID */
+        string define_name;     /* コンテナ名 */
+        string object_name;     /* コンテナの実体名 */
+        std::vector<parameter*> params;     /* コンテナパラメータへのポインタ */
+        std::vector<object*> subcontainers; /* サブコンテナへのポインタ */
+        object* parent;         /* 親コンテナへのポインタ */
+        string file_name;       /* パースファイル名 */
+        int line;               /* パース行番号 */
+        int siblings;           /* 兄弟コンテナの数 */
+      };
 
-				void setId( int id_ )
-				{
-					id = id_;
-				}
-				void setLine( int line_ )
-				{
-					line = line_;
-				}
-				void setFileName( std::string str )
-				{
-					file_name = str;
-				}
-				void setDefName( std::string str )
-				{
-					define_name = str;
-				}
-				void setObjName( std::string str )
-				{
-					object_name = str;
-				}
-				void setParams( std::vector<parameter*> p )
-				{
-					params = p;
-				}
-				void setSubcontainers( std::vector<object*> p )
-				{
-					subcontainers = p;
-				}
-				void setParent( object* p )
-				{
-					parent = p;
-				}
-				void setSiblings( int siblings_ )
-				{
-					siblings = siblings_;
-				}
-			protected:
-				int id;									/* コンテナオブジェクトのID */
-				string define_name;						/* コンテナ名 */
-				string object_name;						/* コンテナの実体名 */
-				std::vector<parameter*> params;			/* コンテナパラメータへのポインタ */
-				std::vector<object*> subcontainers;		/* サブコンテナへのポインタ */
-				object* parent;							/* 親コンテナへのポインタ */
-				string file_name;						/* パースファイル名 */
-				int line;                               /* パース行番号 */
-				int siblings;                           /* 兄弟コンテナの数 */
-			};
+      // コンテナパラメータに関する情報
+      class parameter
+      {
+      public:
+        ~parameter() {}
 
-			// コンテナパラメータに関する情報
-			class parameter
-			{
-			public:
-				~parameter() {}
+        int getLine() { return line; }
+        std::string getFileName() { return file_name; }
+        std::string getDefName()  { return define_name; }
+        object* getParent() { return parent; }
+        string getValue() { return value; }
+        PARAMETER_TYPE getType() { return type; }
 
-				int getLine() { return line; }
-				std::string getFileName() { return file_name; }
-				std::string getDefName()	{ return define_name; }
-				object* getParent() { return parent; }
-				string getValue() { return value; }
-				PARAMETER_TYPE getType() { return type; }
+        void setLine( int line_ )
+        {
+          line = line_;
+        }
+        void setFileName( std::string str )
+        {
+          file_name = str;
+        }
+        void setDefName( std::string str )
+        {
+          define_name = str;
+        }
+        void setParent( object* p )
+        {
+          parent = p;
+        }
+        void setType( PARAMETER_TYPE param_type )
+        {
+          type = param_type;
+        }
+        void setValue( string val_ )
+        {
+          value = val_;
+        }
 
-				void setLine( int line_ )
-				{
-					line = line_;
-				}
-				void setFileName( std::string str )
-				{
-					file_name = str;
-				}
-				void setDefName( std::string str )
-				{
-					define_name = str;
-				}
-				void setParent( object* p )
-				{
-					parent = p;
-				}
-				void setType( PARAMETER_TYPE param_type )
-				{
-					type = param_type;
-				}
-				void setValue( string val_ )
-				{
-					value = val_;
-				}
+      protected:
+        string define_name;   /* パラメータ名 */
+        PARAMETER_TYPE type;  /* 型 */
+        string value;         /* 値 */
+        object* parent;       /* コンテナへのポインタ */
+        string file_name;     /* パースファイル名 */
+        int line;             /* パース行番号 */
+      };
+    } /* container */
 
-			protected:
-				string define_name;		/* パラメータ名 */
-				PARAMETER_TYPE type;	/* 型 */
-				string value;			/* 値 */
-				object* parent;			/* コンテナへのポインタ */
-				string file_name;		/* パースファイル名 */
-				int line;	    		/* パース行番号 */
-			};
-		} /* container */
-	} /* xml */
+    struct info
+    {
+      char const* tfname;      /* tfで使用するときに置き換える名前 */
+      char const* type;        /* 型情報 */
+      container::PARAMETER_TYPE type_enum;  /* 型情報(enum) */
+      unsigned int multimin;   /* 多重度最小値 */
+      unsigned int multimax;   /* 多重度最大値 */
+    };
+  } /* xml */
 } /* toppers */
 
 class SAX2Handlers : public DefaultHandler
 {
 public:
 
-    // -----------------------------------------------------------------------
-    //  Constructors and Destructor
-    // -----------------------------------------------------------------------
-	SAX2Handlers();
-    ~SAX2Handlers();
+  // -----------------------------------------------------------------------
+  //  Constructors and Destructor
+  // -----------------------------------------------------------------------
+  SAX2Handlers();
+  ~SAX2Handlers();
 
-	toppers::xml::container::object *obj_temp;
-	toppers::xml::container::parameter *para_temp;
+  toppers::xml::container::object *obj_temp;
+  toppers::xml::container::parameter *para_temp;
 
-	std::vector<toppers::xml::container::object*> object_array;	
+  std::vector<toppers::xml::container::object*> object_array; 
 
-    // -----------------------------------------------------------------------
-    //  Handlers for the SAX ContentHandler interface
-    // -----------------------------------------------------------------------
-    void ignorableWhitespace(const XMLCh* const chars, const XMLSize_t length);
-    void startElement(const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname, const Attributes& attrs);
-    void characters(const XMLCh* const chars, const XMLSize_t length);
-	void endElement( const XMLCh* const uri, const XMLCh *const localname, const XMLCh *const qname);
-	void setDocumentLocator (const Locator *const locator);
-	int get_line();
-	static void obj_delete(toppers::xml::container::object *pObj);
-    //void startDocument();
-    //void endDocument();
+  // -----------------------------------------------------------------------
+  //  Handlers for the SAX ContentHandler interface
+  // -----------------------------------------------------------------------
+  void ignorableWhitespace(const XMLCh* const chars, const XMLSize_t length);
+  void startElement(const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname, const Attributes& attrs);
+  void characters(const XMLCh* const chars, const XMLSize_t length);
+  void endElement( const XMLCh* const uri, const XMLCh *const localname, const XMLCh *const qname);
+  void setDocumentLocator (const Locator *const locator);
+  int get_line();
+  static void obj_delete(toppers::xml::container::object *pObj);
 
-    // -----------------------------------------------------------------------
-    //  Handlers for the SAX ErrorHandler interface
-    // -----------------------------------------------------------------------
-	void warning(const SAXParseException& exc);
-    void error(const SAXParseException& exc);
-    void fatalError(const SAXParseException& exc);
-    void resetErrors();
+  // -----------------------------------------------------------------------
+  //  Handlers for the SAX ErrorHandler interface
+  // -----------------------------------------------------------------------
+  void warning(const SAXParseException& exc);
+  void error(const SAXParseException& exc);
+  void fatalError(const SAXParseException& exc);
+  void resetErrors();
 
-	string filename;
+  string filename;
 
 private:
-	int fEcuModuleConfigurationValues_;
-	int fEcucContainerValue_;
-	int fSubcontainers_;
-	int fSubcontainers_old_;
-	int fParameterValues_;
-	int fReferenceValues_;
-/*
-	int fEcucReferenceValue_(0)
-	int fEcucNumericalParamValue_(0)
-	int fEcucTextualParamValue_(0)
-*/
-	XercesString currentText_;
-	const Locator* locator_; 
+  int fEcuModuleConfigurationValues_;
+  int fEcucContainerValue_;
+  int fSubcontainers_;
+  int fSubcontainers_old_;
+  int fParameterValues_;
+  int fReferenceValues_;
+  XercesString currentText_;
+  const Locator* locator_; 
 
-	// xml:space attribute is trim off(default(=TRUE)).
-	bool fAttrXmlSpace_;
+  // xml:space attribute is trim off(default(=TRUE)).
+  bool fAttrXmlSpace_;
 };
 
 #endif /* TOPPERS_XML_OBJECT_HPP_ */
