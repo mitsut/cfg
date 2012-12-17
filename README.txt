@@ -59,8 +59,8 @@ Windows 7 Home Premium(x64) SP1 + Cygwin 1.7.17 + GCC 4.5.3 + Boost 1.48.0
 アップデートを行った場合には、make realcleanを実行し、configureからやり
 直してください。
 
-configureに--without-xmlを指定することで、XML対応機能を省略することができ
-ます。これにより、Xerces C++が不要になります。
+configureに--without-xmlを指定することで、AUTOSAR XML対応機能を省略する
+ことができます。これにより、Xerces C++が不要になります。
 
 
 【Mekefile.configの説明】
@@ -98,7 +98,7 @@ Xerces C++のライブラリファイルがあるディレクトリ
 普通は何も設定されません。
 
 ・HAS_CFG_XML
-XML対応の有無
+AUTOSAR XML対応の有無
 configureに--without-xmlを指定した場合は0、それ以外は1に定義されます。
 
 
@@ -160,7 +160,7 @@ configureに--without-xmlを指定した場合は0、それ以外は1に定義されます。
 		Makefile中の依存関係を生成する際に用いる。
 
 	--ini-file <設定ファイル名>
-		XML使用時において、設定ファイルを指定する。
+		AUTOSAR XML対応時において、設定ファイルを指定する。
 
 コンフィギュレータの詳細仕様については、別途PDFファイルの形で配布してい
 る「TOPPERS新世代カーネル用コンフィギュレータ仕様」を参照してください。

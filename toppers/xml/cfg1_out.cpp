@@ -163,8 +163,8 @@ namespace toppers
       virtual void validate_type(std::vector< toppers::xml::container::object* > objects ,std::map<std::string, toppers::xml::info> const& info_map );
       virtual void validate_multiplicity( toppers::xml::container::object* object ,std::map<std::string, toppers::xml::info> const& info_map );
       virtual string do_out_macro_name(std::vector<toppers::xml::container::parameter*>::const_iterator r, int serial, std::map<std::string, toppers::xml::info> const& info_map);
-      virtual string do_search_macro(std::vector< toppers::xml::container::object* > objects ,std::map<std::string, toppers::xml::info> const& info_map );
-      virtual void do_search_includes(std::vector< toppers::xml::container::object* > objects ,std::string include_container, std::list< string > *incstr );
+      virtual string do_search_macro(std::vector< toppers::xml::container::object* > const& objects ,std::map<std::string, toppers::xml::info> const& info_map );
+      virtual void do_search_includes(std::vector< toppers::xml::container::object* > const& objects ,std::string include_container, std::list< string > *incstr );
       virtual void do_load_cfg( std::string const& input_file, codeset_t codeset, std::map<std::string, toppers::xml::info> const& info_map );
       virtual void do_generate_includes() const
       {
@@ -337,12 +337,12 @@ namespace toppers
       return stream.str();
     }
 
-    string cfg1_out::implementation::do_search_macro(std::vector< toppers::xml::container::object* > objects,
+    string cfg1_out::implementation::do_search_macro(std::vector< toppers::xml::container::object* > const& objects,
       std::map<std::string, toppers::xml::info> const& info_map )
     {
       ostringstream stream;
 
-      for ( std::vector< toppers::xml::container::object* >::iterator pObj = objects.begin() ;
+      for ( std::vector< toppers::xml::container::object* >::const_iterator pObj = objects.begin() ;
         pObj != objects.end();
         ++pObj )
       {
@@ -366,12 +366,12 @@ namespace toppers
      *  \param[in]  objects  XMLでパースしたコンテナの連想配列
      *  \param[in]  include_container 抽出するコンテナのフルパス名
      */
-    void cfg1_out::implementation::do_search_includes(std::vector< toppers::xml::container::object* > objects,
+    void cfg1_out::implementation::do_search_includes(std::vector< toppers::xml::container::object* > const& objects,
         std::string include_container, std::list< string > *incstr )
     {
         ostringstream stream;
 
-        for ( std::vector< toppers::xml::container::object* >::iterator pObj = objects.begin() ;
+        for ( std::vector< toppers::xml::container::object* >::const_iterator pObj = objects.begin() ;
             pObj != objects.end();
             ++pObj )
         {
