@@ -32,8 +32,14 @@ http://www.boost.org/
 Xerces C++は、下記URLから入手することができます。
 
 ・動作確認済みの環境
-Windows 7 Home Premium(x64) SP1 + Cygwin 1.7.17 + GCC 4.5.3 + Boost 1.48.0
-+ Xerces C++ 3.1.1
+Windows 7 (x64) SP1 + Cygwin 1.7.17 + GCC 4.5.3 + Boost 1.48.0
+	+ Xerces C++ 3.1.1 + ICU 4.8.1
+
+Windows XP SP3 + MinGW 1.0.17 + GCC 4.6.2 + Boost 1.48.0 
+	+ Xerces C++ 3.1.1 + ICU 49.1
+
+Windows 7 (x64) SP1 + MinGW 1.0.17 + GCC 4.6.1 + Boost 1.52.0
+	+ Xerces C++ 3.1.1 + ICU 50.1
 
 === GNU開発環境を用いた構築方法 ===
 
