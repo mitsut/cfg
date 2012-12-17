@@ -160,7 +160,7 @@ namespace toppers
       virtual ~implementation()
       {
       }
-      virtual void validate_type(std::vector< toppers::xml::container::object* > objects ,std::map<std::string, toppers::xml::info> const& info_map );
+      virtual void validate_type(std::vector< toppers::xml::container::object* > const& objects ,std::map<std::string, toppers::xml::info> const& info_map );
       virtual void validate_multiplicity( toppers::xml::container::object* object ,std::map<std::string, toppers::xml::info> const& info_map );
       virtual string do_out_macro_name(std::vector<toppers::xml::container::parameter*>::const_iterator r, int serial, std::map<std::string, toppers::xml::info> const& info_map);
       virtual string do_search_macro(std::vector< toppers::xml::container::object* > const& objects ,std::map<std::string, toppers::xml::info> const& info_map );
@@ -487,14 +487,14 @@ namespace toppers
      *  \param[in]  objects  XMLでパースしたコンテナの連想配列
      *  \param[in]  info_map ATK2で指定するコンテナ情報の連想配列
      */
-    void cfg1_out::implementation::validate_type(std::vector< toppers::xml::container::object* > objects,
+    void cfg1_out::implementation::validate_type(std::vector< toppers::xml::container::object* > const& objects,
       std::map<std::string, toppers::xml::info> const& info_map )
     {
-      for ( std::vector< toppers::xml::container::object* >::iterator pObj = objects.begin() ;
+      for ( std::vector< toppers::xml::container::object* >::const_iterator pObj = objects.begin() ;
         pObj != objects.end();
         ++pObj )
       {
-        for(std::vector< toppers::xml::container::parameter* >::iterator pPara = (*pObj)->getParams()->begin() ;
+        for(std::vector< toppers::xml::container::parameter* >::const_iterator pPara = (*pObj)->getParams()->begin() ;
           pPara != (*pObj)->getParams()->end();
           ++pPara )
         {
