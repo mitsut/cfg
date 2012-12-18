@@ -44,7 +44,7 @@
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
  * 
- *  $Id: xml_object.hpp 5785 2012-09-25 06:08:21Z mtakada $
+ *  $Id$
  */
 
 #ifndef TOPPERS_XML_OBJECT_HPP_

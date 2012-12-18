@@ -43,7 +43,7 @@
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
  * 
- *  $Id: xml_parser.hpp 4000 2012-04-09 12:49:58Z fujitsu-wada $
+ *  $Id$
  */
 
 #ifndef TOPPERS_XML__XMLPARSER_HPP_
