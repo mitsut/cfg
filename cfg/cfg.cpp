@@ -158,7 +158,7 @@ namespace
       {
         has_class = true;
       }
-      if ( kernel == "hrp2" || kernel == "fmp+hrp2" || kernel == "hrp2+fmp" || kernel == "atk2_osap" )
+      if ( kernel == "hrp2" || kernel == "fmp+hrp2" || kernel == "hrp2+fmp" || kernel == "atk2" || kernel == "atk2_osap" )
       {
         has_domain = true;
       }

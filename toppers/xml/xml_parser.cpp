@@ -56,6 +56,7 @@
 #include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/sax/SAXParseException.hpp>
 #include <xercesc/sax/SAXException.hpp>
+#include "toppers/global.hpp"
 #include "toppers/diagnostics.hpp"
 #include "xml_object.hpp"
 
@@ -81,6 +82,59 @@ fEcuModuleConfigurationValues_(0)
 , fEcucTextualParamValue_(0)
 */
 {
+  std::string version( get_global_string( "XML_AUTOSARVersion" ) );
+  if ( version == "3" )
+  {
+    ecucmodule    = fromNative("MODULE-CONFIGURATION");
+    ecuccontainer = fromNative("CONTAINER");
+    subcontainer  = fromNative("SUB-CONTAINERS");
+    parameter     = fromNative("PARAMETER-VALUES");
+    reference     = fromNative("REFERENCE-VALUES");
+    ecuctextual   = fromNative("ENUMERATION-VALUE");
+    ecucnumerical = fromNative("INTEGER-VALUE");
+    ecucreference = fromNative("REFERENCE-VALUE");
+
+    defqname      = fromNative("DEST");
+    definitionref = fromNative("DEFINITION-REF");
+    defReference  = fromNative("REFERENCE-PARAM-DEF");
+    defFunction   = fromNative("FUNCTION-NAME-DEF");
+
+    defInteger    = fromNative("INTEGER-PARAM-DEF");
+    defFloat      = fromNative("FLOAT-PARAM-DEF");
+    defString     = fromNative("STRING-PARAM-DEF");
+    defBool       = fromNative("BOOLEAN-PARAM-DEF");
+    defEnum       = fromNative("ENUMERATION-PARAM-DEF");
+
+    valueref      = fromNative("VALUE-REF");
+    shortname     = fromNative("SHORT-NAME");
+    value         = fromNative("VALUE");
+  }
+  else
+  {
+    ecucmodule    = fromNative("ECUC-MODULE-CONFIGURATION-VALUES");
+    ecuccontainer = fromNative("ECUC-CONTAINER-VALUE");
+    subcontainer  = fromNative("SUB-CONTAINERS");
+    parameter     = fromNative("PARAMETER-VALUES");
+    reference     = fromNative("REFERENCE-VALUES");
+    ecuctextual   = fromNative("ECUC-TEXTUAL-PARAM-VALUE");
+    ecucnumerical = fromNative("ECUC-NUMERICAL-PARAM-VALUE");
+    ecucreference = fromNative("ECUC-REFERENCE-VALUE");
+
+    defqname      = fromNative("DEST");
+    definitionref = fromNative("DEFINITION-REF");
+    defReference  = fromNative("ECUC-REFERENCE-DEF");
+    defFunction   = fromNative("ECUC-FUNCTION-NAME-DEF");
+
+    defInteger    = fromNative("ECUC-INTEGER-PARAM-DEF");
+    defFloat      = fromNative("ECUC-FLOAT-PARAM-DEF");
+    defString     = fromNative("ECUC-STRING-PARAM-DEF");
+    defBool       = fromNative("ECUC-BOOLEAN-PARAM-DEF");
+    defEnum       = fromNative("ECUC-ENUMERATION-PARAM-DEF");
+
+    valueref      = fromNative("VALUE-REF");
+    shortname     = fromNative("SHORT-NAME");
+    value         = fromNative("VALUE");
+  }
 }
 
 SAX2Handlers::~SAX2Handlers()
@@ -95,24 +149,6 @@ void SAX2Handlers::startElement(const XMLCh* const uri
                    , const XMLCh* const qname
                    , const Attributes& attrs)
 {
-  static XercesString ecucmodule    = fromNative("ECUC-MODULE-CONFIGURATION-VALUES");
-  static XercesString ecuccontainer = fromNative("ECUC-CONTAINER-VALUE");
-  static XercesString subcontainer  = fromNative("SUB-CONTAINERS");
-  static XercesString parameter     = fromNative("PARAMETER-VALUES");
-  static XercesString reference     = fromNative("REFERENCE-VALUES");
-  static XercesString ecuctextual   = fromNative("ECUC-TEXTUAL-PARAM-VALUE");
-  static XercesString ecucnumerical = fromNative("ECUC-NUMERICAL-PARAM-VALUE");
-  static XercesString ecucreference = fromNative("ECUC-REFERENCE-VALUE");
-  static XercesString definitionref = fromNative("DEFINITION-REF");
-  static XercesString defqname      = fromNative("DEST");
-  static XercesString defInteger    = fromNative("ECUC-INTEGER-PARAM-DEF");
-  static XercesString defFloat      = fromNative("ECUC-FLOAT-PARAM-DEF");
-  static XercesString defString     = fromNative("ECUC-STRING-PARAM-DEF");
-  static XercesString defBool       = fromNative("ECUC-BOOLEAN-PARAM-DEF");
-  static XercesString defEnum       = fromNative("ECUC-ENUMERATION-PARAM-DEF");
-  static XercesString defReference  = fromNative("ECUC-REFERENCE-DEF");
-  static XercesString defFunction   = fromNative("ECUC-FUNCTION-NAME-DEF");
-
 //  XERCES_STD_QUALIFIER cerr << "element : " << toNative(localname) << "(" << get_line() << ")" << XERCES_STD_QUALIFIER endl;
   int attlen = attrs.getLength();
   for(int i=0 ; i < attlen ; i++)
@@ -267,23 +303,6 @@ void SAX2Handlers::endElement( const XMLCh* const uri, const XMLCh *const localn
 #if defined( _MSC_VER ) && _DEBUG && XML_DEBUG
   XERCES_STD_QUALIFIER cerr << "end element : " << toNative(localname) << XERCES_STD_QUALIFIER endl;
 #endif
-
-  static XercesString ecucmodule    = fromNative("ECUC-MODULE-CONFIGURATION-VALUES");
-  static XercesString ecuccontainer = fromNative("ECUC-CONTAINER-VALUE");
-  static XercesString subcontainer  = fromNative("SUB-CONTAINERS");
-  static XercesString parameter     = fromNative("PARAMETER-VALUES");
-  static XercesString reference     = fromNative("REFERENCE-VALUES");
-  static XercesString ecuctextual   = fromNative("ECUC-TEXTUAL-PARAM-VALUE");
-  static XercesString ecucnumerical = fromNative("ECUC-NUMERICAL-PARAM-VALUE");
-  static XercesString ecucreference = fromNative("ECUC-REFERENCE-VALUE");
-
-  static XercesString definitionref = fromNative("DEFINITION-REF");
-  static XercesString valueref      = fromNative("VALUE-REF");
-  static XercesString shortname     = fromNative("SHORT-NAME");
-  static XercesString value         = fromNative("VALUE");
-
-  static XercesString oscontainer   = fromNative("/AUTOSAR/EcucDefs/Os");
-
   // パース中のタグの処理
   if(fEcuModuleConfigurationValues_ || fEcucContainerValue_)
   {

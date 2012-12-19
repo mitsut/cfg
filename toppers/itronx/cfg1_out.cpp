@@ -102,10 +102,20 @@ namespace toppers
       }
       virtual void do_generate_cfg1_def() const
       {
-        ofile_ << "const uint32_t TOPPERS_cfg_magic_number = 0x12345678;\n"
-                  "const uint32_t TOPPERS_cfg_sizeof_signed_t = sizeof(signed_t);\n"
-                  "const uint32_t TOPPERS_cfg_sizeof_pointer = sizeof(const volatile void*);\n"
-                  "const unsigned_t TOPPERS_cfg_CHAR_BIT = ((unsigned char)~0u == 0xff ? 8 : 16);\n"  // CHAR_BITが8または16ビットであることを仮定
+        std::string kernel( get_global_string( "kernel" ) );
+        if ( kernel == "atk2_osap" || kernel == "atk2_no_osap" )
+        {
+          ofile_ << "const uint32 TOPPERS_cfg_magic_number = 0x12345678;\n"
+                    "const uint32 TOPPERS_cfg_sizeof_signed_t = sizeof(signed_t);\n"
+                    "const uint32 TOPPERS_cfg_sizeof_pointer = sizeof(const volatile void*);\n";
+        }
+        else
+        {
+          ofile_ << "const uint32_t TOPPERS_cfg_magic_number = 0x12345678;\n"
+                    "const uint32_t TOPPERS_cfg_sizeof_signed_t = sizeof(signed_t);\n"
+                    "const uint32_t TOPPERS_cfg_sizeof_pointer = sizeof(const volatile void*);\n";
+        }
+        ofile_ << "const unsigned_t TOPPERS_cfg_CHAR_BIT = ((unsigned char)~0u == 0xff ? 8 : 16);\n"  // CHAR_BITが8または16ビットであることを仮定
                   "const unsigned_t TOPPERS_cfg_CHAR_MAX = ((char)-1 < 0 ? (char)((unsigned char)~0u >> 1) : (unsigned char)~0u);\n"
                   "const unsigned_t TOPPERS_cfg_CHAR_MIN = ((char)-1 < 0 ? -((unsigned char)~0u >> 1) - 1 : 0);\n"
                   "const unsigned_t TOPPERS_cfg_SCHAR_MAX = (signed char)((unsigned char)~0u >> 1);\n"

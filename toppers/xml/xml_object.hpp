@@ -303,6 +303,31 @@ private:
   XercesString currentText_;
   const Locator* locator_; 
 
+  // PaserStrings
+  XercesString ecucmodule;
+  XercesString ecuccontainer;
+  XercesString subcontainer;
+  XercesString parameter;
+  XercesString reference;
+  XercesString ecuctextual;
+  XercesString ecucnumerical;
+  XercesString ecucreference;
+
+  XercesString defqname;
+  XercesString definitionref;
+  XercesString defReference;
+  XercesString defFunction;
+
+  XercesString defInteger;
+  XercesString defFloat;
+  XercesString defString;
+  XercesString defBool;
+  XercesString defEnum;
+
+  XercesString valueref;
+  XercesString shortname;
+  XercesString value;
+
   // xml:space attribute is trim off(default(=TRUE)).
   bool fAttrXmlSpace_;
 };
