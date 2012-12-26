@@ -64,6 +64,8 @@ using namespace std;
 using namespace toppers;
 using namespace toppers::xml::container;
 
+#define XML_DEBUG_P 0 /* xml debug print (0:silent 1:verbose) */
+
 // ---------------------------------------------------------------------------
 //  SAX2Handlers: Constructors and Destructor
 // ---------------------------------------------------------------------------
@@ -88,52 +90,58 @@ fEcuModuleConfigurationValues_(0)
     ecucmodule    = fromNative("MODULE-CONFIGURATION");
     ecuccontainer = fromNative("CONTAINER");
     subcontainer  = fromNative("SUB-CONTAINERS");
+
     parameter     = fromNative("PARAMETER-VALUES");
-    reference     = fromNative("REFERENCE-VALUES");
-    ecuctextual   = fromNative("ENUMERATION-VALUE");
+    ecucboolean   = fromNative("BOOLEAN-VALUE");
+    ecucenum      = fromNative("ENUMERATION-VALUE");
+    ecucfloat     = fromNative("FLOAT-VALUE");
+    ecucfunction  = fromNative("FUNCTION-NAME-VALUE");
     ecucnumerical = fromNative("INTEGER-VALUE");
+    ecuctextual   = fromNative("STRING-VALUE");
+
+    reference     = fromNative("REFERENCE-VALUES");
     ecucreference = fromNative("REFERENCE-VALUE");
 
-    defqname      = fromNative("DEST");
     definitionref = fromNative("DEFINITION-REF");
-    defReference  = fromNative("REFERENCE-PARAM-DEF");
-    defFunction   = fromNative("FUNCTION-NAME-DEF");
-
-    defInteger    = fromNative("INTEGER-PARAM-DEF");
-    defFloat      = fromNative("FLOAT-PARAM-DEF");
-    defString     = fromNative("STRING-PARAM-DEF");
+    defqname      = fromNative("DEST");
     defBool       = fromNative("BOOLEAN-PARAM-DEF");
     defEnum       = fromNative("ENUMERATION-PARAM-DEF");
+    defFloat      = fromNative("FLOAT-PARAM-DEF");
+    defFunction   = fromNative("FUNCTION-NAME-DEF");
+    defInteger    = fromNative("INTEGER-PARAM-DEF");
+    defReference  = fromNative("REFERENCE-PARAM-DEF");
+    defString     = fromNative("STRING-PARAM-DEF");
 
-    valueref      = fromNative("VALUE-REF");
     shortname     = fromNative("SHORT-NAME");
     value         = fromNative("VALUE");
+    valueref      = fromNative("VALUE-REF");
   }
   else
   {
     ecucmodule    = fromNative("ECUC-MODULE-CONFIGURATION-VALUES");
     ecuccontainer = fromNative("ECUC-CONTAINER-VALUE");
     subcontainer  = fromNative("SUB-CONTAINERS");
+
     parameter     = fromNative("PARAMETER-VALUES");
-    reference     = fromNative("REFERENCE-VALUES");
     ecuctextual   = fromNative("ECUC-TEXTUAL-PARAM-VALUE");
     ecucnumerical = fromNative("ECUC-NUMERICAL-PARAM-VALUE");
+
+    reference     = fromNative("REFERENCE-VALUES");
     ecucreference = fromNative("ECUC-REFERENCE-VALUE");
 
-    defqname      = fromNative("DEST");
     definitionref = fromNative("DEFINITION-REF");
-    defReference  = fromNative("ECUC-REFERENCE-DEF");
-    defFunction   = fromNative("ECUC-FUNCTION-NAME-DEF");
-
-    defInteger    = fromNative("ECUC-INTEGER-PARAM-DEF");
-    defFloat      = fromNative("ECUC-FLOAT-PARAM-DEF");
-    defString     = fromNative("ECUC-STRING-PARAM-DEF");
+    defqname      = fromNative("DEST");
     defBool       = fromNative("ECUC-BOOLEAN-PARAM-DEF");
     defEnum       = fromNative("ECUC-ENUMERATION-PARAM-DEF");
+    defFloat      = fromNative("ECUC-FLOAT-PARAM-DEF");
+    defFunction   = fromNative("ECUC-FUNCTION-NAME-DEF");
+    defInteger    = fromNative("ECUC-INTEGER-PARAM-DEF");
+    defReference  = fromNative("ECUC-REFERENCE-DEF");
+    defString     = fromNative("ECUC-STRING-PARAM-DEF");
 
-    valueref      = fromNative("VALUE-REF");
     shortname     = fromNative("SHORT-NAME");
     value         = fromNative("VALUE");
+    valueref      = fromNative("VALUE-REF");
   }
 }
 
@@ -149,13 +157,17 @@ void SAX2Handlers::startElement(const XMLCh* const uri
                    , const XMLCh* const qname
                    , const Attributes& attrs)
 {
-//  XERCES_STD_QUALIFIER cerr << "element : " << toNative(localname) << "(" << get_line() << ")" << XERCES_STD_QUALIFIER endl;
+#if XML_DEBUG_P
+  XERCES_STD_QUALIFIER cerr << "element : " << toNative(localname) << "(" << get_line() << ")" << XERCES_STD_QUALIFIER endl;
+#endif
   int attlen = attrs.getLength();
   for(int i=0 ; i < attlen ; i++)
   {
     const XMLCh* qname = attrs.getQName(i);
     string name = toNative(attrs.getValue(qname));
-    //XERCES_STD_QUALIFIER cerr << "        ATTR("<< i <<":"<< attlen <<") : name : " << toNative(qname) << "[" << name << "]" << XERCES_STD_QUALIFIER endl;
+#if XML_DEBUG_P
+    XERCES_STD_QUALIFIER cerr << "        ATTR("<< i <<":"<< attlen <<") : name : " << toNative(qname) << "[" << name << "]" << XERCES_STD_QUALIFIER endl;
+#endif
     if( toNative(qname) == "xml:space" && name == "preserve" )
     {
       fAttrXmlSpace_ = false;
@@ -213,7 +225,8 @@ void SAX2Handlers::startElement(const XMLCh* const uri
     {
       fReferenceValues_++;
     }
-    else if(localname == ecuctextual || localname == ecucnumerical || localname == ecucreference)
+    else if(localname == ecuctextual || localname == ecucnumerical || localname == ecucreference 
+        || localname == ecucboolean || localname == ecucenum || localname == ecucfloat || localname == ecucfunction )
     {
       para_temp = new toppers::xml::container::parameter();
       para_temp->setLine( get_line() );
@@ -287,7 +300,7 @@ void SAX2Handlers::characters(  const   XMLCh* const   chars
                    , const XMLSize_t length)
 {
   string slen = boost::lexical_cast<string>(length);
-#if defined( _MSC_VER ) && _DEBUG && XML_DEBUG
+#if XML_DEBUG_P
   XERCES_STD_QUALIFIER cerr << "contents : " << toNative(chars) << "(" << get_line() << ")" << XERCES_STD_QUALIFIER endl;
 #endif
 
@@ -300,7 +313,7 @@ void SAX2Handlers::characters(  const   XMLCh* const   chars
 void SAX2Handlers::endElement( const XMLCh* const uri, const XMLCh *const localname, const XMLCh *const qname)
 {
 
-#if defined( _MSC_VER ) && _DEBUG && XML_DEBUG
+#if XML_DEBUG_P
   XERCES_STD_QUALIFIER cerr << "end element : " << toNative(localname) << XERCES_STD_QUALIFIER endl;
 #endif
   // パース中のタグの処理
@@ -309,11 +322,15 @@ void SAX2Handlers::endElement( const XMLCh* const uri, const XMLCh *const localn
     // xml:space要素はデフォルトでスペースを削除する
     if(fAttrXmlSpace_ == true)
     {
-      //XERCES_STD_QUALIFIER cerr << "attr(before) : [" << toNative(currentText_) << "]" <<XERCES_STD_QUALIFIER endl;
+#if XML_DEBUG_P
+      XERCES_STD_QUALIFIER cerr << "attr(before) : [" << toNative(currentText_) << "]" <<XERCES_STD_QUALIFIER endl;
+#endif
       std::string strAttr = ( toNative(currentText_) );
       boost::trim(strAttr);
       currentText_ = fromNative( strAttr.c_str() );
-      //XERCES_STD_QUALIFIER cerr << "attr(after) : [" << toNative(currentText_) << "]" <<XERCES_STD_QUALIFIER endl;
+#if XML_DEBUG_P
+      XERCES_STD_QUALIFIER cerr << "attr(after) : [" << toNative(currentText_) << "]" <<XERCES_STD_QUALIFIER endl;
+#endif
     }
     if(localname == shortname)
     {

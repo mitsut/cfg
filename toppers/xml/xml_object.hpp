@@ -307,26 +307,31 @@ private:
   XercesString ecucmodule;
   XercesString ecuccontainer;
   XercesString subcontainer;
+
   XercesString parameter;
-  XercesString reference;
-  XercesString ecuctextual;
   XercesString ecucnumerical;
   XercesString ecucreference;
 
-  XercesString defqname;
-  XercesString definitionref;
-  XercesString defReference;
-  XercesString defFunction;
+  XercesString reference;
+  XercesString ecuctextual;
+  XercesString ecucboolean;     /* R3.1 only */
+  XercesString ecucenum;        /* R3.1 only */
+  XercesString ecucfloat;       /* R3.1 only */
+  XercesString ecucfunction;    /* R3.1 only */
 
-  XercesString defInteger;
-  XercesString defFloat;
-  XercesString defString;
+  XercesString definitionref;
+  XercesString defqname;
   XercesString defBool;
   XercesString defEnum;
+  XercesString defFloat;
+  XercesString defFunction;
+  XercesString defInteger;
+  XercesString defReference;
+  XercesString defString;
 
-  XercesString valueref;
   XercesString shortname;
   XercesString value;
+  XercesString valueref;
 
   // xml:space attribute is trim off(default(=TRUE)).
   bool fAttrXmlSpace_;
