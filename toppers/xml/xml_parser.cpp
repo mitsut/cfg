@@ -85,7 +85,7 @@ fEcuModuleConfigurationValues_(0)
 */
 {
   std::string version( get_global_string( "XML_AUTOSARVersion" ) );
-  if ( version == "3" )
+  if ( version.at(0) == '3' )
   {
     ecucmodule    = fromNative("MODULE-CONFIGURATION");
     ecuccontainer = fromNative("CONTAINER");
@@ -116,7 +116,7 @@ fEcuModuleConfigurationValues_(0)
     value         = fromNative("VALUE");
     valueref      = fromNative("VALUE-REF");
   }
-  else
+  else if ( version.at(0) == '4' )
   {
     ecucmodule    = fromNative("ECUC-MODULE-CONFIGURATION-VALUES");
     ecuccontainer = fromNative("ECUC-CONTAINER-VALUE");
@@ -142,6 +142,10 @@ fEcuModuleConfigurationValues_(0)
     shortname     = fromNative("SHORT-NAME");
     value         = fromNative("VALUE");
     valueref      = fromNative("VALUE-REF");
+  }
+  else
+  {
+    fatal( _( "illegal \"AUTOSARVersion\" parameter in AUTOSAR ini-file (%s)" ), version );
   }
 }
 
