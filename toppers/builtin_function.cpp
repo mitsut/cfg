@@ -887,7 +887,7 @@ namespace toppers
     e.i = strtoll( str.c_str(), &endptr, static_cast< int >( radix ) );
     if ( errno != 0 || *endptr != '\0')
     {
-      error( line, _( "conversion error in function `%2%\'" ), "ATOI" );
+      error( line, _( "conversion error in function `%1%\'" ), "ATOI" );
     }
 
     return var_t( 1, e ); 
