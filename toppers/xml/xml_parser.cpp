@@ -85,6 +85,11 @@ fEcuModuleConfigurationValues_(0)
 */
 {
   std::string version( get_global_string( "XML_AUTOSARVersion" ) );
+  if(version.empty())
+  {
+    version = "4";
+  }
+
   if ( version.at(0) == '3' )
   {
     ecucmodule    = fromNative("MODULE-CONFIGURATION");
