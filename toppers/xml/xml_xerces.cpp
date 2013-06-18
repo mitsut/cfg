@@ -184,7 +184,7 @@ namespace toppers
       {
         std::string schema( get_global_string( "XML_Schema" ) );
         if ( schema.empty() )
-          schema = "/AUTOSAR_4-0-3.xsd";
+          schema = "/AUTOSAR_4-0-3_STRICT.xsd";
         std::string schema_location( get_global_string( "XML_SchemaLocation" ) );
         if ( schema_location.empty() )
           schema_location = "http://autosar.org/schema/r4.0";
