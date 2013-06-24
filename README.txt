@@ -22,7 +22,8 @@ PC等の開発用コンピュータ上で動作するコマンドラインプログラムです。したが
 あります（コンフィギュレータをバイナリで入手した場合には、このステップ
 は必要はありません）。
 コンフィギュレータの構築にはBoost C++ Libraries 1.42.0以上およびXerces C++
-3.1.1以上が必要です。
+3.1.1以上が必要です(AUTOSAR XML対応機能を省略する場合には，Xerces C++
+は必要ありません)。
 開発時点でのBoost C++ Librariesの最新版は1.52.0、Xerces C++の最新版は3.1.1
 であり、それ以降のバージョンについては動作確認を行っていません。
 
@@ -30,6 +31,7 @@ Boost C++ Librariesは、下記URLから入手することができます。
 http://www.boost.org/
 
 Xerces C++は、下記URLから入手することができます。
+http://xerces.apache.org/xerces-c/
 
 ・動作確認済みの環境
 Windows 7 (x64) SP1 + Cygwin 1.7.17 + GCC 4.5.3 + Boost 1.48.0
