@@ -117,7 +117,7 @@ namespace toppers
         }
         ofile_ << "const unsigned_t TOPPERS_cfg_CHAR_BIT = ((unsigned char)~0u == 0xff ? 8 : 16);\n"  // CHAR_BITが8または16ビットであることを仮定
                   "const unsigned_t TOPPERS_cfg_CHAR_MAX = ((char)-1 < 0 ? (char)((unsigned char)~0u >> 1) : (unsigned char)~0u);\n"
-                  "const unsigned_t TOPPERS_cfg_CHAR_MIN = ((char)-1 < 0 ? -((unsigned char)~0u >> 1) - 1 : 0);\n"
+                  "const unsigned_t TOPPERS_cfg_CHAR_MIN = (unsigned_t)((char)-1 < 0 ? -((unsigned char)~0u >> 1) - 1 : 0);\n"
                   "const unsigned_t TOPPERS_cfg_SCHAR_MAX = (signed char)((unsigned char)~0u >> 1);\n"
                   "const unsigned_t TOPPERS_cfg_SHRT_MAX = (short)((unsigned short)~0u >> 1);\n"
                   "const unsigned_t TOPPERS_cfg_INT_MAX = (int)(~0u >> 1);\n"
@@ -442,7 +442,7 @@ namespace toppers
               oss << "const unsigned_t TOPPERS_cfg_valueof_" << id << " = ";
               if ( id == "TDOM_KERNEL" )
               {
-                oss << "-1" << ";\n";
+                oss << "( unsigned_t ) (-1)" << ";\n";
               }
               else
               {
@@ -494,7 +494,7 @@ namespace toppers
               if ( !current_domain.empty() )
               {
                 api.set_domain( current_domain );
-                oss << "const unsigned_t TOPPERS_cfg_valueof_DOMAIN_" << serial << " = " << current_domain << ";";
+                oss << "const unsigned_t TOPPERS_cfg_valueof_DOMAIN_" << serial << " = ( unsigned_t ) ( " << current_domain << " );";
               }
 
               api_array.push_back( api );
