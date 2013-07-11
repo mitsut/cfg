@@ -70,6 +70,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 
 /*!
  *  \brief  オブジェクトID番号の割付け
@@ -490,6 +491,9 @@ namespace toppers
     void cfg1_out::implementation::validate_type(std::vector< toppers::xml::container::object* > const& objects,
       std::map<std::string, toppers::xml::info> const& info_map )
     {
+	  std::list<std::string> moduleNames;
+	  boost::split(moduleNames, get_global_string( "XML_ModuleName" ), boost::is_any_of(",") );
+	  
       for ( std::vector< toppers::xml::container::object* >::const_iterator pObj = objects.begin() ;
         pObj != objects.end();
         ++pObj )
@@ -501,8 +505,23 @@ namespace toppers
           std::map<std::string, toppers::xml::info>::const_iterator pInfo = info_map.find( (*pPara)->getDefName() );
           if( pInfo == info_map.end() )
           {
-            warning( _( "Unknown Parameter(%1%:%2%) : `%3%\'. " ), (*pPara)->getFileName(), (*pPara)->getLine(), (*pPara)->getDefName() );
-            (*pPara)->setType(toppers::xml::container::TYPE_UNKNOWN);
+            BOOST_FOREACH(std::string module, moduleNames)
+            {
+              if ( module.empty() )
+              {
+                warning( _( "Unknown Parameter(%1%:%2%) : `%3%\'. " ), (*pPara)->getFileName(), (*pPara)->getLine(), (*pPara)->getDefName() );
+                (*pPara)->setType(toppers::xml::container::TYPE_UNKNOWN);
+              }
+              else
+              {
+                if( (*pPara)->getDefName().find( get_global_string( "XML_ContainerPath" ) + "/" + module ) != string::npos  )
+                {
+                  warning( _( "Unknown Parameter(%1%:%2%) : `%3%\'. " ), (*pPara)->getFileName(), (*pPara)->getLine(), (*pPara)->getDefName() );
+                  (*pPara)->setType(toppers::xml::container::TYPE_UNKNOWN);
+                  break;
+                }
+              }
+            }
           }
           else
           {
