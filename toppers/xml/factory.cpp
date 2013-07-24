@@ -53,6 +53,7 @@
 #include <fstream>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 #include "toppers/misc.hpp"
 #include "toppers/global.hpp"
 #include "toppers/csv.hpp"
@@ -420,6 +421,11 @@ namespace toppers
           boost::any t = global( "api-table" );
           if ( !t.empty() )
           {
+            std::list<std::string> moduleNames;
+            boost::split(moduleNames, get_global_string( "XML_ModuleName" ), boost::is_any_of(",") );
+            std::string containerLocation( get_global_string( "XML_ContainerPath" ) );
+            if ( containerLocation.empty() )
+                containerLocation = "/AUTOSAR/EcucDefs";
             std::vector< std::string > api_tables( boost::any_cast< std::vector< std::string >& >( t ) );
             for ( std::vector< std::string >::const_iterator iter( api_tables.begin() ), last( api_tables.end() );
                   iter != last;
@@ -433,81 +439,97 @@ namespace toppers
                     d_iter != d_last;
                     ++d_iter )
               {
-                csv::size_type len = d_iter->size();
-                if ( len < 2 )  // container full-path, container rename,は必須要素
+                int searchFlag = 0;
+                BOOST_FOREACH(std::string module, moduleNames)
                 {
-                  toppers::fatal( _( "too little fields in `%1%\'" ), *iter );
+                  //toppers::warning( _( "search container = `%1%\'" ), containerLocation + "/" + module );
+                  if ( (*d_iter)[0].find( containerLocation + "/" + module ) != string::npos )
+                  {
+                    searchFlag++;
+                  }
                 }
-
-                toppers::xml::info  xml_info= { 0 };
-                try
+                if ( searchFlag > 0 )
                 {
-                  char* s;
-                  s = new char[ ( *d_iter )[ 1 ].size() + 1 ];
-                  std::strcpy( s, ( *d_iter )[ 1 ].c_str() );
-                  xml_info.tfname = s;
-
-                  s = new char[ ( *d_iter )[ 2 ].size() + 1 ];
-                  std::strcpy( s, ( *d_iter )[ 2 ].c_str() );
-                  xml_info.type = s;
-                  if( strlen(s) )
+                  csv::size_type len = d_iter->size();
+                  if ( len < 2 )  // container full-path, container rename,は必須要素
                   {
-                    if( !strcmp( s, "INT" ) )
-                        xml_info.type_enum = toppers::xml::container::TYPE_INT;
-                    else if( !strcmp( s, "FLOAT" ) )
-                        xml_info.type_enum = toppers::xml::container::TYPE_FLOAT;
-                    else if( !strcmp( s, "STRING" ) || !strcmp( s, "+STRING" ) )
-                        xml_info.type_enum = toppers::xml::container::TYPE_STRING;
-                    else if( !strcmp( s, "BOOLEAN" ) )
-                        xml_info.type_enum = toppers::xml::container::TYPE_BOOLEAN;
-                    else if( !strcmp( s, "ENUM" ) )
-                        xml_info.type_enum = toppers::xml::container::TYPE_ENUM;
-                    else if( !strcmp( s, "REF" ) )
-                        xml_info.type_enum = toppers::xml::container::TYPE_REF;
-                    else if( !strcmp( s, "FUNCTION" ) )
-                        xml_info.type_enum = toppers::xml::container::TYPE_FUNCTION;
-                    else if( !strcmp( s, "INCLUDE" ) || !strcmp( s, "+INCLUDE" ))
-                        xml_info.type_enum = toppers::xml::container::TYPE_INCLUDE;
+                    toppers::fatal( _( "too little fields in `%1%\'" ), *iter );
                   }
 
-                  if ( len >= 4 && !( *d_iter )[ 3 ].empty() )
+                  toppers::xml::info  xml_info= { 0 };
+                  try
                   {
-                    try
+                    char* s;
+                    s = new char[ ( *d_iter )[ 1 ].size() + 1 ];
+                    std::strcpy( s, ( *d_iter )[ 1 ].c_str() );
+                    xml_info.tfname = s;
+
+                    s = new char[ ( *d_iter )[ 2 ].size() + 1 ];
+                    std::strcpy( s, ( *d_iter )[ 2 ].c_str() );
+                    xml_info.type = s;
+                    if( strlen(s) )
                     {
-                      string multi = ( *d_iter )[ 3 ].c_str();
-                      xml_info.multimin = boost::lexical_cast<int>(multi);
-                      xml_info.multimax = xml_info.multimin;
+                      if( !strcmp( s, "INT" ) )
+                          xml_info.type_enum = toppers::xml::container::TYPE_INT;
+                      else if( !strcmp( s, "FLOAT" ) )
+                          xml_info.type_enum = toppers::xml::container::TYPE_FLOAT;
+                      else if( !strcmp( s, "STRING" ) || !strcmp( s, "+STRING" ) )
+                          xml_info.type_enum = toppers::xml::container::TYPE_STRING;
+                      else if( !strcmp( s, "BOOLEAN" ) )
+                          xml_info.type_enum = toppers::xml::container::TYPE_BOOLEAN;
+                      else if( !strcmp( s, "ENUM" ) )
+                          xml_info.type_enum = toppers::xml::container::TYPE_ENUM;
+                      else if( !strcmp( s, "REF" ) )
+                          xml_info.type_enum = toppers::xml::container::TYPE_REF;
+                      else if( !strcmp( s, "FUNCTION" ) )
+                          xml_info.type_enum = toppers::xml::container::TYPE_FUNCTION;
+                      else if( !strcmp( s, "INCLUDE" ) || !strcmp( s, "+INCLUDE" ))
+                          xml_info.type_enum = toppers::xml::container::TYPE_INCLUDE;
                     }
-                    catch(...)
-                    {
-                      toppers::fatal( _( "Invalid parameter fields in `%1%\'" ), *iter );
-                    }
-                  }
-                  if ( len >= 5 && !( *d_iter )[ 4 ].empty() )
-                  {
-                    if("*" == ( *d_iter )[ 4 ])
-                    {
-                      xml_info.multimax = -1;  // unsigned intの最大値
-                    }
-                    else
+
+                    if ( len >= 4 && !( *d_iter )[ 3 ].empty() )
                     {
                       try
                       {
-                        xml_info.multimax = boost::lexical_cast<int>(( *d_iter )[ 4 ].c_str());
+                        string multi = ( *d_iter )[ 3 ].c_str();
+                        xml_info.multimin = boost::lexical_cast<int>(multi);
+                        xml_info.multimax = xml_info.multimin;
                       }
                       catch(...)
                       {
                         toppers::fatal( _( "Invalid parameter fields in `%1%\'" ), *iter );
                       }
                     }
+                    if ( len >= 5 && !( *d_iter )[ 4 ].empty() )
+                    {
+                      if("*" == ( *d_iter )[ 4 ])
+                      {
+                        xml_info.multimax = -1;  // unsigned intの最大値
+                      }
+                      else
+                      {
+                        try
+                        {
+                          xml_info.multimax = boost::lexical_cast<int>(( *d_iter )[ 4 ].c_str());
+                        }
+                        catch(...)
+                        {
+                          toppers::fatal( _( "Invalid parameter fields in `%1%\'" ), *iter );
+                        }
+                      }
+                    }
+                    container_table_[ (*d_iter)[0].c_str() ] = xml_info;
                   }
-                  container_table_[ (*d_iter)[0].c_str() ] = xml_info;
+                  catch( ... )
+                  {
+                    delete[] xml_info.type;
+                    delete[] xml_info.tfname;
+                    throw;
+                  }
                 }
-                catch( ... )
+                else 
                 {
-                  delete[] xml_info.type;
-                  delete[] xml_info.tfname;
-                  throw;
+                  //toppers::warning( _( "pass container = `%1%\'" ), (*d_iter)[1].c_str() );
                 }
               }
             }
@@ -528,6 +550,10 @@ namespace toppers
         std::map< std::string, toppers::xml::info > container_table_;
       };
       static init_t init;
+      if ( init.container_table_.empty() )
+      {
+        toppers::fatal( _( "api-table file is empty or Container Location path is out of range." ) );
+      }
       std::map< std::string, toppers::xml::info > const* result = &init.container_table_;
       return result;
     }
