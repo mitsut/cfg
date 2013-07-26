@@ -588,10 +588,7 @@ namespace toppers
         ++pIncStr;
       }
 
-      //対象モジュール情報の取得
       std::string container_path( get_global_string( "XML_ContainerPath" ) );
-      if ( container_path.empty() )
-        container_path = "/AUTOSAR/EcucDefs";
       std::list<std::string> moduleNames;
       boost::split(moduleNames, get_global_string( "XML_ModuleName" ), boost::is_any_of(",") );
       // XML_ModuleNameで設定されていないモジュールは削除する
@@ -603,7 +600,7 @@ namespace toppers
         int enaFlg = 0;
         BOOST_FOREACH(std::string module, moduleNames)
         {
-          if ( (*pObj)->getDefName() == container_path + "/" + module)
+          if ( (*pObj)->getDefName().find( container_path + "/" + module ) != string::npos )
           {
             enaFlg++;
           }
