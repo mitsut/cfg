@@ -588,12 +588,35 @@ namespace toppers
         ++pIncStr;
       }
 
-      // 多重度の検証
-      toppers::xml::container::object *obj = new toppers::xml::container::object();
-      obj->setSubcontainers(container_array_temp);
+      //対象モジュール情報の取得
       std::string container_path( get_global_string( "XML_ContainerPath" ) );
       if ( container_path.empty() )
         container_path = "/AUTOSAR/EcucDefs";
+      std::list<std::string> moduleNames;
+      boost::split(moduleNames, get_global_string( "XML_ModuleName" ), boost::is_any_of(",") );
+      // XML_ModuleNameで設定されていないモジュールは削除する
+      for( std::vector< toppers::xml::container::object* >::iterator pObj = container_array_temp.begin() ;
+        pObj != container_array_temp.end();
+        ++pObj)
+      {
+        //std::cout << "defName:" << (*pObj)->getDefName() << std::endl;
+        int enaFlg = 0;
+        BOOST_FOREACH(std::string module, moduleNames)
+        {
+          if ( (*pObj)->getDefName() == container_path + "/" + module)
+          {
+            enaFlg++;
+          }
+        }
+        if(enaFlg == 0)
+        {
+          SAX2Handlers::obj_delete((*pObj));
+        }
+      }
+
+      // 多重度の検証
+      toppers::xml::container::object *obj = new toppers::xml::container::object();
+      obj->setSubcontainers(container_array_temp);
       obj->setDefName( container_path );
       validate_multiplicity(obj, info_map);
 
