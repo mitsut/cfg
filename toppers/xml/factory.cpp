@@ -424,8 +424,6 @@ namespace toppers
             std::list<std::string> moduleNames;
             boost::split(moduleNames, get_global_string( "XML_ModuleName" ), boost::is_any_of(",") );
             std::string containerLocation( get_global_string( "XML_ContainerPath" ) );
-            if ( containerLocation.empty() )
-                containerLocation = "/AUTOSAR/EcucDefs";
             std::vector< std::string > api_tables( boost::any_cast< std::vector< std::string >& >( t ) );
             for ( std::vector< std::string >::const_iterator iter( api_tables.begin() ), last( api_tables.end() );
                   iter != last;

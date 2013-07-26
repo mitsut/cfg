@@ -138,26 +138,43 @@ namespace toppers
       }
       /* 設定ファイルがある場合はパラメータ名のチェックを行う */
       std::string paraname( get_global_string( "ini-file" ) );
+      std::string strAUTOSARVersion;
+      std::string strSchema;
+      std::string strSchemaLocation;
+      std::string strContainerPath;
+      std::string strModuleName;
       //std::cout << "AUTOSAR ini-file (ini file name):[" << paraname << "]" << std::endl;
       if( !paraname.empty() )
       {
-        paraname = get_global_string( "XML_AUTOSARVersion" );
-        //std::cout << "AUTOSAR ini-file (AUTOSARVersion):[" << paraname << "]" << std::endl;
-        if( paraname.empty() )
-            fatal( _( " \"AUTOSARVersion\" parameter is not found in AUTOSAR ini-file." ) );
-        paraname = get_global_string( "XML_Schema" );
-        //std::cout << "AUTOSAR ini-file (Schema):[" << paraname << "]" << std::endl;
-        if( paraname.empty() )
-            fatal( _( " \"Schema\" parameter is not found in AUTOSAR ini-file." ) );
-        paraname = get_global_string( "XML_SchemaLocation" );
-        //std::cout << "AUTOSAR ini-file (SchemaLocation):[" << paraname << "]" << std::endl;
-        if( paraname.empty() )
-            fatal( _( " \"SchemaLocation\" parameter is not found in AUTOSAR ini-file." ) );
-        paraname = get_global_string( "XML_ContainerPath" );
-        //std::cout << "AUTOSAR ini-file (ContainerPath):[" << paraname << "]" << std::endl;
-        if( paraname.empty() )
-            fatal( _( " \"ContainerPath\" parameter is not found in AUTOSAR ini-file." ) );
+        strAUTOSARVersion = get_global_string( "XML_AUTOSARVersion" );
+        if( strAUTOSARVersion.empty() )
+        {
+          strAUTOSARVersion = "4";
+          warning( _( " \"AUTOSARVersion\" parameter is not found in AUTOSAR ini-file. Use default value." ) );
+        }
+        strSchema = get_global_string( "XML_Schema" );
+        if( strSchema.empty() )
+        {
+          strSchema = "./AUTOSAR_4-0-3_STRICT.xsd";
+          warning( _( " \"Schema\" parameter is not found in AUTOSAR ini-file. Use default value." ) );
+        }
+        strSchemaLocation = get_global_string( "XML_SchemaLocation" );
+        if( strSchemaLocation.empty() )
+        {
+          strSchemaLocation = "http://autosar.org/schema/r4.0";
+          warning( _( " \"SchemaLocation\" parameter is not found in AUTOSAR ini-file. Use default value." ) );
+        }
+        strContainerPath = get_global_string( "XML_ContainerPath" );
+        if( strContainerPath.empty() )
+        {
+          strContainerPath = "/AUTOSAR/EcucDefs";
+          warning( _( " \"ContainerPath\" parameter is not found in AUTOSAR ini-file. Use default value." ) );
+        }
       }
+      toppers::global( "XML_AUTOSARVersion" ) = strAUTOSARVersion;
+      toppers::global( "XML_Schema" )         = strSchema;
+      toppers::global( "XML_SchemaLocation" ) = strSchemaLocation;
+      toppers::global( "XML_ContainerPath" )  = strContainerPath;
 
       // XMLファイルの中にxsi:schemaLocation属性があればその要素を取得
       std::string sstr( "xsi:schemaLocation" );
@@ -183,11 +200,7 @@ namespace toppers
       else
       {
         std::string schema( get_global_string( "XML_Schema" ) );
-        if ( schema.empty() )
-          schema = "/AUTOSAR_4-0-3_STRICT.xsd";
         std::string schema_location( get_global_string( "XML_SchemaLocation" ) );
-        if ( schema_location.empty() )
-          schema_location = "http://autosar.org/schema/r4.0";
 
         ostream << schema_location << " " << get_global_string( "cfg-directory" ) << schema;
       }
