@@ -152,13 +152,13 @@ namespace toppers
             // 出現順リスト用の情報作成
             order_list_map[ name ].push_back(e);
             // オブジェクト自身の値代入
-            mproc.set_var( toppers::toupper(name), obj_id, var_t( 1, e ) );
+            mproc.set_var( name, obj_id, var_t( 1, e ) );
             // 親コンテナがある場合はその情報を登録
             if( (*q)->getParent() != NULL )
             {
               e.s = (*q)->getParent()->getObjName();
               e.i = (*q)->getParent()->getId();
-              mproc.set_var( toppers::toupper(name)+".PARENT", obj_id, var_t( 1, e ) );
+              mproc.set_var( name +".PARENT", obj_id, var_t( 1, e ) );
             }
 
             // オブジェクトメンバの値代入
@@ -295,17 +295,17 @@ namespace toppers
           ++iter )
         {
           // 出現順リスト $OBJ.ORDER_LIST$ -- ID番号の並び
-          mproc.set_var( toppers::toupper( iter->first + ".order_list" ), iter->second );
+          mproc.set_var( iter->first + ".ORDER_LIST" , iter->second );
           var_t rorder_list( iter->second );
 
           // 逆順リスト $OBJ.RORDER_LIST$ -- ID番号の並び
           std::reverse( rorder_list.begin(), rorder_list.end() );
-          mproc.set_var( toppers::toupper( iter->first + ".rorder_list" ), rorder_list );
+          mproc.set_var( iter->first + ".RORDER_LIST" , rorder_list );
 
           // ID番号リスト $OBJ.ID_LIST$ -- ID番号の並び
           var_t id_list( iter->second );
           std::sort( id_list.begin(), id_list.end() );
-          mproc.set_var( toppers::toupper( iter->first + ".id_list" ), id_list );
+          mproc.set_var( iter->first + ".ID_LIST" , id_list );
         }
 
         element external_id;
