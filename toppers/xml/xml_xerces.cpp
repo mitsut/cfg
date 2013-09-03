@@ -202,7 +202,7 @@ namespace toppers
         std::string schema( get_global_string( "XML_Schema" ) );
         std::string schema_location( get_global_string( "XML_SchemaLocation" ) );
 
-        ostream << schema_location << " " << get_global_string( "cfg-directory" ) << schema;
+        ostream << schema_location << " " << fs::absolute( get_global_string( "cfg-directory" ).c_str() ).string() << schema;
       }
       XMLCh* str (XMLString::transcode (ostream.str().c_str()));
 
