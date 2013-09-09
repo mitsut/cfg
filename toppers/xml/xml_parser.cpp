@@ -145,7 +145,7 @@ fEcuModuleConfigurationValues_(0)
   }
   else
   {
-    fatal( _( "Illegal \"AUTOSARVersion\" parameter in AUTOSAR ini-file (%s)" ), version );
+    fatal( _( "Illegal \"AUTOSARVersion\" parameter(%s) in AUTOSAR ini-file." ), version );
   }
 }
 
@@ -323,38 +323,47 @@ void SAX2Handlers::endElement( const XMLCh* const uri, const XMLCh *const localn
   // パース中のタグの処理
   if(fEcuModuleConfigurationValues_ || fEcucContainerValue_)
   {
+    std::string strAttr;
     // xml:space要素はデフォルトでスペースを削除する
     if(fAttrXmlSpace_ == true)
     {
 #if XML_DEBUG_P
       XERCES_STD_QUALIFIER cerr << "attr(before) : [" << toNative(currentText_) << "]" <<XERCES_STD_QUALIFIER endl;
 #endif
-      std::string strAttr = ( toNative(currentText_) );
+      strAttr = ( toNative(currentText_) );
       boost::trim(strAttr);
-      currentText_ = fromNative( strAttr.c_str() );
 #if XML_DEBUG_P
-      XERCES_STD_QUALIFIER cerr << "attr(after) : [" << toNative(currentText_) << "]" <<XERCES_STD_QUALIFIER endl;
+      XERCES_STD_QUALIFIER cerr << "attr(after) : [" << strAttr << "]" <<XERCES_STD_QUALIFIER endl;
 #endif
     }
     if(localname == shortname)
     {
-      obj_temp->setObjName( toNative(currentText_) );
+      obj_temp->setObjName( strAttr );
       obj_temp->setFileName( filename );
     }
     else if(localname == definitionref)
     {
       if(fParameterValues_ || fReferenceValues_)
       {
-        para_temp->setDefName( toNative(currentText_) );
+        para_temp->setDefName( strAttr );
       }
       else
       {
-        obj_temp->setDefName( toNative(currentText_) );
+        obj_temp->setDefName( strAttr );
       }
     }
     else if(localname == value || localname == valueref)
     {
-      para_temp->setValue( toNative(currentText_) );
+      // VALUEの値が空の場合はエラー
+      if ( strAttr.empty() == true )
+      {
+        currentText_.clear();
+        fatal( _( "Empty string value in %1%. (%2%:%3%)" ), para_temp->getFileName(), para_temp->getDefName(), para_temp->getLine() );
+      }
+      else
+      {
+        para_temp->setValue( strAttr );
+      }
     }
 
 
