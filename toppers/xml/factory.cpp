@@ -122,11 +122,15 @@ namespace toppers
 
         std::size_t sizeof_signed_t;
         std::size_t sizeof_pointer;
-        nm_symbol::entry nm_entry = cfg1out.get_syms()->find( "TOPPERS_cfg_sizeof_signed_t" );
-        sizeof_signed_t = static_cast< std::size_t >( cfg1out.get_srec()->get_value( nm_entry.address, 4, cfg1out.is_little_endian() ) );
+        nm_symbol::entry nm_entry;
+        if ( !get_global_bool( "omit-symbol" ) )
+        {
+          nm_entry = cfg1out.get_syms()->find( "TOPPERS_cfg_sizeof_signed_t" );
+          sizeof_signed_t = static_cast< std::size_t >( cfg1out.get_srec()->get_value( nm_entry.address, 4, cfg1out.is_little_endian() ) );
 
-        nm_entry = cfg1out.get_syms()->find( "TOPPERS_cfg_sizeof_pointer" );
-        sizeof_pointer = static_cast< std::size_t >( cfg1out.get_srec()->get_value( nm_entry.address, 4, cfg1out.is_little_endian() ) );
+          nm_entry = cfg1out.get_syms()->find( "TOPPERS_cfg_sizeof_pointer" );
+          sizeof_pointer = static_cast< std::size_t >( cfg1out.get_srec()->get_value( nm_entry.address, 4, cfg1out.is_little_endian() ) );
+        }
 
         for ( p = xml_map.begin() ; p != xml_map.end() ; p++)
         {
@@ -205,10 +209,17 @@ namespace toppers
                     grandObjName = (*r)->getParent()->getParent()->getObjName();
                   }
 
-                  nm_entry = cfg1out.get_syms()->find( "TOPPERS_cfg_valueof_" + contanerDefName + "_" + paramDefName + "_" + (*r)->getParent()->getObjName() + "_" + grandObjName );
-                  if ( nm_entry.type >= 0 )
+                  if ( !get_global_bool( "omit-symbol" ) )
                   {
-                    e.i = cfg1out.get_srec()->get_value( nm_entry.address, sizeof_signed_t, cfg1out.is_little_endian() );
+                    nm_entry = cfg1out.get_syms()->find( "TOPPERS_cfg_valueof_" + contanerDefName + "_" + paramDefName + "_" + (*r)->getParent()->getObjName() + "_" + grandObjName );
+                    if ( nm_entry.type >= 0 )
+                    {
+                      e.i = cfg1out.get_srec()->get_value( nm_entry.address, sizeof_signed_t, cfg1out.is_little_endian() );
+                    }
+                    else
+                    {
+                      e.i = 0;
+                    }
                   }
                   else
                   {
@@ -281,9 +292,9 @@ namespace toppers
               mproc.set_var( (*p).first + ".TEXT_LINE", obj_id, var_t( 1, e ) );
 
               // コンテナの兄弟コンテナ数
-              e.s = (*q)->getSiblings();
-              e.i = (*q)->getSiblings();
-              mproc.set_var( (*p).first + ".SIBLINGS", obj_id, var_t( 1, e ) );
+              //e.s = (*q)->getSiblings();
+              //e.i = (*q)->getSiblings();
+              //mproc.set_var( (*p).first + ".SIBLINGS", obj_id, var_t( 1, e ) );
             }
 
           }
@@ -667,7 +678,10 @@ namespace toppers
 
       // その他の組み込み変数の設定
       set_object_vars( cfg1out, xml_map, *mproc );
-      set_platform_vars( cfg1out, *mproc );
+      if ( !get_global_bool( "omit-symbol" ) )
+      {
+        set_platform_vars( cfg1out, *mproc );
+      }
       e.s = cfg1out.get_includes();
       e.i = boost::none;
       mproc->set_var( "INCLUDES", var_t( 1, e ) );

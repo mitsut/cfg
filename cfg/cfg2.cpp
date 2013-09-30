@@ -71,7 +71,10 @@ namespace
 
     codeset_t codeset = get_global< codeset_t >( "codeset" );
     cfg1_out->load_cfg( input_file, codeset, factory.get_cfg_info() );
-    cfg1_out->load_srec();
+    if ( !get_global_bool( "omit-symbol" ) )
+    {
+      cfg1_out->load_srec();
+    }
 
     std::auto_ptr< macro_processor > mproc;
     std::auto_ptr< typename Factory::component > component_ptr;

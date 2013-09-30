@@ -102,6 +102,7 @@ namespace
       ( "print-dependencies,M", po::value< std::string >(), _( "output dependencies of source file (for `make\')" ) )
       ( "with-software-components", _( "with software components" ) )
       ( "ini-file", po::value< std::string >()->default_value( std::string() ), _( "configuration file for XML" ) )
+      ( "omit-symbol", _( "omit Symbol table and ROM image(S-record) files. Only use in pass 2." ) )
       ;
 
     // 非表示オプション
@@ -300,6 +301,7 @@ namespace
     }
     toppers::global( "external-id" ) = vm.count( "external-id" ) ? true : false;
     toppers::global( "with-software-components" ) = vm.count( "with-software-components" ) ? true : false;
+    toppers::global( "omit-symbol" ) = vm.count( "omit-symbol" ) ? true : false;
 
     toppers::global( "version" ) = std::string( CFG_VERSION );
 
