@@ -505,22 +505,25 @@ namespace toppers
           std::map<std::string, toppers::xml::info>::const_iterator pInfo = info_map.find( (*pPara)->getDefName() );
           if( pInfo == info_map.end() )
           {
-            BOOST_FOREACH(std::string module, moduleNames)
+            if( get_global_string( "XML_CheckUnknownParameter" ) == "TRUE" )
             {
-              if ( module.empty() )
+              BOOST_FOREACH(std::string module, moduleNames)
               {
-                warning( _( "Unknown Parameter(%1%:%2%) : `%3%\'. " ), (*pPara)->getFileName(), (*pPara)->getLine(), (*pPara)->getDefName() );
-                (*pPara)->setType(toppers::xml::container::TYPE_UNKNOWN);
-              }
-              else
-              {
-                if( (*pPara)->getDefName().find( get_global_string( "XML_ContainerPath" ) + "/" + module ) != string::npos  )
+                if ( module.empty() )
                 {
                   warning( _( "Unknown Parameter(%1%:%2%) : `%3%\'. " ), (*pPara)->getFileName(), (*pPara)->getLine(), (*pPara)->getDefName() );
                   (*pPara)->setType(toppers::xml::container::TYPE_UNKNOWN);
-                  break;
                 }
-              }
+                else
+                {
+                  if( (*pPara)->getDefName().find( get_global_string( "XML_ContainerPath" ) + "/" + module ) != string::npos  )
+                  {
+                    warning( _( "Unknown Parameter(%1%:%2%) : `%3%\'. " ), (*pPara)->getFileName(), (*pPara)->getLine(), (*pPara)->getDefName() );
+                    (*pPara)->setType(toppers::xml::container::TYPE_UNKNOWN);
+                    break;
+                  }
+                }
+              }              
             }
           }
           else
