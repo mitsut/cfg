@@ -161,8 +161,12 @@ namespace toppers
       virtual ~implementation()
       {
       }
+      virtual toppers::xml::container::object* search_container( std::vector< toppers::xml::container::object*> const& objects, std::string containerPath );
+      virtual void merge_container(std::vector< toppers::xml::container::object*> & rootContainer, toppers::xml::container::object* _container );
+      virtual string search_value_path( toppers::xml::container::object* searchObj );
       virtual void validate_type(std::vector< toppers::xml::container::object* > const& objects ,std::map<std::string, toppers::xml::info> const& info_map );
       virtual void validate_multiplicity( toppers::xml::container::object* object ,std::map<std::string, toppers::xml::info> const& info_map );
+      virtual void total_multiplicity( toppers::xml::container::object* object, t_multi_info_map &multi_info_map );
       virtual string do_out_macro_name(std::vector<toppers::xml::container::parameter*>::const_iterator r, int serial, std::map<std::string, toppers::xml::info> const& info_map);
       virtual string do_search_macro(std::vector< toppers::xml::container::object* > const& objects ,std::map<std::string, toppers::xml::info> const& info_map );
       virtual void do_search_includes(std::vector< toppers::xml::container::object* > const& objects ,std::string include_container, std::list< string > *incstr );
@@ -392,10 +396,100 @@ namespace toppers
     }
 
     /*! 
+     *  \brief  コンテナのフルパス名を取得する
+     *  \param[in]  searchObj  取得するコンテナオブジェクト
+     */
+     string cfg1_out::implementation::search_value_path( toppers::xml::container::object* searchObj )
+     {
+      string FullPath;
+      string currentName = searchObj->getObjName();
+      string parentName = searchObj->getParent()->getObjName() ;
+
+      while( currentName != parentName )
+      {
+        FullPath = "/" + currentName + FullPath;
+
+        searchObj = searchObj->getParent();
+        currentName = searchObj->getObjName();
+        parentName = searchObj->getParent()->getObjName();
+      }
+      FullPath = "/" + currentName + FullPath;
+
+      return FullPath;
+    }
+
+    /*! 
+     *  \brief  多重度情報を集計する
+     *  \param[in]  objects  XMLでパースしたコンテナの連想配列
+     *  \param[in]  info_map ATK2で指定するコンテナ情報の連想配列 
+     *  \param[in]  multi_info_map マージを行うためにコンテナ情報とショートネームのフルパスをシリアライズした連想配列 
+     */
+    void cfg1_out::implementation::total_multiplicity( toppers::xml::container::object* object, t_multi_info_map &multi_info_map )
+    {
+      // 自コンテナのパラメータの多重度を集計する
+      for ( std::vector<toppers::xml::container::parameter*>::const_iterator pPara = object->getParams()->begin() ;
+        pPara != object->getParams()->end();
+        ++pPara )
+      {
+        std::string Containerpath = search_value_path( (*pPara)->getParent() );
+        t_multi_info_map::iterator multi_it = multi_info_map.find( boost::str(boost::format( "%s::%s" ) % (*pPara)->getDefName() % Containerpath ));
+
+        //パラメータパスがmulti_info_mapに無い場合は追加する
+        if( multi_it == multi_info_map.end() )
+        {
+          _multi_info mi;
+          mi.multiplicity = 1;
+          multi_info_map.insert( make_pair( boost::str(boost::format( "%s::%s" ) % (*pPara)->getDefName() % Containerpath ), mi ) );
+        }
+        else
+        {
+          multi_it->second.multiplicity++;
+        }
+      }
+
+      // 自コンテナのサブコンテナの多重度を集計する
+      for ( std::vector< toppers::xml::container::object* >::iterator pObj = object->getSubcontainers()->begin() ;
+        pObj != object->getSubcontainers()->end();
+        ++pObj )
+      {
+        std::string Containerpath = search_value_path( *pObj );
+        std::string Parentpath = search_value_path( (*pObj)->getParent() );
+        t_multi_info_map::iterator multi_it = multi_info_map.find( boost::str(boost::format( "%s::%s" ) %(*pObj)->getDefName() %Parentpath) );
+
+        // コンテナパスがmulti_info_mapに無い場合は，追加する
+        if( multi_it == multi_info_map.end() )
+        {
+          _multi_info mi;
+          mi.multiplicity = 1;
+          mi.shortname.push_back( (*pObj)->getObjName() );
+          multi_info_map.insert( make_pair( boost::str(boost::format( "%s::%s" ) %(*pObj)->getDefName() %Parentpath), mi ) );
+        }
+        else
+        {
+          // コンテナのフルパスが違う場合は追加して，多重度を増やす。
+          std::vector< std::string >::iterator it = find( multi_it->second.shortname.begin(), multi_it->second.shortname.end(), (*pObj)->getObjName() );
+          if( it == multi_it->second.shortname.end() )
+          {
+            multi_it->second.shortname.push_back( (*pObj)->getObjName() );
+            multi_it->second.multiplicity++;
+          }
+        }
+      }
+
+      // サブコンテナのチェック
+      for (  std::vector<toppers::xml::container::object*>::const_iterator pSub = object->getSubcontainers()->begin() ;
+        pSub != object->getSubcontainers()->end();
+        ++pSub )
+      {
+        total_multiplicity(*pSub, multi_info_map);
+      }
+    }
+     
+    /*! 
      *  \brief  多重度情報を検証する 
      *  \param[in]  objects  XMLでパースしたコンテナの連想配列 
      *  \param[in]  info_map ATK2で指定するコンテナ情報の連想配列 
-     */ 
+     */
     void cfg1_out::implementation::validate_multiplicity( toppers::xml::container::object* object,
       std::map<std::string, toppers::xml::info> const& info_map )
     {
@@ -552,6 +646,78 @@ namespace toppers
     }
 
     /*!
+     *  \brief  コンテナオブジェクトの探索
+     *  \param[in]  objects  XMLでパースしたコンテナの連想配列
+     *  \param[in]  searchPath 探索を行うコンテナのフルパス名
+     */
+     toppers::xml::container::object* cfg1_out::implementation::search_container( std::vector< toppers::xml::container::object*> const &objects,
+      std::string searchPath )
+     {
+      toppers::xml::container::object* searchObj;
+
+      for ( std::vector< toppers::xml::container::object* >::const_iterator pObj = objects.begin();
+        pObj != objects.end() ; ++pObj )
+      {
+        std::string valName = search_value_path( *pObj );
+        if( searchPath == valName )
+        {
+          return *pObj;
+        }
+        else if( (*pObj)->getSubcontainers()->size() != 0 )
+        {
+          return search_container( *(*pObj)->getSubcontainers(), searchPath );
+        }
+      }
+      // 探索したコンテナのフルパス名が無い場合はNULL
+      return NULL; 
+    }
+
+    /*!
+     *  \brief  コンテナオブジェクトのマージ
+     *  \param[in]  rootContainer  XMLでパースしたコンテナの連想配列（マージされる連想配列）
+     *  \param[in]  _container マージするコンテナオブジェクト
+     */
+     void cfg1_out::implementation::merge_container(std::vector< toppers::xml::container::object*> &rootContainer, toppers::xml::container::object* _container )
+     {
+      // コンテナ情報の出力
+      toppers::xml::container::object* searchedObj = search_container( rootContainer, search_value_path( _container ) ); 
+      if( searchedObj != NULL)
+      {
+        for( std::vector<toppers::xml::container::parameter*>::iterator pPara = _container->getParams()->begin() ;
+         pPara != _container->getParams()->end() ; ++pPara )
+        {
+          // マッチしたコンテナにコンテナのパラメータを追加させる
+          searchedObj->getParams()->push_back( *pPara );     
+        }
+
+        // サブコンテナがある場合
+        for ( std::vector<toppers::xml::container::object*>::iterator pSub = _container->getSubcontainers()->begin() ;
+          pSub != _container->getSubcontainers()->end();
+          ++pSub )
+        {
+          merge_container( rootContainer, *pSub );
+        }
+      }
+      else
+      {
+        // マージするコンテナの親コンテナのフルパス名（親コンテナは上のifで既に存在してるはず）
+        std::string addParentPath = search_value_path( _container->getParent() );
+        // マージされるコンテナオブジェクト
+        toppers::xml::container::object* addObj =  search_container( rootContainer, addParentPath );
+        if( addObj == NULL )
+        {
+          // マージする親コンテナがない？（コンテナのトップ）
+          rootContainer.push_back( _container );
+        }
+        else
+        {
+          //サブコンテナを追加する場合
+          addObj->getSubcontainers()->push_back( _container );
+        }
+      }
+    }
+
+    /*!
      *  \brief  システムコンフィギュレーションファイルのロード処理の実体
      *  \param[in]  input_file  入力ファイル名
      *  \param[in]  codeset     文字コード
@@ -561,7 +727,18 @@ namespace toppers
                 codeset_t codeset, std::map<std::string, toppers::xml::info> const& info_map )
     {
       // XMLファイルのパース処理
-      std::vector< toppers::xml::container::object*> container_array_temp( xml_parser_init(input_file) );
+      std::vector< toppers::xml::container::object*> container_array_temp;
+      std::list<std::string> xmlfiles;
+      boost::split( xmlfiles, input_file, boost::is_space() );
+
+      BOOST_FOREACH(std::string xmlfile, xmlfiles)
+      {
+        std::vector< toppers::xml::container::object*> _xmlcontainer( xml_parser_init(xmlfile) );
+        for( int i = 0 ; i < _xmlcontainer.size() ; i++ )
+        {
+          merge_container( container_array_temp, _xmlcontainer[i] );
+        }
+      }
 
       // インクルードコンテナのフルパス名を取得
       std::string include_container;
@@ -618,6 +795,8 @@ namespace toppers
       toppers::xml::container::object *obj = new toppers::xml::container::object();
       obj->setSubcontainers(container_array_temp);
       obj->setDefName( container_path );
+      t_multi_info_map multi_info_map;
+      total_multiplicity(obj, multi_info_map);
       validate_multiplicity(obj, info_map);
 
       // 型情報の検証

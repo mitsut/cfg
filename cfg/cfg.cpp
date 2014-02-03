@@ -108,7 +108,7 @@ namespace
     // 非表示オプション
     po::options_description hidden( _( "Hidden options" ) );
     hidden.add_options()
-      ( "input-file,s", po::value< std::string >(), _( "input file" ) )
+      ( "input-file,s", po::value< std::vector<std::string> >(), _( "input files" ) )
       ;
     
     po::options_description cmdline_options;
@@ -142,8 +142,16 @@ namespace
     toppers::global( "pass" ) = pass;
     if ( vm.count( "input-file" ) )
     {
+      std::string inputfile;
+      const std::vector< std::string >& v =
+      vm["input-file"].as< std::vector< std::string > >();
+      for( int i = 0 ; i < v.size() ; i++ )
+      {
+        inputfile += v[i];
+        if( i+1 < v.size()) inputfile += " ";
+      }
       toppers::global( "input-file" )
-        = slashes_to_single_slash( vm[ "input-file" ].as< std::string >() );
+        = slashes_to_single_slash( inputfile );
     }
     if ( vm.count( "kernel" ) )
     {
