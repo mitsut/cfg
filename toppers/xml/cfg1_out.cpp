@@ -421,7 +421,6 @@ namespace toppers
     /*! 
      *  \brief  多重度情報を集計する
      *  \param[in]  objects  XMLでパースしたコンテナの連想配列
-     *  \param[in]  info_map ATK2で指定するコンテナ情報の連想配列 
      *  \param[in]  multi_info_map マージを行うためにコンテナ情報とショートネームのフルパスをシリアライズした連想配列 
      */
     void cfg1_out::implementation::total_multiplicity( toppers::xml::container::object* object, t_multi_info_map &multi_info_map )
@@ -677,42 +676,42 @@ namespace toppers
      *  \param[in]  rootContainer  XMLでパースしたコンテナの連想配列（マージされる連想配列）
      *  \param[in]  _container マージするコンテナオブジェクト
      */
-     void cfg1_out::implementation::merge_container(std::vector< toppers::xml::container::object*> &rootContainer, toppers::xml::container::object* _container )
+     void cfg1_out::implementation::merge_container(std::vector< toppers::xml::container::object*> &rootContainers, toppers::xml::container::object* mergeContainer )
      {
       // コンテナ情報の出力
-      toppers::xml::container::object* searchedObj = search_container( rootContainer, search_value_path( _container ) ); 
+      toppers::xml::container::object* searchedObj = search_container( rootContainers, search_value_path( mergeContainer ) ); 
       if( searchedObj != NULL)
       {
-        for( std::vector<toppers::xml::container::parameter*>::iterator pPara = _container->getParams()->begin() ;
-         pPara != _container->getParams()->end() ; ++pPara )
+        for( std::vector<toppers::xml::container::parameter*>::iterator pPara = mergeContainer->getParams()->begin() ;
+         pPara != mergeContainer->getParams()->end() ; ++pPara )
         {
           // マッチしたコンテナにコンテナのパラメータを追加させる
           searchedObj->getParams()->push_back( *pPara );     
         }
 
         // サブコンテナがある場合
-        for ( std::vector<toppers::xml::container::object*>::iterator pSub = _container->getSubcontainers()->begin() ;
-          pSub != _container->getSubcontainers()->end();
+        for ( std::vector<toppers::xml::container::object*>::iterator pSub = mergeContainer->getSubcontainers()->begin() ;
+          pSub != mergeContainer->getSubcontainers()->end();
           ++pSub )
         {
-          merge_container( rootContainer, *pSub );
+          merge_container( rootContainers, *pSub );
         }
       }
       else
       {
         // マージするコンテナの親コンテナのフルパス名（親コンテナは上のifで既に存在してるはず）
-        std::string addParentPath = search_value_path( _container->getParent() );
+        std::string addParentPath = search_value_path( mergeContainer->getParent() );
         // マージされるコンテナオブジェクト
-        toppers::xml::container::object* addObj =  search_container( rootContainer, addParentPath );
+        toppers::xml::container::object* addObj =  search_container( rootContainers, addParentPath );
         if( addObj == NULL )
         {
           // マージする親コンテナがない？（コンテナのトップ）
-          rootContainer.push_back( _container );
+          rootContainers.push_back( mergeContainer );
         }
         else
         {
           //サブコンテナを追加する場合
-          addObj->getSubcontainers()->push_back( _container );
+          addObj->getSubcontainers()->push_back( mergeContainer );
         }
       }
     }
