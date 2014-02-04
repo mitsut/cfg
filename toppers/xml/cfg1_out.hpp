@@ -95,12 +95,12 @@ namespace toppers
       typedef xml_obj_map cfg_element_map;
       typedef std::vector< cfg1_def_t > cfg1_def_table;
 
-      struct _multi_info
+      struct multi_info
       {
         unsigned int multiplicity;
         std::vector< std::string > shortname;
       };
-      typedef std::map< std::string, _multi_info > t_multi_info_map;
+      typedef std::map< std::string, multi_info > t_multi_info_map;
 
       //std::vector< toppers::xml::container::object* > container_array; /*  xmlからパースした生データ only xml */
       void del_containers();

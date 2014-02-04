@@ -162,7 +162,7 @@ namespace toppers
       {
       }
       virtual toppers::xml::container::object* search_container( std::vector< toppers::xml::container::object*> const& objects, std::string containerPath );
-      virtual void merge_container(std::vector< toppers::xml::container::object*> & rootContainer, toppers::xml::container::object* _container );
+      virtual void merge_container(std::vector< toppers::xml::container::object*> & rootContainer, toppers::xml::container::object* mergeContainer );
       virtual string search_value_path( toppers::xml::container::object* searchObj );
       virtual void validate_type(std::vector< toppers::xml::container::object* > const& objects ,std::map<std::string, toppers::xml::info> const& info_map );
       virtual void validate_multiplicity( toppers::xml::container::object* object ,std::map<std::string, toppers::xml::info> const& info_map );
@@ -436,7 +436,7 @@ namespace toppers
         //パラメータパスがmulti_info_mapに無い場合は追加する
         if( multi_it == multi_info_map.end() )
         {
-          _multi_info mi;
+          multi_info mi;
           mi.multiplicity = 1;
           multi_info_map.insert( make_pair( boost::str(boost::format( "%s::%s" ) % (*pPara)->getDefName() % Containerpath ), mi ) );
         }
@@ -458,7 +458,7 @@ namespace toppers
         // コンテナパスがmulti_info_mapに無い場合は，追加する
         if( multi_it == multi_info_map.end() )
         {
-          _multi_info mi;
+          multi_info mi;
           mi.multiplicity = 1;
           mi.shortname.push_back( (*pObj)->getObjName() );
           multi_info_map.insert( make_pair( boost::str(boost::format( "%s::%s" ) %(*pObj)->getDefName() %Parentpath), mi ) );
@@ -674,7 +674,7 @@ namespace toppers
     /*!
      *  \brief  コンテナオブジェクトのマージ
      *  \param[in]  rootContainer  XMLでパースしたコンテナの連想配列（マージされる連想配列）
-     *  \param[in]  _container マージするコンテナオブジェクト
+     *  \param[in]  mergeContainer マージするコンテナオブジェクト
      */
      void cfg1_out::implementation::merge_container(std::vector< toppers::xml::container::object*> &rootContainers, toppers::xml::container::object* mergeContainer )
      {
@@ -732,10 +732,10 @@ namespace toppers
 
       BOOST_FOREACH(std::string xmlfile, xmlfiles)
       {
-        std::vector< toppers::xml::container::object*> _xmlcontainer( xml_parser_init(xmlfile) );
-        for( int i = 0 ; i < _xmlcontainer.size() ; i++ )
+        std::vector< toppers::xml::container::object*> xmlcontainer( xml_parser_init(xmlfile) );
+        for( int i = 0 ; i < xmlcontainer.size() ; i++ )
         {
-          merge_container( container_array_temp, _xmlcontainer[i] );
+          merge_container( container_array_temp, xmlcontainer[i] );
         }
       }
 
