@@ -66,6 +66,7 @@
 #include "toppers/macro_processor.hpp"
 #include "toppers/xml/cfg1_out.hpp"
 #include "toppers/xml/checker.hpp"
+#include "toppers/xml/xml_parser.hpp"
 
 namespace toppers
 {
@@ -118,6 +119,14 @@ namespace toppers
       {
         return *get_container_info_map();
       }
+      struct tf_element
+      {
+        std::string name;
+        std::string value;
+        int index;
+      };
+      typedef std::vector< tf_element > tf_e;
+ 
     protected:
       virtual void do_swap( factory& other );
       virtual std::auto_ptr< macro_processor > do_create_macro_processor( cfg1_out const& cfg1out, cfg1_out::xml_obj_map const& xml_map ) const;

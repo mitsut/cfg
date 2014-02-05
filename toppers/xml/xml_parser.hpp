@@ -59,7 +59,55 @@
 #include <xercesc/sax2/XMLReaderFactory.hpp>
 #include <xercesc/sax2/SAX2XMLReader.hpp>
 
+#include <xercesc/dom/DOMErrorHandler.hpp>
+#include <xercesc/util/XMLString.hpp>
+
 #include "xml_object.hpp"
+
+
+// ---------------------------------------------------------------------------
+//  Simple error handler deriviative to install on parser
+// ---------------------------------------------------------------------------
+class DOMCfgErrorHandler : public DOMErrorHandler
+{
+public:
+    // -----------------------------------------------------------------------
+    //  Constructors and Destructor
+    // -----------------------------------------------------------------------
+    DOMCfgErrorHandler();
+    ~DOMCfgErrorHandler();
+
+
+    // -----------------------------------------------------------------------
+    //  Getter methods
+    // -----------------------------------------------------------------------
+    bool getSawErrors() const;
+
+
+    // -----------------------------------------------------------------------
+    //  Implementation of the DOM ErrorHandler interface
+    // -----------------------------------------------------------------------
+    bool handleError(const DOMError& domError);
+    void resetErrors();
+
+
+private :
+    // -----------------------------------------------------------------------
+    //  Unimplemented constructors and operators
+    // -----------------------------------------------------------------------
+    DOMCfgErrorHandler(const DOMCfgErrorHandler&);
+    void operator=(const DOMCfgErrorHandler&);
+
+    // -----------------------------------------------------------------------
+    //  Private data members
+    //
+    //  fSawErrors
+    //      This is set if we get any errors, and is queryable via a getter
+    //      method. Its used by the main code to suppress output if there are
+    //      errors.
+    // -----------------------------------------------------------------------
+    bool    fSawErrors;
+};
 
 // ---------------------------------------------------------------------------
 //  This is a simple class that lets us do easy (though not terribly efficient)

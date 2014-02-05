@@ -66,6 +66,10 @@
 #include "toppers/xml/factory.hpp"
 #include "toppers/xml/cfg1_out.hpp"
 
+#include <xercesc/dom/DOM.hpp>
+#include <xercesc/util/XMLString.hpp>
+#include <xercesc/util/PlatformUtils.hpp>
+
 namespace toppers
 {
   namespace xml
@@ -105,6 +109,155 @@ namespace toppers
           return (*q2);
         else
           return NULL;
+      }
+    
+      void add_tfvalue(factory::tf_e &tfvalue, string name, string value, int index)
+      {
+        factory::tf_element e;
+
+        //std::cout << "add_tfvalue element[" << index <<"] name=[" << name << "] value=[" << value <<  "] " << std::endl;
+        e.name = name;
+        e.value = value;
+        e.index = index;
+        tfvalue.push_back(e);
+      }
+
+      std::string get_csvtype(csv::const_iterator& d_iter, csv::const_iterator& d_last)
+      {
+        std::string csvtype;
+
+        if( d_iter < d_last)
+        {
+          if( ( *d_iter ).size() == 2  )
+          {
+            csvtype = "NORMAL";
+          }
+          else if( ( *d_iter ).size() != 3 )
+          {
+            warning( _("%1% is invalid format (%2%)\n"), ( *d_iter )[ 0 ], get_global_string( "XML_XMLEvaluateFile" ) );
+          }
+          else
+          {
+            csvtype = ( *d_iter )[ 2 ];
+          }
+        }
+        return csvtype;
+      }
+
+      void dom_xml_parse(csv::const_iterator& d_iter, csv::const_iterator& d_last, DOMDocument *doc, DOMNode *cnode,
+       factory::tf_e &tfvalue, std::string &befortype, int &childnum, std::string groupname = "", int index = 0)
+      {
+        //std::cout << "dom_xml_parse Node name is " << XMLString::transcode( cnode->getNodeName() ) << "." << std::endl;
+        // ロケーションパス，tf変数名，タイプ(NORMAL/PARENT/CHILD)以外の記述がされている場合はワーニングを出して探索を行わない
+        std::string evaltype = get_csvtype(d_iter, d_last);
+
+        if( (befortype == "NORMAL" && evaltype == "CHILD") || (befortype == "PARENT" && evaltype == "NORMAL") )
+        {
+          //warning( _("'%1%' is invalid state type from '%2%' to '%3%'. \n"), ( *d_iter )[ 0 ], befortype, evaltype );
+          return;
+        }
+
+        // 子要素からのもどり
+        if( (befortype == "CHILD" && evaltype == "NORMAL") || (befortype == "CHILD" && evaltype == "PARENT") || (befortype == "PARENT" && evaltype == "PARENT"))
+        {
+          childnum = 0;
+        }
+        if( evaltype == "CHILD" )
+        {
+          childnum++;
+        }
+
+        //std::cout << "dom_xml_parse start beforetype=[" << befortype << "] evaltype=[" << evaltype <<  "] name=[" << groupname << "] Str=[" << ( *d_iter )[ 0 ] << "]" << std::endl;
+        // XMLの評価
+        XMLCh* xpathStr = XMLString::transcode( ( *d_iter )[ 0 ].c_str() );
+        try
+        {
+          DOMXPathNSResolver* resolver=doc->createNSResolver(cnode);
+          DOMXPathResult* result=doc->evaluate(
+           xpathStr,
+           cnode,
+           resolver,
+           DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE ,
+           NULL);
+
+          XMLSize_t nLength = result->getSnapshotLength();
+          if( nLength == 0 ) 
+          {
+            if( get_global_string( "XML_VerboseMessage" ) == "TRUE" )
+            {
+              const XMLCh *moji = cnode->getNodeName();
+              warning( _("element '%1%' is no data corresponding to XPath. Parent element is '%2%'.\n"), ( *d_iter )[ 0 ], XMLString::transcode(moji) );              
+            }
+          }
+          else
+          {
+            for(int i = 0; i < nLength ; i++)
+            {
+              evaltype = get_csvtype(d_iter, d_last);
+              result->snapshotItem(i);
+
+              if(evaltype == "PARENT")
+              {
+                groupname = ( *d_iter )[ 1 ];
+                befortype = evaltype;
+                while( d_iter < d_last  )
+                {
+                  ++d_iter;
+                  evaltype = get_csvtype(d_iter, d_last);
+
+                  if(evaltype != "CHILD")
+                  {
+                    break;
+                  }
+                  dom_xml_parse(d_iter, d_last, doc, result->getNodeValue(), tfvalue, befortype, childnum, groupname, i);
+                }
+                if( i+1 < nLength)
+                {
+                  d_iter -= (childnum + 1);
+                }
+                else
+                {
+                  d_iter--;
+                  befortype = evaltype;
+                }
+                childnum = 0;
+                groupname = "";
+              }
+              else
+              {
+                const XMLCh *moji = result->getNodeValue()->getTextContent();
+                string name;
+                if( !groupname.empty() )
+                {
+                  name = groupname + "." + (*d_iter)[1];
+                }
+                else
+                {
+                  name = (*d_iter)[1];
+                }
+                if(evaltype == "CHILD")
+                {
+                  add_tfvalue(tfvalue, name, XMLString::transcode(moji), index);
+                }
+                else
+                {
+                  add_tfvalue(tfvalue, name, XMLString::transcode(moji), i);                  
+                }
+              }
+            }
+            result->release();
+            resolver->release();
+          }
+        }
+        catch (const DOMXPathException& e)
+        {
+          warning( _("An error occurred during processing of the XPath expression. Msg is: %\n"), StrX(e.getMessage()) );
+        }
+        catch (const DOMException& e)
+        {
+          warning( _("An error occurred during processing of the XPath expression. Msg is: %\n"), StrX(e.getMessage()) );
+        }
+        XMLString::release(&xpathStr);
       }
 
       // カーネルオブジェクト生成・定義用静的APIの各パラメータをマクロプロセッサの変数として設定する。
@@ -317,6 +470,101 @@ namespace toppers
           var_t id_list( iter->second );
           std::sort( id_list.begin(), id_list.end() );
           mproc.set_var( iter->first + ".ID_LIST" , id_list );
+        }
+
+        // 汎用XMLの要素をXPathによるevalateでマクロプロセッサの変数として設定する
+        if( !get_global_string( "XML_XMLEvaluateFile" ).empty() )
+        {
+          try
+          {
+            XMLPlatformUtils::Initialize();
+          }
+          catch (const XMLException& e)
+          {
+            fatal( _("Error during initialization! Message:\n%" ), toNative(e.getMessage()));
+          }
+
+          // Instantiate the DOM parser.
+          static const XMLCh gLS[] = { chLatin_L, chLatin_S, chNull };
+          DOMImplementation *impl = DOMImplementationRegistry::getDOMImplementation(gLS);
+          DOMLSParser       *parser = ((DOMImplementationLS*)impl)->createLSParser(DOMImplementationLS::MODE_SYNCHRONOUS, 0);
+          DOMConfiguration  *config = parser->getDomConfig();
+
+          config->setParameter(XMLUni::fgDOMNamespaces, true);
+          config->setParameter(XMLUni::fgXercesSchema, false);
+          config->setParameter(XMLUni::fgXercesHandleMultipleImports, true);
+          config->setParameter(XMLUni::fgXercesSchemaFullChecking, true);
+          config->setParameter(XMLUni::fgDOMValidateIfSchema, true);
+          config->setParameter(XMLUni::fgDOMDatatypeNormalization, true);
+
+          DOMCfgErrorHandler errorHandler;
+          config->setParameter(XMLUni::fgDOMErrorHandler, &errorHandler);
+
+          std::string exschema( get_global_string( "cfg-directory" ) + get_global_string( "XML_Schema" ) );
+          XMLCh* xsdFile (XMLString::transcode( exschema.c_str() ));
+          parser->loadGrammar(xsdFile, Grammar::SchemaGrammarType, true);
+
+          errorHandler.resetErrors();
+
+          XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = 0;
+          
+          std::list<string> urifiles;
+          boost::split( urifiles, get_global_string( "input-file" ), boost::is_space() );
+
+          factory::tf_e tfvalue;
+          // 指定したXMLファイルが複数ある場合には複数回処理を繰り返す
+          BOOST_FOREACH( string urifile, urifiles )
+          {
+            std::string filebuf;
+
+            // ファイルの存在チェック
+            read( urifile, filebuf );
+
+            // XMLファイルのパース
+            try
+            {
+              parser->resetDocumentPool();
+              doc = parser->parseURI( urifile.c_str() );
+            }
+            catch (const XMLException& e)
+            {
+              warning( _("\nError during parsing: '%'\nException message is:  \n%\n"), urifile, StrX(e.getMessage()) );
+            }
+            catch (const DOMException& e)
+            {
+              const unsigned int maxChars = 2047;
+              XMLCh errText[maxChars + 1];
+
+              warning( _("\nDOM Error during parsing: '%'\nDOMException message is:  \n%\n"), urifile, StrX(e.getMessage()) );
+
+              if (DOMImplementation::loadDOMExceptionMsg(e.code, errText, maxChars))
+                warning( _("Message is: '%'\n"), StrX(errText) );
+            }
+            
+            // CSVファイルのパース
+            read( get_global_string( "XML_XMLEvaluateFile" ) , filebuf);
+            csv data( filebuf.begin(), filebuf.end() );
+
+            // CSVファイルからXPathのリスト記述分だけXMLのDOM探索を行う
+            string type = "NORMAL";
+            int childnum = 0;
+            for ( csv::const_iterator d_iter( data.begin() ), d_last( data.end() );
+              d_iter != d_last;
+              ++d_iter )
+            {
+              dom_xml_parse( d_iter, d_last, doc, (DOMNode*)doc->getDocumentElement(), tfvalue, type, childnum );
+            }
+          }
+          delete parser;
+
+          // 格納された要素をtf変数名として設定する
+          for( std::tr1::int64_t i = 0 ; i < tfvalue.size() ; i++ )
+          {
+            macro_processor::element e;
+            
+            e.s = tfvalue[i].value;
+            mproc.set_var( tfvalue[i].name, tfvalue[i].index, var_t( 1, e ) );
+					}
         }
 
         element external_id;
@@ -699,3 +947,41 @@ namespace toppers
 
   }
 }
+
+DOMCfgErrorHandler::DOMCfgErrorHandler() :
+
+    fSawErrors(false)
+{
+}
+
+DOMCfgErrorHandler::~DOMCfgErrorHandler()
+{
+}
+
+
+// ---------------------------------------------------------------------------
+//  DOMCfgHandlers: Overrides of the DOM ErrorHandler interface
+// ---------------------------------------------------------------------------
+bool DOMCfgErrorHandler::handleError(const DOMError& domError)
+{
+    fSawErrors = true;
+    if (domError.getSeverity() == DOMError::DOM_SEVERITY_WARNING)
+        XERCES_STD_QUALIFIER cerr << "\nWarning at file ";
+    else if (domError.getSeverity() == DOMError::DOM_SEVERITY_ERROR)
+        XERCES_STD_QUALIFIER cerr << "\nError at file ";
+    else
+        XERCES_STD_QUALIFIER cerr << "\nFatal Error at file ";
+
+    XERCES_STD_QUALIFIER cerr << StrX(domError.getLocation()->getURI())
+         << ", line " << domError.getLocation()->getLineNumber()
+         << ", char " << domError.getLocation()->getColumnNumber()
+         << "\n  Message: " << StrX(domError.getMessage()) << XERCES_STD_QUALIFIER endl;
+
+    return true;
+}
+
+void DOMCfgErrorHandler::resetErrors()
+{
+    fSawErrors = false;
+}
+
