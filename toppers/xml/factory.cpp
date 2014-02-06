@@ -500,7 +500,7 @@ namespace toppers
           DOMCfgErrorHandler errorHandler;
           config->setParameter(XMLUni::fgDOMErrorHandler, &errorHandler);
 
-          std::string exschema( get_global_string( "cfg-directory" ) + get_global_string( "XML_Schema" ) );
+          std::string exschema( get_global_string( "cfg-directory" ) + "/" + get_global_string( "XML_Schema" ) );
           XMLCh* xsdFile (XMLString::transcode( exschema.c_str() ));
           parser->loadGrammar(xsdFile, Grammar::SchemaGrammarType, true);
 

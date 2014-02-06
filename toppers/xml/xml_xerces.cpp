@@ -155,7 +155,7 @@ namespace toppers
         strSchema = get_global_string( "XML_Schema" );
         if( strSchema.empty() )
         {
-          strSchema = "./AUTOSAR_4-0-3_STRICT.xsd";
+          strSchema = "AUTOSAR_4-0-3_STRICT.xsd";
           warning( _( " \"Schema\" parameter is not found in AUTOSAR ini-file. Use default value." ) );
         }
         strSchemaLocation = get_global_string( "XML_SchemaLocation" );
@@ -199,10 +199,7 @@ namespace toppers
       }
       else
       {
-        std::string schema( get_global_string( "XML_Schema" ) );
-        std::string schema_location( get_global_string( "XML_SchemaLocation" ) );
-
-        ostream << schema_location << " " << fs::absolute( get_global_string( "cfg-directory" ).c_str() ).string() << schema;
+        ostream << get_global_string( "XML_SchemaLocation" ) << " " << get_global_string( "cfg-directory" ) << "/" << get_global_string( "XML_Schema" );
       }
       XMLCh* str (XMLString::transcode (ostream.str().c_str()));
 
