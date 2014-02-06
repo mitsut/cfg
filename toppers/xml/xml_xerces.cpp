@@ -199,7 +199,8 @@ namespace toppers
       }
       else
       {
-        ostream << get_global_string( "XML_SchemaLocation" ) << " " << get_global_string( "cfg-directory" ) << "/" << get_global_string( "XML_Schema" );
+        ostream << get_global_string( "XML_SchemaLocation" ) << " " << fs::absolute( get_global_string( "cfg-directory" ).c_str() ).string() 
+         << "/" << get_global_string( "XML_Schema" );
       }
       XMLCh* str (XMLString::transcode (ostream.str().c_str()));
 
