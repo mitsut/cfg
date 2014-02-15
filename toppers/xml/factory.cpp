@@ -260,6 +260,155 @@ namespace toppers
         XMLString::release(&xpathStr);
       }
 
+      void add_tfvalue(factory::tf_e &tfvalue, string name, string value, int index)
+      {
+        factory::tf_element e;
+
+        //std::cout << "add_tfvalue element[" << index <<"] name=[" << name << "] value=[" << value <<  "] " << std::endl;
+        e.name = name;
+        e.value = value;
+        e.index = index;
+        tfvalue.push_back(e);
+      }
+
+      std::string get_csvtype(csv::const_iterator& d_iter, csv::const_iterator& d_last)
+      {
+        std::string csvtype;
+
+        if( d_iter < d_last)
+        {
+          if( ( *d_iter ).size() == 2  )
+          {
+            csvtype = "NORMAL";
+          }
+          else if( ( *d_iter ).size() != 3 )
+          {
+            warning( _("%1% is invalid format (%2%)\n"), ( *d_iter )[ 0 ], get_global_string( "XML_XMLEvaluateFile" ) );
+          }
+          else
+          {
+            csvtype = ( *d_iter )[ 2 ];
+          }
+        }
+        return csvtype;
+      }
+
+      void dom_xml_parse(csv::const_iterator& d_iter, csv::const_iterator& d_last, DOMDocument *doc, DOMNode *cnode,
+       factory::tf_e &tfvalue, std::string &befortype, int &childnum, std::string groupname = "", int index = 0)
+      {
+        //std::cout << "dom_xml_parse Node name is " << XMLString::transcode( cnode->getNodeName() ) << "." << std::endl;
+        // ロケーションパス，tf変数名，タイプ(NORMAL/PARENT/CHILD)以外の記述がされている場合はワーニングを出して探索を行わない
+        std::string evaltype = get_csvtype(d_iter, d_last);
+
+        if( (befortype == "NORMAL" && evaltype == "CHILD") || (befortype == "PARENT" && evaltype == "NORMAL") )
+        {
+          //warning( _("'%1%' is invalid state type from '%2%' to '%3%'. \n"), ( *d_iter )[ 0 ], befortype, evaltype );
+          return;
+        }
+
+        // 子要素からのもどり
+        if( (befortype == "CHILD" && evaltype == "NORMAL") || (befortype == "CHILD" && evaltype == "PARENT") || (befortype == "PARENT" && evaltype == "PARENT"))
+        {
+          childnum = 0;
+        }
+        if( evaltype == "CHILD" )
+        {
+          childnum++;
+        }
+
+        //std::cout << "dom_xml_parse start beforetype=[" << befortype << "] evaltype=[" << evaltype <<  "] name=[" << groupname << "] Str=[" << ( *d_iter )[ 0 ] << "]" << std::endl;
+        // XMLの評価
+        XMLCh* xpathStr = XMLString::transcode( ( *d_iter )[ 0 ].c_str() );
+        try
+        {
+          DOMXPathNSResolver* resolver=doc->createNSResolver(cnode);
+          DOMXPathResult* result=doc->evaluate(
+           xpathStr,
+           cnode,
+           resolver,
+           DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE ,
+           NULL);
+
+          XMLSize_t nLength = result->getSnapshotLength();
+          if( nLength == 0 ) 
+          {
+            if( get_global_string( "XML_VerboseMessage" ) == "TRUE" )
+            {
+              const XMLCh *moji = cnode->getNodeName();
+              warning( _("element '%1%' is no data corresponding to XPath. Parent element is '%2%'.\n"), ( *d_iter )[ 0 ], XMLString::transcode(moji) );              
+            }
+          }
+          else
+          {
+            for(int i = 0; i < nLength ; i++)
+            {
+              evaltype = get_csvtype(d_iter, d_last);
+              result->snapshotItem(i);
+
+              if(evaltype == "PARENT")
+              {
+                groupname = ( *d_iter )[ 1 ];
+                befortype = evaltype;
+                while( d_iter < d_last  )
+                {
+                  ++d_iter;
+                  evaltype = get_csvtype(d_iter, d_last);
+
+                  if(evaltype != "CHILD")
+                  {
+                    break;
+                  }
+                  dom_xml_parse(d_iter, d_last, doc, result->getNodeValue(), tfvalue, befortype, childnum, groupname, i);
+                }
+                if( i+1 < nLength)
+                {
+                  d_iter -= (childnum + 1);
+                }
+                else
+                {
+                  d_iter--;
+                  befortype = evaltype;
+                }
+                childnum = 0;
+                groupname = "";
+              }
+              else
+              {
+                const XMLCh *moji = result->getNodeValue()->getTextContent();
+                string name;
+                if( !groupname.empty() )
+                {
+                  name = groupname + "." + (*d_iter)[1];
+                }
+                else
+                {
+                  name = (*d_iter)[1];
+                }
+                if(evaltype == "CHILD")
+                {
+                  add_tfvalue(tfvalue, name, XMLString::transcode(moji), index);
+                }
+                else
+                {
+                  add_tfvalue(tfvalue, name, XMLString::transcode(moji), i);                  
+                }
+              }
+            }
+            result->release();
+            resolver->release();
+          }
+        }
+        catch (const DOMXPathException& e)
+        {
+          warning( _("An error occurred during processing of the XPath expression. Msg is: %\n"), StrX(e.getMessage()) );
+        }
+        catch (const DOMException& e)
+        {
+          warning( _("An error occurred during processing of the XPath expression. Msg is: %\n"), StrX(e.getMessage()) );
+        }
+        XMLString::release(&xpathStr);
+      }
+
       // カーネルオブジェクト生成・定義用静的APIの各パラメータをマクロプロセッサの変数として設定する。
       void set_object_vars( cfg1_out const& cfg1out, cfg1_out::xml_obj_map const& xml_map, macro_processor& mproc )
       {
@@ -324,8 +473,9 @@ namespace toppers
               name = (*p).first+ string(".") + (*r)->getDefName();
               e.s = (*r)->getValue();
 
-              if(e.s == string(""))
+              if(e.s == string("") || (*r)->getDefName().find("/") != string::npos )
               {
+                //std::cout << "set_object_vars name:[" << name << "] e.s:[" << e.s << "]" << std::endl;
                 continue;
               }
 
