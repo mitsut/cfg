@@ -133,7 +133,7 @@ namespace toppers
           {
             csvtype = "NORMAL";
           }
-          else if( ( *d_iter ).size() != 3 )
+          else if( ( *d_iter ).size() < 2 || 4 < ( *d_iter ).size() )
           {
             warning( _("%1% is invalid format (%2%)\n"), ( *d_iter )[ 0 ], get_global_string( "XML_XMLEvaluateFile" ) );
           }
@@ -143,6 +143,37 @@ namespace toppers
           }
         }
         return csvtype;
+      }
+
+      std::string dom_search_node_fullpath(DOMNode *node)
+      {
+        std::string path, nodeName;
+        DOMNodeList *nodeList = node->getParentNode()->getChildNodes();
+
+        int i = nodeList->getLength();
+        for(int j=0 ; j<i ; j++)
+        {
+          DOMNode *child = nodeList->item(j);
+
+          nodeName = XMLString::transcode(child->getNodeName());
+          //std::cout << "dom_search_node_fullpath node name[" << j << "] = [" << nodeName << "]" << std::endl;
+          if( nodeName == "SHORT-NAME")
+          {
+            path = XMLString::transcode(child->getTextContent());
+            //std::cout << "dom_search_node_fullpath node vale =[" << path << "]" << std::endl;
+          }
+        }
+
+        if( nodeName != "AUTOSAR")
+        {
+          std::string nodeValue;
+          if(!path.empty())
+          {
+            nodeValue = "/" + path;
+          }
+          path = dom_search_node_fullpath(node->getParentNode()) + nodeValue;
+        }
+        return path;
       }
 
       void dom_xml_parse(csv::const_iterator& d_iter, csv::const_iterator& d_last, DOMDocument *doc, DOMNode *cnode,
@@ -238,7 +269,21 @@ namespace toppers
                 }
                 if(evaltype == "CHILD")
                 {
-                  add_tfvalue(tfvalue, name, XMLString::transcode(moji), index);
+                  if(( *d_iter ).size() == 4)
+                  {
+                    if((std::string)(*d_iter)[3] == "PATH")
+                    {
+                      add_tfvalue(tfvalue, name, dom_search_node_fullpath(result->getNodeValue()), index);
+                    }
+                    else
+                    {
+                      warning( _("%1% is invalid format (%2%)\n"), ( *d_iter )[ 0 ], get_global_string( "XML_XMLEvaluateFile" ) );
+                    }
+                  }
+                  else
+                  {
+                    add_tfvalue(tfvalue, name, XMLString::transcode(moji), index);
+                  }
                 }
                 else
                 {
