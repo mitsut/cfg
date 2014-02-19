@@ -51,6 +51,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <fstream>
+#include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
@@ -543,7 +544,7 @@ namespace toppers
             }
             
             // CSVファイルのパース
-            read( get_global_string( "XML_XMLEvaluateFile" ) , filebuf);
+            read( boost::filesystem::absolute( get_global_string( "cfg-directory" ).c_str() ).string() + "/" + get_global_string( "XML_XMLEvaluateFile" ) , filebuf);
             csv data( filebuf.begin(), filebuf.end() );
 
             // CSVファイルからXPathのリスト記述分だけXMLのDOM探索を行う
