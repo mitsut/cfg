@@ -500,6 +500,111 @@ namespace toppers
           }
 
         }
+        // 汎用XMLの要素をXPathによるevalateでマクロプロセッサの変数として設定する
+        if( !get_global_string( "XML_XMLEvaluateFile" ).empty() )
+        {
+          try
+          {
+            XMLPlatformUtils::Initialize();
+          }
+          catch (const XMLException& e)
+          {
+            fatal( _("Error during initialization! Message:\n%" ), toNative(e.getMessage()));
+          }
+
+          // Instantiate the DOM parser.
+          static const XMLCh gLS[] = { chLatin_L, chLatin_S, chNull };
+          DOMImplementation *impl = DOMImplementationRegistry::getDOMImplementation(gLS);
+          DOMLSParser       *parser = ((DOMImplementationLS*)impl)->createLSParser(DOMImplementationLS::MODE_SYNCHRONOUS, 0);
+          DOMConfiguration  *config = parser->getDomConfig();
+
+          config->setParameter(XMLUni::fgDOMNamespaces, true);
+          config->setParameter(XMLUni::fgXercesSchema, false);
+          config->setParameter(XMLUni::fgXercesHandleMultipleImports, true);
+          config->setParameter(XMLUni::fgXercesSchemaFullChecking, true);
+          config->setParameter(XMLUni::fgDOMValidateIfSchema, true);
+          config->setParameter(XMLUni::fgDOMDatatypeNormalization, true);
+
+          DOMCfgErrorHandler errorHandler;
+          config->setParameter(XMLUni::fgDOMErrorHandler, &errorHandler);
+
+          std::string exschema( get_global_string( "cfg-directory" ) + "/" + get_global_string( "XML_Schema" ) );
+          XMLCh* xsdFile (XMLString::transcode( exschema.c_str() ));
+          parser->loadGrammar(xsdFile, Grammar::SchemaGrammarType, true);
+
+          errorHandler.resetErrors();
+
+          XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *doc = 0;
+          
+          std::list<string> urifiles;
+          boost::split( urifiles, get_global_string( "input-file" ), boost::is_space() );
+
+          factory::tf_e tfvalue;
+          // 指定したXMLファイルが複数ある場合には複数回処理を繰り返す
+          BOOST_FOREACH( string urifile, urifiles )
+          {
+            std::string filebuf;
+
+            // ファイルの存在チェック
+            read( urifile, filebuf );
+
+            // XMLファイルのパース
+            try
+            {
+              parser->resetDocumentPool();
+              doc = parser->parseURI( urifile.c_str() );
+            }
+            catch (const XMLException& e)
+            {
+              warning( _("\nError during parsing: '%'\nException message is:  \n%\n"), urifile, StrX(e.getMessage()) );
+            }
+            catch (const DOMException& e)
+            {
+              const unsigned int maxChars = 2047;
+              XMLCh errText[maxChars + 1];
+
+              warning( _("\nDOM Error during parsing: '%'\nDOMException message is:  \n%\n"), urifile, StrX(e.getMessage()) );
+
+              if (DOMImplementation::loadDOMExceptionMsg(e.code, errText, maxChars))
+                warning( _("Message is: '%'\n"), StrX(errText) );
+            }
+            
+            // CSVファイルのパース
+            read( boost::filesystem::absolute( get_global_string( "cfg-directory" ).c_str() ).string() + "/" + get_global_string( "XML_XMLEvaluateFile" ) , filebuf);
+            csv data( filebuf.begin(), filebuf.end() );
+
+            // CSVファイルからXPathのリスト記述分だけXMLのDOM探索を行う
+            string type = "NORMAL";
+            int childnum = 0;
+            for ( csv::const_iterator d_iter( data.begin() ), d_last( data.end() );
+              d_iter != d_last;
+              ++d_iter )
+            {
+              dom_xml_parse( d_iter, d_last, doc, (DOMNode*)doc->getDocumentElement(), tfvalue, type, childnum );
+            }
+          }
+          delete parser;
+
+          // 格納された要素をtf変数名として設定する
+          for( std::tr1::int64_t i = 0 ; i < tfvalue.size() ; i++ )
+          {
+            macro_processor::element e;
+            const std::string pathStr= "_PATH";
+            
+            e.s = tfvalue[i].value;
+            mproc.set_var( tfvalue[i].name, tfvalue[i].index, var_t( 1, e ) );
+
+            // PATH種別オプションにはID_LISTを付与する
+            string::size_type pathindex = tfvalue[i].name.rfind( pathStr );
+            if( pathindex == tfvalue[i].name.length() - pathStr.length() )
+            {
+              //ID番号リストへ登録
+              e.i = tfvalue[i].index + 1;
+              order_list_map[ tfvalue[i].name ].push_back(e);
+            }
+          }
+        }
+
         // 順序リストの作成
         for ( std::map< std::string, var_t >::const_iterator iter( order_list_map.begin() ), last( order_list_map.end() );
           iter != last;
