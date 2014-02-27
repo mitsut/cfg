@@ -176,7 +176,7 @@ namespace toppers
         return path;
       }
 
-      void dom_xml_parse(csv::const_iterator& d_iter, csv::const_iterator& d_last, DOMDocument *doc, DOMNode *cnode,
+      void dom_xml_parse(csv::const_iterator& d_iter, csv::const_iterator& d_last, xercesc::DOMDocument *doc, xercesc::DOMNode *cnode,
        factory::tf_e &tfvalue, std::string &befortype, int &childnum, std::string groupname = "", int index = 0)
       {
         //std::cout << "dom_xml_parse Node name is " << XMLString::transcode( cnode->getNodeName() ) << "." << std::endl;
@@ -585,21 +585,38 @@ namespace toppers
           }
           delete parser;
 
+          map<string, int> tf_map;
           // 格納された要素をtf変数名として設定する
           for( std::tr1::int64_t i = 0 ; i < tfvalue.size() ; i++ )
           {
             macro_processor::element e;
             const std::string pathStr= "_PATH";
-            
+            int last_index;   // 複数ファイルで同一コンテナの場合，前のインデックス値を付加する必要がある
+
+            if(tfvalue[i].index == 0)
+            {
+              map<string, int>::iterator tf_itr = tf_map.find( tfvalue[i].name );
+              if(tf_itr != tf_map.end())
+              {
+                last_index = tf_itr->second;
+              }
+              else
+              {
+                last_index = 0;
+              }
+            }
+            //std::cout << "mproc.set_var[" << i << "] name:[" << tfvalue[i].name << "] index:[" << tfvalue[i].index << "] value:[" << tfvalue[i].value << "] last_index:[" << last_index << "]" << std::endl;
+            tf_map.insert(pair<string, int>(tfvalue[i].name, tfvalue[i].index + last_index + 1));
+
             e.s = tfvalue[i].value;
-            mproc.set_var( tfvalue[i].name, tfvalue[i].index, var_t( 1, e ) );
+            mproc.set_var( tfvalue[i].name, tfvalue[i].index + last_index, var_t( 1, e ) );
 
             // PATH種別オプションにはID_LISTを付与する
             string::size_type pathindex = tfvalue[i].name.rfind( pathStr );
             if( pathindex == tfvalue[i].name.length() - pathStr.length() )
             {
               //ID番号リストへ登録
-              e.i = tfvalue[i].index + 1;
+              e.i = tfvalue[i].index + last_index + 1;
               order_list_map[ tfvalue[i].name ].push_back(e);
             }
           }
