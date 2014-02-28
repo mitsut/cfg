@@ -605,8 +605,8 @@ namespace toppers
                 last_index = 0;
               }
             }
-            //std::cout << "mproc.set_var[" << i << "] name:[" << tfvalue[i].name << "] index:[" << tfvalue[i].index << "] value:[" << tfvalue[i].value << "] last_index:[" << last_index << "]" << std::endl;
-            tf_map.insert(pair<string, int>(tfvalue[i].name, tfvalue[i].index + last_index + 1));
+            //std::cout << "mproc.set_var[" << i << "] index:[" << tfvalue[i].index << "] last_index:[" << last_index << "] value:[" << tfvalue[i].value << "] name:[" << tfvalue[i].name << "] " << std::endl;
+            tf_map[tfvalue[i].name] = tfvalue[i].index + last_index + 1;
 
             e.s = tfvalue[i].value;
             mproc.set_var( tfvalue[i].name, tfvalue[i].index + last_index, var_t( 1, e ) );
