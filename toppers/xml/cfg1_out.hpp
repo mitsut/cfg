@@ -4,16 +4,16 @@
  *      Automotive Kernel Version 2
  *  
  *  Copyright (C) 2007-2012 by TAKAGI Nobuhisa
- *  Copyright (C) 2011-2012 by Center for Embedded Computing Systems
+ *  Copyright (C) 2011-2014 by Center for Embedded Computing Systems
  *              Graduate School of Information Science, Nagoya Univ., JAPAN
- *  Copyright (C) 2011-2012 by FUJISOFT INCORPORATED, JAPAN
- *  Copyright (C) 2011-2012 by FUJITSU VLSI LIMITED, JAPAN
- *  Copyright (C) 2011-2012 by NEC Communication Systems, Ltd., JAPAN
- *  Copyright (C) 2011-2012 by Panasonic Advanced Technology Development Co., Ltd., JAPAN
- *  Copyright (C) 2011-2012 by Renesas Electronics Corporation, JAPAN
- *  Copyright (C) 2011-2012 by Sunny Giken Inc., JAPAN
- *  Copyright (C) 2011-2012 by TOSHIBA CORPOTATION, JAPAN
- *  Copyright (C) 2011-2012 by Witz Corporation, JAPAN
+ *  Copyright (C) 2011-2014 by FUJISOFT INCORPORATED, JAPAN
+ *  Copyright (C) 2011-2013 by Spansion LLC, USA
+ *  Copyright (C) 2011-2013 by NEC Communication Systems, Ltd., JAPAN
+ *  Copyright (C) 2011-2014 by Panasonic Advanced Technology Development Co., Ltd., JAPAN
+ *  Copyright (C) 2011-2014 by Renesas Electronics Corporation, JAPAN
+ *  Copyright (C) 2011-2014 by Sunny Giken Inc., JAPAN
+ *  Copyright (C) 2011-2014 by TOSHIBA CORPOTATION, JAPAN
+ *  Copyright (C) 2011-2014 by Witz Corporation, JAPAN
  *  
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -37,7 +37,12 @@
  *      また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
  *      由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
  *      免責すること．
- *  
+ *
+ *  本ソフトウェアは，AUTOSAR（AUTomotive Open System ARchitecture）仕
+ *  様に基づいている．上記の許諾は，AUTOSARの知的財産権を許諾するもので
+ *  はない．AUTOSARは，AUTOSAR仕様に基づいたソフトウェアを商用目的で利
+ *  用する者に対して，AUTOSARパートナーになることを求めている．
+ *
  *  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
  *  よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
  *  に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
