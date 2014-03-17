@@ -47,6 +47,7 @@ Windows 7 (x64) SP1 + MinGW 1.0.17 + GCC 4.6.1 + Boost 1.52.0
 
 コンフィギュレータ（cfgプログラム）を構築するには、cfgディレクトリに移動
 し、configureおよびmakeコマンドを実行します。
+(AUTOSAR XML対応機能を省略する場合)
 
 	% cd cfg
 	% ./configure
@@ -67,8 +68,12 @@ Windows 7 (x64) SP1 + MinGW 1.0.17 + GCC 4.6.1 + Boost 1.52.0
 アップデートを行った場合には、make realcleanを実行し、configureからやり
 直してください。
 
-configureに--without-xmlを指定することで、AUTOSAR XML対応機能を省略する
-ことができます。これにより、Xerces C++が不要になります。
+configureに--with-xmlを指定することで、AUTOSAR XML対応機能を追加する
+ことができます。これにより、Xerces C++が必要になります。
+
+	% cd cfg
+	% ./configure --with-xml
+	% make
 
 
 【Mekefile.configの説明】
@@ -107,7 +112,7 @@ Xerces C++のライブラリファイルがあるディレクトリ
 
 ・HAS_CFG_XML
 AUTOSAR XML対応の有無
-configureに--without-xmlを指定した場合は0、それ以外は1に定義されます。
+configureに--with-xmlを指定した場合は1に定義されます。
 
 
 【コンフィギュレータの使い方】

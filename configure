@@ -1,6 +1,7 @@
 #!/bin/sh
 
 makefile_config="Makefile.config"
+with_xml=0
 
 # コマンドライン引数の処理
 for arg in "$@"
@@ -11,7 +12,7 @@ do
 	case $name in
 		--with-headers)		include_path=$value ;;
 		--with-libraries)	library_path=$value ;;
-		--without-xml)		without_xml=1 ;;
+		--with-xml)			with_xml=1 ;;
 		--help)				echo "configure options:"
 							echo "--help"
 							echo "	display this information"
@@ -19,8 +20,8 @@ do
 							echo "	specify the directory of Boost headers"
 							echo "--with-libraries=<dir>"
 							echo "	specify the directory of Boost libraries"
-							echo "--without-xml"
-							echo "  omit support for XML"
+							echo "--with-xml"
+							echo "  support for XML"
 							exit
 							;;
 	esac
@@ -82,7 +83,7 @@ echo XERCES_DIR=$include_path >> $makefile_config
 echo LIBBOOST_DIR=$library_path >> $makefile_config
 echo LIBXERCES_DIR=$library_path >> $makefile_config
 echo OPTIONS=$options >> $makefile_config
-if test -z $without_xml
+if test $with_xml -eq 1
 then
 	echo HAS_CFG_XML=1 >> $makefile_config
 fi
