@@ -133,6 +133,7 @@ fEcuModuleConfigurationValues_(0)
 
     reference     = fromNative("REFERENCE-VALUES");
     ecucreference = fromNative("ECUC-REFERENCE-VALUE");
+    ecucinstanceref = fromNative("ECUC-INSTANCE-REFERENCE-VALUE");
 
     definitionref = fromNative("DEFINITION-REF");
     defqname      = fromNative("DEST");
@@ -234,7 +235,7 @@ void SAX2Handlers::startElement(const XMLCh* const uri
     {
       fReferenceValues_++;
     }
-    else if(localname == ecuctextual || localname == ecucnumerical || localname == ecucreference 
+    else if(localname == ecuctextual || localname == ecucnumerical || localname == ecucreference || localname == ecucinstanceref
         || localname == ecucboolean || localname == ecucenum || localname == ecucfloat || localname == ecucfunction )
     {
       para_temp = new toppers::xml::container::parameter();
@@ -257,6 +258,10 @@ void SAX2Handlers::startElement(const XMLCh* const uri
       {
         //fEcucReferenceValue_++;
         para_temp->setType( TYPE_REF );
+      }
+      else if (localname == ecucinstanceref)
+      {
+        para_temp->setType( TYPE_IREF );
       }
     }
     else if(localname == definitionref)

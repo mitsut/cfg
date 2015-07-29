@@ -127,6 +127,7 @@ namespace toppers
         TYPE_REF ,
         TYPE_FUNCTION,
         TYPE_INCLUDE,
+        TYPE_IREF ,
       };
 
       /* オブジェクト定義のクラス */
@@ -305,6 +306,11 @@ private:
   int fSubcontainers_old_;
   int fParameterValues_;
   int fReferenceValues_;
+/*
+  int fEcucReferenceValue_;
+  int fEcucNumericalParamValue_;
+  int fEcucTextualParamValue_;
+*/
   XercesString currentText_;
   const Locator* locator_; 
 
@@ -316,6 +322,7 @@ private:
   XercesString parameter;
   XercesString ecucnumerical;
   XercesString ecucreference;
+  XercesString ecucinstanceref;
 
   XercesString reference;
   XercesString ecuctextual;

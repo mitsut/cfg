@@ -821,6 +821,8 @@ namespace toppers
                           xml_info.type_enum = toppers::xml::container::TYPE_FUNCTION;
                       else if( !strcmp( s, "INCLUDE" ) || !strcmp( s, "+INCLUDE" ))
                           xml_info.type_enum = toppers::xml::container::TYPE_INCLUDE;
+                      else if( !strcmp( s, "IREF" ) )
+                          xml_info.type_enum = toppers::xml::container::TYPE_IREF;
                     }
 
                     if ( len >= 4 && !( *d_iter )[ 3 ].empty() )
