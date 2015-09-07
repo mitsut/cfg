@@ -8,7 +8,7 @@ ifdef HAS_CFG_XML
 endif
 
 CPPFLAGS := $(CPPFLAGS) -I$(BOOST_DIR) -I$(PROJDIR)
-LDFLAGS := $(CXXFLAGS)
+LDFLAGS := $(LDFLAGS) $(CXXFLAGS)
 
 ifeq ($(OSTYPE), msys)
 	LDFLAGS := $(LDFLAGS) -static-libgcc -static-libstdc++
