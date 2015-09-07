@@ -1,4 +1,4 @@
--include ../Makefile.config
+-include ../../Makefile.config
 
 PROJDIR = ../..
 WORKDIR = $(PROJDIR)/toppers/oil
