@@ -61,10 +61,10 @@ rm Makefile.config 2> /dev/null
 
 # Boost C++ Librariesのバージョンを調べる
 boost_version=`echo "#include <boost/version.hpp>
-echo BOOST_VERSION" | g++ -E -I$include_path -L$library_path - | sh`
+BOOST_VERSION" | g++ -E -I$include_path -L$library_path - | tail -1`
 
 boost_lib_version=`echo "#include <boost/version.hpp>
-echo BOOST_LIB_VERSION" | g++ -E -I$include_path -L$library_path - | sh`
+BOOST_LIB_VERSION" | g++ -E -I$include_path -L$library_path - | tail -1`
 
 # ライブラリファイルの添字を調べる
 # 環境によって、-gcc-mt-s, -mt-s, -gcc42-mt-sなど、添字が異なるため
