@@ -414,8 +414,8 @@ namespace toppers
             }
 
             // 入れ子判定
-            if ( block_type == "CLASS" && !current_class.empty()
-              || block_type == "DOMAIN" && !current_domain.empty() )
+            if ( (block_type == "CLASS" && !current_class.empty())
+              || (block_type == "DOMAIN" && !current_domain.empty()) )
             {
               fatal( iter.line(), _( "`%1%\' is nested" ), block_type );
             }

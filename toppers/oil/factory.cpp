@@ -374,7 +374,7 @@ namespace toppers
         nm_entry = cfg1out.get_syms()->find( "TOPPERS_cfg_sizeof_pointer" );
         sizeof_pointer = static_cast< std::size_t >( cfg1out.get_srec()->get_value( nm_entry.address, 4, cfg1out.is_little_endian() ) );
 
-        for ( std::size_t i = 0; i < sizeof limit_defs / sizeof limit_defs[ 0 ]; ++i )
+        for ( int i = 0; i < sizeof(limit_defs) / sizeof(limit_defs[ 0 ]); ++i )
         {
           element e;
           e.s = limit_defs[ i ].expression;

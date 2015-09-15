@@ -160,6 +160,8 @@ namespace toppers
     case block_comment:
       error( "unterminated comment" );
       break;
+    default:
+      break;
     }
     return result;
   }

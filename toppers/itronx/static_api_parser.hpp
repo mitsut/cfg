@@ -115,6 +115,8 @@ namespace toppers
           case semicolon_expected:
             toppers::fatal( ln, _( "missing `%1%\' before %2%" ), ';', str );
             break;
+          default:
+            break;
           }
           return  boost::spirit::classic::error_status<>( boost::spirit::classic::error_status<>::fail );
         }

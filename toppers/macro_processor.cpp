@@ -918,8 +918,8 @@ namespace toppers
             {
               e.i = 0;
             }
-            else if ( ( ( x < 0 ) == ( y < 0 ) ) && ( std::numeric_limits< std::tr1::int64_t >::max() / y < x )
-                 || ( ( x < 0 ) != ( y < 0 ) ) && ( std::numeric_limits< std::tr1::int64_t >::min() / y > x ) )
+            else if ( (( ( x < 0 ) == ( y < 0 ) ) && ( std::numeric_limits< std::tr1::int64_t >::max() / y < x ))
+                 ||   (( ( x < 0 ) != ( y < 0 ) ) && ( std::numeric_limits< std::tr1::int64_t >::min() / y > x )) )
             {
               error( node.children[0].value.begin().line(), _( "overflow at `%1%\'" ), get_s( lhs, p_ctx ) + "*" + get_s( rhs, p_ctx ) );
               // e.i に値はセットされない
