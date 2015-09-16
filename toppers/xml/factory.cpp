@@ -56,10 +56,14 @@
 #include <cstring>
 #include <cstdlib>
 #include <fstream>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
+#include <boost/regex.hpp>
 #include "toppers/misc.hpp"
 #include "toppers/global.hpp"
 #include "toppers/csv.hpp"
@@ -403,19 +407,64 @@ namespace toppers
                 }
                 catch( std::exception& exception )
                 {
-                  string contanerDefName( (*r)->getParent()->getDefName() );
-                  string paramDefName( (*r)->getDefName() );
-                  string grandObjName;
-
-                  boost::replace_all(contanerDefName, ".", "_");
-                  boost::replace_all(paramDefName, ".", "_");
-                  if( (*r)->getParent()->getParent() != NULL )
+                  /* decimal constant */
+                  if( ((*r)->getType() == TYPE_INT) && boost::regex_match( value_str, boost::regex("^-?[0-9]+[uUlL]$") ) )
                   {
-                    grandObjName = (*r)->getParent()->getParent()->getObjName();
+                    string decimal_str( value_str );
+
+                    decimal_str.erase( decimal_str.end()-1 );
+                    e.i = boost::lexical_cast< std::tr1::int64_t >( decimal_str );
                   }
-
-                  if ( !get_global_bool( "omit-symbol" ) )
+                  /* hexadecimal constant */
+                  else if( ((*r)->getType() == TYPE_INT) && boost::regex_match( value_str, boost::regex("^-?[0x|0X][0-9a-fA-F]+$") ) )
                   {
+                    stringstream ss( value_str );
+                    int64_t hex_data;
+
+                    ss >> hex >> hex_data;
+                    e.i = hex_data;
+                  }
+                  /* float constat */
+                  else if( ((*r)->getType() == TYPE_FLOAT) && boost::regex_match( value_str, boost::regex("^-?[0-9]+\\.[0-9]+$") ) )
+                  {
+                    e.i = 0;
+                  }
+                  else if( ((*r)->getType() == TYPE_FLOAT) && boost::regex_match( value_str, boost::regex("^-?[0-9]+\\.[0-9]+[Ee\\-][0-9]+$") ) )
+                  {
+                    std::stringstream ss( value_str );
+                    std::stringstream double_ss;
+                    double d;
+
+                    ss >> d;
+                    double_ss << fixed << setprecision(20) << d;
+                    string double_str = boost::regex_replace(double_ss.str(), boost::regex("\\.?0+$"), "");
+                    toppers::warning( _( "(%1%:%2%) : FLOAT type data from `%3%\' to `%4%\' ." ), (*r)->getFileName(), (*r)->getLine(), value_str, double_str );
+                    e.s = double_str;
+                    e.i = 0;
+                  }
+                  /* FLOAT infinity */
+                  else if( ((*r)->getType() == TYPE_FLOAT) && boost::regex_match( value_str, boost::regex("NaN|INF|-INF") ) )
+                  {
+                    e.s = (*r)->getValue();
+                    e.i = 0;
+                  }
+                  else if( boost::regex_match( value_str, boost::regex("^[0-9][0-9a-zA-Z_]+$") )  )
+                  {
+                    toppers::fatal( _( "(%1%:%2%) : invalid suffix \"%3%\" on integer constant." ), (*r)->getFileName(), (*r)->getLine(), value_str );
+                  }
+                  else if ( !get_global_bool( "omit-symbol" ) )
+                  {
+                    string contanerDefName( (*r)->getParent()->getDefName() );
+                    string paramDefName( (*r)->getDefName() );
+                    string grandObjName;
+
+                    boost::replace_all(contanerDefName, ".", "_");
+                    boost::replace_all(paramDefName, ".", "_");
+                    if( (*r)->getParent()->getParent() != NULL )
+                    {
+                      grandObjName = (*r)->getParent()->getParent()->getObjName();
+                    }
+
                     nm_entry = cfg1out.get_syms()->find( "TOPPERS_cfg_valueof_" + contanerDefName + "_" + paramDefName + "_" + (*r)->getParent()->getObjName() + "_" + grandObjName );
                     if ( nm_entry.type >= 0 )
                     {
@@ -423,12 +472,8 @@ namespace toppers
                     }
                     else
                     {
-                      e.i = 0;
+                      //toppers::warning( _( "(%1%:%2%) : not MACRO data `%3%\'." ), (*r)->getFileName(), (*r)->getLine(), (*r)->getValue() );
                     }
-                  }
-                  else
-                  {
-                    e.i = 0;
                   }
                 }
               }
@@ -453,13 +498,33 @@ namespace toppers
               else if( (*r)->getType() == TYPE_BOOLEAN )
               {
                 string value_str( (*r)->getValue() );
-                if(value_str == "1" || value_str == "TRUE" || value_str == "true")
+                if(value_str == "1" || value_str == "TRUE" || value_str == "true" || value_str == "ON" || value_str == "ENABLE")
                 {
                   e.i = 1;
                 }
-                else
+                else if(value_str == "0" || value_str == "FALSE" || value_str == "false" || value_str == "OFF" || value_str == "DISABLE")
                 {
                   e.i = 0;
+                }
+                else
+                {
+                  toppers::warning( _( "(%1%:%2%) : Invalid boolean name `%3%\'." ), (*r)->getFileName(), (*r)->getLine(), (*r)->getValue() );
+                }
+              }
+              else if( (*r)->getType() == TYPE_FUNCTION || (*r)->getType() == TYPE_ENUM )
+              {
+                string type_str;
+                if( (*r)->getType() == TYPE_FUNCTION )
+                {
+                  type_str = "function";
+                }
+                else
+                {
+                  type_str = "enum";
+                }
+                if( !boost::regex_match((*r)->getValue(), boost::regex("[a-zA-Z_][a-zA-Z0-9_]*")) )
+                {
+                  toppers::fatal( _( "(%1%:%2%) : Invalid %4% name `%3%\'." ), (*r)->getFileName(), (*r)->getLine(), (*r)->getValue(), type_str );
                 }
               }
               else
