@@ -32,19 +32,19 @@ SUBDIRS  = toppers $(MODULES) cfg
 all: $(SUBDIRS)
 
 $(SUBDIRS)::
-	make BOOST_DIR="$(BOOST_DIR)" LIBBOOST_SUFFIX="$(LIBBOOST_SUFFIX)" CXXFLAGS="$(OPTIMIZE) $(OPTIONS)" -C $@
+	$(MAKE) BOOST_DIR="$(BOOST_DIR)" LIBBOOST_SUFFIX="$(LIBBOOST_SUFFIX)" CXXFLAGS="$(OPTIMIZE) $(OPTIONS)" -C $@
 
 depend:
 	for subdir in $(SUBDIRS) ; do \
 		if test -d $$subdir ; then \
-			make BOOST_DIR="$(BOOST_DIR)" LIBBOOST_SUFFIX="$(LIBBOOST_SUFFIX)" depend -C $$subdir; \
+			$(MAKE) BOOST_DIR="$(BOOST_DIR)" LIBBOOST_SUFFIX="$(LIBBOOST_SUFFIX)" depend -C $$subdir; \
 		fi ; \
 	done \
 
 clean:
 	for subdir in $(SUBDIRS) ; do \
 		if test -d $$subdir ; then \
-			make clean -C $$subdir ; \
+			$(MAKE) clean -C $$subdir ; \
 		fi ; \
 	done \
 
