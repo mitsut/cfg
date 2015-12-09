@@ -730,6 +730,18 @@ namespace toppers
     void cfg1_out::implementation::do_load_cfg( std::string const& input_file, 
                 codeset_t codeset, std::map<std::string, toppers::xml::info> const& info_map )
     {
+      boost::any print_depend = global( "print-dependencies" );
+      if ( !print_depend.empty() )
+      {
+        std::set< std::string > depend;
+
+        // 依存関係の出力（GNU makeに適した形式）
+        std::string target_file = boost::any_cast< std::string& >( print_depend );
+        std::cout << target_file << ": " << input_file << ' ';
+        std::copy( depend.begin(), depend.end(), std::ostream_iterator< std::string >( std::cout, " " ) );
+        std::cout << std::endl;
+        exit();
+      }
       // XMLファイルのパース処理
       std::vector< toppers::xml::container::object*> container_array_temp;
       std::list<std::string> xmlfiles;
