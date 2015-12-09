@@ -407,21 +407,18 @@ namespace toppers
                 }
                 catch( std::exception& exception )
                 {
-                  /* decimal constant */
-                  if( ((*r)->getType() == TYPE_INT) && boost::regex_match( value_str, boost::regex("^-?[0-9]+[uUlL]$") ) )
+                  /* invalid suffix */
+                  if( ((*r)->getType() == TYPE_INT) && boost::regex_match( value_str, boost::regex("^[+|-]?[0-9][0-9a-fx]*[uUlL]$") ) )
                   {
-                    string decimal_str( value_str );
-
-                    decimal_str.erase( decimal_str.end()-1 );
-                    e.i = boost::lexical_cast< std::tr1::int64_t >( decimal_str );
+                    toppers::fatal( _( "(%1%:%2%) : invalid suffix \"%3%\" on integer constant." ), (*r)->getFileName(), (*r)->getLine(), value_str );
                   }
                   /* hexadecimal constant */
-                  else if( ((*r)->getType() == TYPE_INT) && boost::regex_match( value_str, boost::regex("^-?[0x|0X][0-9a-fA-F]+$") ) )
+                  else if( ((*r)->getType() == TYPE_INT) && boost::regex_match( value_str, boost::regex("^0x[0-9a-f]+$") ) )
                   {
                     stringstream ss( value_str );
                     int64_t hex_data;
 
-                    ss >> hex >> hex_data;
+                    ss >> std::hex >> hex_data;
                     e.i = hex_data;
                   }
                   /* float constat */
@@ -429,7 +426,7 @@ namespace toppers
                   {
                     e.i = 0;
                   }
-                  else if( ((*r)->getType() == TYPE_FLOAT) && boost::regex_match( value_str, boost::regex("^-?[0-9]+\\.[0-9]+[Ee\\-][0-9]+$") ) )
+                  else if( ((*r)->getType() == TYPE_FLOAT) && boost::regex_match( value_str, boost::regex("^-?[0-9]+\\.[0-9]+[Ee]-[0-9]+$") ) )
                   {
                     std::stringstream ss( value_str );
                     std::stringstream double_ss;
@@ -438,7 +435,7 @@ namespace toppers
                     ss >> d;
                     double_ss << fixed << setprecision(20) << d;
                     string double_str = boost::regex_replace(double_ss.str(), boost::regex("\\.?0+$"), "");
-                    toppers::warning( _( "(%1%:%2%) : FLOAT type data from `%3%\' to `%4%\' ." ), (*r)->getFileName(), (*r)->getLine(), value_str, double_str );
+                    //toppers::warning( _( "(%1%:%2%) : FLOAT type data from `%3%\' to `%4%\' ." ), (*r)->getFileName(), (*r)->getLine(), value_str, double_str );
                     e.s = double_str;
                     e.i = 0;
                   }
@@ -447,10 +444,6 @@ namespace toppers
                   {
                     e.s = (*r)->getValue();
                     e.i = 0;
-                  }
-                  else if( boost::regex_match( value_str, boost::regex("^[0-9][0-9a-zA-Z_]+$") )  )
-                  {
-                    toppers::fatal( _( "(%1%:%2%) : invalid suffix \"%3%\" on integer constant." ), (*r)->getFileName(), (*r)->getLine(), value_str );
                   }
                   else if ( !get_global_bool( "omit-symbol" ) )
                   {
@@ -472,7 +465,7 @@ namespace toppers
                     }
                     else
                     {
-                      //toppers::warning( _( "(%1%:%2%) : not MACRO data `%3%\'." ), (*r)->getFileName(), (*r)->getLine(), (*r)->getValue() );
+                      toppers::warning( _( "(%1%:%2%) : not MACRO data `%3%\'." ), (*r)->getFileName(), (*r)->getLine(), (*r)->getValue() );
                     }
                   }
                 }
