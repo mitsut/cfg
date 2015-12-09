@@ -633,7 +633,8 @@ namespace toppers
             }
             
             // CSVファイルのパース
-            read( boost::filesystem::absolute( get_global_string( "cfg-directory" ).c_str() ).string() + "/" + get_global_string( "XML_XMLEvaluateFile" ) , filebuf);
+            boost::filesystem::path path( get_global_string( "ini-file" ).c_str() );
+            read( boost::filesystem::absolute( path.parent_path() ).string() + "/" + get_global_string( "XML_XMLEvaluateFile" ) , filebuf);
             csv data( filebuf.begin(), filebuf.end() );
 
             // CSVファイルからXPathのリスト記述分だけXMLのDOM探索を行う
