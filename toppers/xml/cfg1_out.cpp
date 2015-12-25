@@ -176,6 +176,7 @@ namespace toppers
       virtual string do_search_macro(std::vector< toppers::xml::container::object* > const& objects ,std::map<std::string, toppers::xml::info> const& info_map );
       virtual void do_search_includes(std::vector< toppers::xml::container::object* > const& objects ,std::string include_container, std::list< string > *incstr );
       virtual void do_load_cfg( std::string const& input_file, codeset_t codeset, std::map<std::string, toppers::xml::info> const& info_map );
+      virtual void print_container(toppers::xml::container::object* objCon, int flag=0);
       virtual void do_generate_includes() const
       {
       }
@@ -250,6 +251,30 @@ namespace toppers
         result = pInfo->second;
       }
       return result;
+    }
+
+    void cfg1_out::implementation::print_container(toppers::xml::container::object* objCon, int flag)
+    {
+      warning( _("DefName:%2% , ObjName:%3%, FileName:%1% (%4%)") , objCon->getFileName(), objCon->getDefName(), objCon->getObjName(), objCon->getLine() );
+
+      if (flag !=0)
+      {
+        if( objCon->getSubcontainers()->size() != 0 )
+        {
+          for ( std::vector<toppers::xml::container::object*>::iterator pSub = objCon->getSubcontainers()->begin() ;
+            pSub != objCon->getSubcontainers()->end();
+            ++pSub )
+          {
+            print_container( *pSub, 1 );
+          }
+        }
+        for( std::vector< toppers::xml::container::parameter* >::iterator pPara = objCon->getParams()->begin() ;
+          pPara != objCon->getParams()->end();
+          ++pPara )
+        {
+            warning( _("NAME:%1% , TYPE:%2%, VALUE:%3% ") , (*pPara)->getDefName(), (*pPara)->getType(), (*pPara)->getValue() );
+        }
+      }
     }
 
     /*!
@@ -657,23 +682,22 @@ namespace toppers
      toppers::xml::container::object* cfg1_out::implementation::search_container( std::vector< toppers::xml::container::object*> const &objects,
       std::string searchPath )
      {
-      toppers::xml::container::object* searchObj;
+      toppers::xml::container::object* searchObj = NULL;
 
       for ( std::vector< toppers::xml::container::object* >::const_iterator pObj = objects.begin();
-        pObj != objects.end() ; ++pObj )
+        pObj != objects.end() && searchObj == NULL; ++pObj )
       {
         std::string valName = search_value_path( *pObj );
         if( searchPath == valName )
         {
           return *pObj;
         }
-        else if( (*pObj)->getSubcontainers()->size() != 0 )
+        else if( searchPath.find(valName) != std::string::npos && (*pObj)->getSubcontainers()->size() != 0 )
         {
-          return search_container( *(*pObj)->getSubcontainers(), searchPath );
+          searchObj = search_container( *(*pObj)->getSubcontainers(), searchPath );
         }
       }
-      // 探索したコンテナのフルパス名が無い場合はNULL
-      return NULL; 
+      return searchObj; 
     }
 
     /*!
@@ -683,10 +707,12 @@ namespace toppers
      */
      void cfg1_out::implementation::merge_container(std::vector< toppers::xml::container::object*> &rootContainers, toppers::xml::container::object* mergeContainer )
      {
+      // warning( _("===merge_container DefName(%1%) FullPath(%2%)"), mergeContainer->getDefName(), search_value_path( mergeContainer ) );
       // コンテナ情報の出力
       toppers::xml::container::object* searchedObj = search_container( rootContainers, search_value_path( mergeContainer ) ); 
       if( searchedObj != NULL)
       {
+        // print_container(searchedObj);
         for( std::vector<toppers::xml::container::parameter*>::iterator pPara = mergeContainer->getParams()->begin() ;
          pPara != mergeContainer->getParams()->end() ; ++pPara )
         {
@@ -717,6 +743,7 @@ namespace toppers
         {
           //サブコンテナを追加する場合
           addObj->getSubcontainers()->push_back( mergeContainer );
+          mergeContainer->setParent( addObj );
         }
       }
     }
@@ -755,6 +782,10 @@ namespace toppers
           merge_container( container_array_temp, xmlcontainer[i] );
         }
       }
+      //BOOST_FOREACH( toppers::xml::container::object* pCon, container_array_temp )
+      //{
+      //  print_container( pCon , 1);       
+      //}
 
       // インクルードコンテナのフルパス名を取得
       std::string include_container;
