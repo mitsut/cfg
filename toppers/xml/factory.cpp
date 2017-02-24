@@ -834,6 +834,12 @@ namespace toppers
                     d_iter != d_last;
                     ++d_iter )
               {
+                // api-tableファイルで#から始まる行はコメントとして読み飛ばす
+                if( (*d_iter)[0][0] == '#' )
+                {
+                   continue;
+                }
+
                 int searchFlag = 0;
                 BOOST_FOREACH(std::string module, moduleNames)
                 {

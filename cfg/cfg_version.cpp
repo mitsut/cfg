@@ -41,7 +41,7 @@
 #include <sys/stat.h>
 
 //! cfgのバージョン情報
-extern char const cfg_version[] = "1.9.5";
+extern char const cfg_version[] = "1.9.6";
 
 /*!
  *  \brief  プログラムファイル(cfg or cfg.exe)のタイムスタンプを取得する。
