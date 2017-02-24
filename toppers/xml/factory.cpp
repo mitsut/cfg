@@ -412,6 +412,11 @@ namespace toppers
                   {
                     toppers::fatal( _( "(%1%:%2%) : invalid suffix \"%3%\" on integer constant." ), (*r)->getFileName(), (*r)->getLine(), value_str );
                   }
+                  /* float constat */
+                  else if( ((*r)->getType() == TYPE_INT) && boost::regex_match( value_str, boost::regex("^-?[0-9]+\\.[0-9]+$") ) )
+                  {
+                    toppers::fatal( _( "(%1%:%2%) : invalid suffix \"%3%\" on integer constant." ), (*r)->getFileName(), (*r)->getLine(), value_str );
+                  }
                   /* hexadecimal constant */
                   else if( ((*r)->getType() == TYPE_INT) && boost::regex_match( value_str, boost::regex("^0x[0-9a-f]+$") ) )
                   {
