@@ -5,10 +5,13 @@ addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
-    - boost-latest
     packages:
-    - libboost1.52-all-dev
     - perl
-    - gcc-4.5
-    - g++-4.5
+before_install:
+    # or another boost version
+    - sudo add-apt-repository ppa:apokluda/boost1.53 --yes
+    - sudo apt-get update
+install:
+    # or another boost version
+    - sudo apt-get install libboost1.53-all-dev
 script: configure && make
