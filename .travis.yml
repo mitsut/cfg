@@ -1,17 +1,5 @@
 language: cpp
-compiler: gcc
-os: linux
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - perl
-before_install:
-    # or another boost version
-    - sudo add-apt-repository ppa:apokluda/boost1.53 --yes
-    - sudo apt-get update
-install:
-    # or another boost version
-    - sudo apt-get install libboost1.53-all-dev
-script: configure && make
+compiler: 
+    - gcc
+script: 
+    configure && make
