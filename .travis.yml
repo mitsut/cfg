@@ -1,5 +1,43 @@
 language: cpp
+
+matrix:
+    include:
+        - os: linux
+          env: TARGET=x86_64-unknown-linux-gnu
+        - os: osx
+          env: TARGET=x86_64-apple-darwin
 compiler: 
     - gcc
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - perl
+before_install:
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y libboost-all-dev; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y libxerces-c-dev; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then brew update          ; fi
+#    - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then brew install boost; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then brew install xerces-c; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then brew install icu4c; fi
+
 script: 
-    configure && make
+    ./configure --with-xml && make
+after_success:
+    - cd cfg ; tar cvzf "cfg-${TRAVIS_BRANCH}-${TARGET}.tar.gz" cfg ; cd ../
+    - mkdir -p dist ; cp cfg/"cfg-${TRAVIS_BRANCH}-${TARGET}.tar.gz" dist/ ; cd dist
+    - git init
+    - git config user.name "${GH_USER_NAME}"
+    - git config user.email "{GH_USER_EMAIL}"
+    - git add . ; git commit -m "Deploy to GitHub Pages"
+    - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:gh-pages > /dev/null 2>&1
+
+deploy:
+  provider: releases
+  api_key: ${GH_TOKEN}
+  file_glob: true
+  file: 'dist/*.{tar.gz,zip}'
+  skip_cleanup: true
+  on:
+    tags: true

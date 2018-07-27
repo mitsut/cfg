@@ -45,7 +45,7 @@ do
 done
 
 # Boost C++ Librariesのライブラリファイルがあるディレクトリをサーチ
-for dir in $library_path "/usr/local/lib" "/opt/local/lib" "/opt/lib" "/usr/lib" "/lib" "/mingw/lib"
+for dir in $library_path "/usr/local/lib" "/opt/local/lib" "/opt/lib" "/usr/lib" "/lib" "/mingw/lib" "/usr/lib/x86_64-linux-gnu"
 do
 	ls $dir/libboost* 2> /dev/null > /dev/null
 	if test $? -eq 0

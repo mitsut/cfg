@@ -7,7 +7,7 @@ ifndef BOOST_DIR
 	ifeq ($(OSTYPE), msys)
 		BOOST_DIR = /mingw/include/boost-$(BOOST_VERSION)
 	else
-		ifeq ($(shell echo $$OSTYPE), cygwin)
+		ifeq ($(OSTYPE), cygwin)
 			BOOST_DIR = /usr/include/boost-$(BOOST_VERSION)
 		else
 			BOOST_DIR = /usr/local/include/boost-$(BOOST_VERSION)
@@ -55,4 +55,3 @@ realclean: clean
 		fi ; \
 	done
 	rm -f Makefile.config
-

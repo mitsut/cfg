@@ -13,6 +13,12 @@ LDFLAGS := $(LDFLAGS) $(CXXFLAGS)
 ifeq ($(OSTYPE), msys)
 	LDFLAGS := $(LDFLAGS) -static-libgcc -static-libstdc++
 endif
+ifeq ($(OSTYPE), linux-gnu)
+	LDFLAGS := $(LDFLAGS) -static -static-libgcc -static-libstdc++
+endif
+ifeq ($(shell uname), Darwin)
+	LIBXERCES_DIR := $(LIBXERCES_DIR) -L/usr/local/opt/boost/lib/ -L/usr/local/opt/xerces-c/lib/ -L/usr/local/opt/icu4c/lib/
+endif
 
 CXXFILES = \
 	cfg.cpp \
@@ -42,7 +48,7 @@ LIBFILES := $(LIBFILES) $(PROJDIR)/toppers/libtoppers.a \
 all: cfg
 
 cfg: $(OBJFILES) $(LIBFILES)
-	$(CXX) $(LDFLAGS) -o cfg $(OBJFILES) -L$(LIBBOOST_DIR) -L$(LIBXERCES_DIR) $(LIBFILES) $(BOOST_LIBFILES) $(XERCES_LIBSFILE)
+	$(CXX) $(LDFLAGS) -o cfg $(OBJFILES) -L$(LIBBOOST_DIR) -L$(LIBXERCES_DIR) $(LIBFILES) $(BOOST_LIBFILES) $(XERCES_LIBSFILE) -lpthread
 
 depend:
 	$(CXX) $(CPPFLAGS) -M $(CXXFILES) > Makefile.depend
