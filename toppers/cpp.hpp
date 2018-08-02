@@ -44,6 +44,7 @@
 #include "toppers/codeset.hpp"
 #include "toppers/diagnostics.hpp"
 #include <boost/utility.hpp>
+#include <boost/next_prior.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/exception.hpp>
