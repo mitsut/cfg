@@ -1,0 +1,17 @@
+version: 1.0.{build}
+init:
+- cmd: >-
+    SET PATH=%PATH%;C:\MinGW\bin;C:\Libraries\boost
+    mingw-get --version
+environment:
+  MINGW_DIR: mingw32
+  TARGET: i686-pc-windows-gnu
+build_script:
+- sh: ./configure & make
+test: off
+on_success:
+- sh: echo 'build success'
+on_failure:
+- sh: echo 'build error'
+on_finish:
+- sh: echo 'build finish'
