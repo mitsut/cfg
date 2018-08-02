@@ -2,12 +2,14 @@ version: 1.0.{build}
 init:
   - SET PATH=%PATH%;C:\MinGW\bin;C:\Libraries\boost
   - mingw-get --version
+  - perl --version
+  - make --version
 environment:
   MINGW_DIR: mingw32
   TARGET: i686-pc-windows-gnu
-build_script:
-- sh: ./configure & make
-- sh: ls -laR
+before_build:
+  - ./configure & make
+  - ls -laR
 test: off
 on_success:
 - sh: echo 'build success'
