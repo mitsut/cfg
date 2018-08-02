@@ -54,6 +54,7 @@
 #include "toppers/text_line.hpp"
 #include "toppers/misc.hpp"
 #include <boost/utility.hpp>
+#include <boost/next_prior.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/format.hpp>
 
