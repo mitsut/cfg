@@ -161,14 +161,14 @@ namespace toppers
               {
                                 // modified by takuya 110823
                 //sscanf_s(value_str.c_str() , "0x%I64x" , &temp);
-                sscanf(value_str.c_str() , "0x%llx" , &temp);
+                sscanf(value_str.c_str() , "0x%lx" , &temp);
                 e.i = temp;
               }
               else if(value_str.find("0X") == 0)
               {
                                 // modified by takuya 110823
                 //sscanf_s(value_str.c_str() , "0X%I64x" , &temp);
-                sscanf(value_str.c_str() , "0X%llx" , &temp);
+                sscanf(value_str.c_str() , "0X%lx" , &temp);
                 e.i = temp;
               }
               else
@@ -195,14 +195,14 @@ namespace toppers
               {
                                 // modified by takuya 110823
                 //sscanf_s(value_str.c_str() , "0x%I64x" , &temp);
-                sscanf(value_str.c_str() , "0x%llx" , &temp);
+                sscanf(value_str.c_str() , "0x%lx" , &temp);
                 e.i = temp;
               }
               else if(value_str.find("0X") == 0)
               {
                                 // modified by takuya 110823
                 //sscanf_s(value_str.c_str() , "0X%I64x" , &temp);
-                sscanf(value_str.c_str() , "0X%llx" , &temp);
+                sscanf(value_str.c_str() , "0X%lx" , &temp);
                 e.i = temp;
               }
               else

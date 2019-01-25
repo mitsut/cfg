@@ -316,13 +316,13 @@ namespace toppers
 				{
                     // modified by takuya 110823
 					//(void)sscanf_s(obj->get_value().c_str() , "0x%I64x" , &value);
-					(void)sscanf(obj->get_value().c_str() , "0x%llx" , &value);
+					(void)sscanf(obj->get_value().c_str() , "0x%lx" , &value);
 				}
 				else if(obj->get_value().find("0X") != string::npos)
 				{
                     // modified by takuya 110823
 					//(void)sscanf_s(obj->get_value().c_str() , "0X%I64x" , &value);
-					(void)sscanf(obj->get_value().c_str() , "0X%llx" , &value);
+					(void)sscanf(obj->get_value().c_str() , "0X%lx" , &value);
 				}
 				else
 				{
@@ -395,13 +395,13 @@ namespace toppers
 				{
                     // modified by takuya 110823
 					//(void)sscanf_s(obj->get_value().c_str() , "0x%I64x" , &value);
-					(void)sscanf(obj->get_value().c_str() , "0x%llx" , &value);
+					(void)sscanf(obj->get_value().c_str() , "0x%lx" , &value);
 				}
 				else if(obj->get_value().find("0X") != string::npos)
 				{
                     // modified by takuya 110823
 					//(void)sscanf_s(obj->get_value().c_str() , "0X%I64x" , &value);
-					(void)sscanf(obj->get_value().c_str() , "0X%llx" , &value);
+					(void)sscanf(obj->get_value().c_str() , "0X%lx" , &value);
 				}
 				else
 				{
