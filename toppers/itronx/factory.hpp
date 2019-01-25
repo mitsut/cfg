@@ -78,22 +78,22 @@ namespace toppers
       virtual ~factory();
       std::map< std::string, static_api::info > const* get_static_api_info_map() const;
       cfg1_out::cfg1_def_table const* get_cfg1_def_table() const;
-      std::auto_ptr< cfg1_out > create_cfg1_out( std::string const& filename ) const
+      std::unique_ptr< cfg1_out > create_cfg1_out( std::string const& filename ) const
       {
         return do_create_cfg1_out( filename );
       }
-      std::auto_ptr< checker > create_checker() const
+      std::unique_ptr< checker > create_checker() const
       {
         return do_create_checker();
       }
-      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out ) const;
-      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, cfg1_out::static_api_map const& api_map ) const
+      std::unique_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out ) const;
+      std::unique_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, cfg1_out::static_api_map const& api_map ) const
       {
         return do_create_macro_processor( cfg1out, api_map );
       }
-      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, std::auto_ptr< component >& component_ptr ) const
+      std::unique_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, std::unique_ptr< component >& component_ptr ) const
       {
-        std::auto_ptr< macro_processor > mproc( do_create_macro_processor( cfg1out, cfg1out.get_static_api_array() ) );
+        std::unique_ptr< macro_processor > mproc( do_create_macro_processor( cfg1out, cfg1out.get_static_api_array() ) );
         component_ptr.reset( new component( mproc.get() ) );
         return mproc;
       }
@@ -105,11 +105,11 @@ namespace toppers
       }
     protected:
       virtual void do_swap( factory& other );
-      virtual std::auto_ptr< macro_processor > do_create_macro_processor( cfg1_out const& cfg1out, cfg1_out::static_api_map const& api_map ) const;
-      virtual std::auto_ptr< macro_processor > do_create_macro_processor( cfg1_out const& cfg1out, std::vector< static_api > const& api_array ) const;
+      virtual std::unique_ptr< macro_processor > do_create_macro_processor( cfg1_out const& cfg1out, cfg1_out::static_api_map const& api_map ) const;
+      virtual std::unique_ptr< macro_processor > do_create_macro_processor( cfg1_out const& cfg1out, std::vector< static_api > const& api_array ) const;
     private:
-      virtual std::auto_ptr< cfg1_out > do_create_cfg1_out( std::string const& filename ) const;
-      virtual std::auto_ptr< checker > do_create_checker() const;
+      virtual std::unique_ptr< cfg1_out > do_create_cfg1_out( std::string const& filename ) const;
+      virtual std::unique_ptr< checker > do_create_checker() const;
 
       std::string kernel_;
     };

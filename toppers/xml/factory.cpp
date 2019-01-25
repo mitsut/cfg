@@ -1049,11 +1049,11 @@ namespace toppers
      *  \return     マクロプロセッサへのポインタ
      *  \note   このメンバ関数は従来仕様（ソフトウェア部品非対応版）の温存のためにそのまま残す。
      */
-    std::auto_ptr< macro_processor > factory::do_create_macro_processor( cfg1_out const& cfg1out, cfg1_out::xml_obj_map const& xml_map ) const
+    std::unique_ptr< macro_processor > factory::do_create_macro_processor( cfg1_out const& cfg1out, cfg1_out::xml_obj_map const& xml_map ) const
     {
       typedef macro_processor::element element;
       typedef macro_processor::var_t var_t;
-      std::auto_ptr< macro_processor > mproc( new macro_processor );
+      std::unique_ptr< macro_processor > mproc( new macro_processor );
       element e;
 
       e.s = " ";    mproc->set_var( "SPC", var_t( 1, e ) );  // $SPC$
@@ -1087,13 +1087,13 @@ namespace toppers
       return mproc;
     }
 
-    std::auto_ptr< cfg1_out > factory::do_create_cfg1_out( std::string const& filename ) const
+    std::unique_ptr< cfg1_out > factory::do_create_cfg1_out( std::string const& filename ) const
     {
-      return std::auto_ptr< xml::cfg1_out >( new cfg1_out( filename, get_cfg1_def_table() ) );
+      return std::unique_ptr< xml::cfg1_out >( new cfg1_out( filename, get_cfg1_def_table() ) );
     }
-    std::auto_ptr< checker > factory::do_create_checker() const
+    std::unique_ptr< checker > factory::do_create_checker() const
     {
-      return std::auto_ptr< xml::checker >( new checker );
+      return std::unique_ptr< xml::checker >( new checker );
     }
 
   }
