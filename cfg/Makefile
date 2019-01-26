@@ -48,7 +48,7 @@ LIBFILES := $(LIBFILES) $(PROJDIR)/toppers/libtoppers.a \
 all: cfg
 
 cfg: $(OBJFILES) $(LIBFILES)
-	$(CXX) $(LDFLAGS) -o cfg $(OBJFILES) -L$(LIBBOOST_DIR) -L$(LIBXERCES_DIR) $(LIBFILES) $(BOOST_LIBFILES) $(XERCES_LIBSFILE) -lpthread
+	$(CXX) $(LDFLAGS) -o cfg $(OBJFILES) -L$(LIBBOOST_DIR) -L$(LIBXERCES_DIR) $(LIBFILES) $(BOOST_LIBFILES) $(XERCES_LIBSFILE) -lpthread -ldl
 
 depend:
 	$(CXX) $(CPPFLAGS) -M $(CXXFILES) > Makefile.depend
