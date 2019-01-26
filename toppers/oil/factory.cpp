@@ -583,11 +583,11 @@ namespace toppers
      *  \param[in]  api_map .cfg ファイルに記述された静的API情報
      *  \return     マクロプロセッサへのポインタ
      */
-    std::auto_ptr< macro_processor > factory::do_create_macro_processor( cfg1_out const& cfg1out, cfg1_out::cfg_obj_map const& obj_def_map ) const
+    std::unique_ptr< macro_processor > factory::do_create_macro_processor( cfg1_out const& cfg1out, cfg1_out::cfg_obj_map const& obj_def_map ) const
     {
       typedef macro_processor::element element;
       typedef macro_processor::var_t var_t;
-      std::auto_ptr< macro_processor > mproc( new macro_processor );
+      std::unique_ptr< macro_processor > mproc( new macro_processor );
       element e;
 
       e.s = " ";    mproc->set_var( "SPC", var_t( 1, e ) );  // $SPC$
@@ -619,11 +619,11 @@ namespace toppers
      *  \param[in]  api_array .cfg ファイルに記述された静的API情報
      *  \return     マクロプロセッサへのポインタ
      */
-    std::auto_ptr< macro_processor > factory::do_create_macro_processor( cfg1_out const& cfg1out, std::vector< object_definition* > const& obj_array ) const
+    std::unique_ptr< macro_processor > factory::do_create_macro_processor( cfg1_out const& cfg1out, std::vector< object_definition* > const& obj_array ) const
     {
       typedef macro_processor::element element;
       typedef macro_processor::var_t var_t;
-      std::auto_ptr< macro_processor > mproc( new macro_processor );
+      std::unique_ptr< macro_processor > mproc( new macro_processor );
       element e;
 
       e.s = " ";    mproc->set_var( "SPC", var_t( 1, e ) );  // $SPC$
@@ -649,13 +649,13 @@ namespace toppers
       return mproc;
     }
 
-    std::auto_ptr< cfg1_out > factory::do_create_cfg1_out( std::string const& filename ) const
+    std::unique_ptr< cfg1_out > factory::do_create_cfg1_out( std::string const& filename ) const
     {
-      return std::auto_ptr< oil::cfg1_out >( new cfg1_out( filename, get_cfg1_def_table() ) );
+      return std::unique_ptr< oil::cfg1_out >( new cfg1_out( filename, get_cfg1_def_table() ) );
     }
-    std::auto_ptr< checker > factory::do_create_checker() const
+    std::unique_ptr< checker > factory::do_create_checker() const
     {
-      return std::auto_ptr< oil::checker >( new checker );
+      return std::unique_ptr< oil::checker >( new checker );
     }
 
   }

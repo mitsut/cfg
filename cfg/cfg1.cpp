@@ -61,7 +61,7 @@ namespace
 
     std::string cfg1_out_name;
     get_global( "cfg1_out", cfg1_out_name );
-    std::auto_ptr< typename Factory::cfg1_out > cfg1_out( factory.create_cfg1_out( cfg1_out_name + ".c" ) );
+    std::unique_ptr< typename Factory::cfg1_out > cfg1_out( factory.create_cfg1_out( cfg1_out_name + ".c" ) );
     cfg1_out->load_cfg( input_file, codeset, factory.get_cfg_info() );
     cfg1_out->generate();
 

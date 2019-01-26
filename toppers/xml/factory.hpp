@@ -96,27 +96,27 @@ namespace toppers
       virtual ~factory();
       std::map< std::string, toppers::xml::info > const* get_container_info_map() const;
       cfg1_out::cfg1_def_table const* get_cfg1_def_table() const;
-      std::auto_ptr< cfg1_out > create_cfg1_out( std::string const& filename ) const
+      std::unique_ptr< cfg1_out > create_cfg1_out( std::string const& filename ) const
       {
         return do_create_cfg1_out( filename );
       }
-      std::auto_ptr< checker > create_checker() const
+      std::unique_ptr< checker > create_checker() const
       {
         return do_create_checker();
       }
-      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out ) const
+      std::unique_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out ) const
       {
         cfg1_out::xml_obj_map xml_map( cfg1out.merge( *get_container_info_map() ) );
         return do_create_macro_processor( cfg1out, xml_map );
       }
-      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, cfg1_out::xml_obj_map const& xml_map ) const
+      std::unique_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, cfg1_out::xml_obj_map const& xml_map ) const
       {
         return do_create_macro_processor( cfg1out, xml_map );
       }
-      std::auto_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, std::auto_ptr< component >& cmponent_ptr ) const
+      std::unique_ptr< macro_processor > create_macro_processor( cfg1_out const& cfg1out, std::unique_ptr< component >& cmponent_ptr ) const
       {
         error( _( "with-software-components is not supported." ) );
-        return std::auto_ptr< macro_processor >();
+        return std::unique_ptr< macro_processor >();
       }
       void swap( factory& other ) { do_swap( other ); }
 
@@ -134,10 +134,10 @@ namespace toppers
  
     protected:
       virtual void do_swap( factory& other );
-      virtual std::auto_ptr< macro_processor > do_create_macro_processor( cfg1_out const& cfg1out, cfg1_out::xml_obj_map const& xml_map ) const;
+      virtual std::unique_ptr< macro_processor > do_create_macro_processor( cfg1_out const& cfg1out, cfg1_out::xml_obj_map const& xml_map ) const;
     private:
-      virtual std::auto_ptr< cfg1_out > do_create_cfg1_out( std::string const& filename ) const;
-      virtual std::auto_ptr< checker > do_create_checker() const;
+      virtual std::unique_ptr< cfg1_out > do_create_cfg1_out( std::string const& filename ) const;
+      virtual std::unique_ptr< checker > do_create_checker() const;
 
       std::string kernel_;
     };

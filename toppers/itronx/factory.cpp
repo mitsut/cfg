@@ -604,7 +604,7 @@ namespace toppers
     {
     }
 
-    std::auto_ptr< macro_processor > factory::create_macro_processor( cfg1_out const& cfg1out ) const
+    std::unique_ptr< macro_processor > factory::create_macro_processor( cfg1_out const& cfg1out ) const
     {
       cfg1_out::static_api_map api_map( cfg1out.merge() );
       assign_id( api_map );
@@ -786,11 +786,11 @@ namespace toppers
      *  \return     マクロプロセッサへのポインタ
      *  \note   このメンバ関数は従来仕様（ソフトウェア部品非対応版）の温存のためにそのまま残す。
      */
-    std::auto_ptr< macro_processor > factory::do_create_macro_processor( cfg1_out const& cfg1out, cfg1_out::static_api_map const& api_map ) const
+    std::unique_ptr< macro_processor > factory::do_create_macro_processor( cfg1_out const& cfg1out, cfg1_out::static_api_map const& api_map ) const
     {
       typedef macro_processor::element element;
       typedef macro_processor::var_t var_t;
-      std::auto_ptr< macro_processor > mproc( new macro_processor );
+      std::unique_ptr< macro_processor > mproc( new macro_processor );
       element e;
 
       e.s = " ";    mproc->set_var( "SPC", var_t( 1, e ) );  // $SPC$
@@ -826,11 +826,11 @@ namespace toppers
      *  \param[in]  api_array .cfg ファイルに記述された静的API情報
      *  \return     マクロプロセッサへのポインタ
      */
-    std::auto_ptr< macro_processor > factory::do_create_macro_processor( cfg1_out const& cfg1out, std::vector< static_api > const& api_array ) const
+    std::unique_ptr< macro_processor > factory::do_create_macro_processor( cfg1_out const& cfg1out, std::vector< static_api > const& api_array ) const
     {
       typedef macro_processor::element element;
       typedef macro_processor::var_t var_t;
-      std::auto_ptr< macro_processor > mproc( new macro_processor );
+      std::unique_ptr< macro_processor > mproc( new macro_processor );
       element e;
 
       e.s = " ";    mproc->set_var( "SPC", var_t( 1, e ) );  // $SPC$
@@ -859,14 +859,14 @@ namespace toppers
       return mproc;
     }
 
-    std::auto_ptr< cfg1_out > factory::do_create_cfg1_out( std::string const& filename ) const
+    std::unique_ptr< cfg1_out > factory::do_create_cfg1_out( std::string const& filename ) const
     {
-      return std::auto_ptr< itronx::cfg1_out >( new cfg1_out( filename, get_cfg1_def_table() ) );
+      return std::unique_ptr< itronx::cfg1_out >( new cfg1_out( filename, get_cfg1_def_table() ) );
     }
 
-    std::auto_ptr< checker > factory::do_create_checker() const
+    std::unique_ptr< checker > factory::do_create_checker() const
     {
-      return std::auto_ptr< itronx::checker >( new checker );
+      return std::unique_ptr< itronx::checker >( new checker );
     }
 
   }

@@ -224,13 +224,13 @@ namespace
     }
     std::string cfg1_out_name;
     get_global( "cfg1_out", cfg1_out_name );
-    std::auto_ptr< Cfg1_out > cfg1_out( factory.create_cfg1_out( cfg1_out_name ) );
+    std::unique_ptr< Cfg1_out > cfg1_out( factory.create_cfg1_out( cfg1_out_name ) );
 
     codeset_t codeset = get_global< codeset_t >( "codeset" );
     cfg1_out->load_cfg( input_file, codeset, factory.get_cfg_info() );
     cfg1_out->load_srec();
 
-    std::auto_ptr< typename Factory::checker > p_checker( factory.create_checker() );
+    std::tr1::shared_ptr< typename Factory::checker > p_checker( factory.create_checker() );
     std::tr1::shared_ptr< typename Factory::checker > chk( p_checker );
     global( "checker" ) = chk;
     std::string rom_image( get_global_string( "rom-image" ) );
@@ -253,8 +253,8 @@ namespace
       namespace fs = boost::filesystem;
 
       // テンプレート処理
-      std::auto_ptr< macro_processor > mproc;
-      std::auto_ptr< typename Factory::component > component_ptr;
+      std::unique_ptr< macro_processor > mproc;
+      std::unique_ptr< typename Factory::component > component_ptr;
 
       if ( get_global_bool( "with-software-components" ) )
       {

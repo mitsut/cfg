@@ -67,7 +67,7 @@ namespace
       fatal( _( "no input files" ) );
     }
     std::string cfg1_out_name( get_global_string( "cfg1_out" ) );
-    std::auto_ptr< Cfg1_out > cfg1_out( factory.create_cfg1_out( cfg1_out_name ) );
+    std::unique_ptr< Cfg1_out > cfg1_out( factory.create_cfg1_out( cfg1_out_name ) );
 
     codeset_t codeset = get_global< codeset_t >( "codeset" );
     cfg1_out->load_cfg( input_file, codeset, factory.get_cfg_info() );
@@ -76,8 +76,8 @@ namespace
       cfg1_out->load_srec();
     }
 
-    std::auto_ptr< macro_processor > mproc;
-    std::auto_ptr< typename Factory::component > component_ptr;
+    std::unique_ptr< macro_processor > mproc;
+    std::unique_ptr< typename Factory::component > component_ptr;
 
     if ( get_global_bool( "with-software-components" ) )
     {
