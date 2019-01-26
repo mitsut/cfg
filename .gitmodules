@@ -1,0 +1,3 @@
+[submodule "depend_libs/xerces-c"]
+	path = depend_libs/xerces-c
+	url = https://github.com/apache/xerces-c.git
