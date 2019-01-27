@@ -11,11 +11,17 @@ ln -s ${XERCES_DIR}/build/lib/libxerces-c-3.2.a ${XERCES_DIR}/build/lib/libxerce
 
 
 cd ${THIS_DIR}
-./configure \
+CONFIGURE_OPTIONS= \
         --with-libraries=/usr/lib/x86_64-linux-gnu \
         --with-xerces-headers=${XERCES_DIR}/build/include \
         --with-xerces-libraries=${XERCES_DIR}/build/lib \
-        --options=-static \
         --with-xml
+
+# OS が Linux であれば、スタティックリンクを行う
+if [ "$(expr substr $(uname -s) 1 5)" == 'Linux' ]; then
+    CONFIGURE_OPTIONS=--options=-static ${CONFIGURE_OPTIONS}
+fi
+
+./configure ${CONFIGURE_OPTIONS}
 make
 
