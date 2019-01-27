@@ -15,6 +15,7 @@ cd ${THIS_DIR}
         --with-libraries=/usr/lib/x86_64-linux-gnu \
         --with-xerces-headers=${XERCES_DIR}/build/include \
         --with-xerces-libraries=${XERCES_DIR}/build/lib \
+        --options=-static \
         --with-xml
 make
 
