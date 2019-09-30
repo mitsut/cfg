@@ -63,7 +63,6 @@
 
 #else
 
-#define BOOST_SP_DISABLE_THREADS  1   // shared_ptr の排他制御を抑止
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/cstdint.hpp>
