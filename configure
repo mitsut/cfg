@@ -10,9 +10,12 @@ do
 	value=`echo $arg | cut -d "=" -f 2`
 
 	case $name in
-		--with-headers)		include_path=$value ;;
-		--with-libraries)	library_path=$value ;;
-		--with-xml)			with_xml=1 ;;
+		--with-headers)				include_path=$value ;;
+		--with-libraries)			library_path=$value ;;
+		--with-xerces-headers)		xerces_include_path=$value ;;
+ 		--with-xerces-libraries)	xerces_library_path=$value ;;
+		--options)					options=$value ;;
+		--with-xml)					with_xml=1 ;;
 		--help)				echo "configure options:"
 							echo "--help"
 							echo "	display this information"
@@ -76,12 +79,21 @@ fi
 libboost_suffix=`echo $libboost_regex_filename | sed -e s/.*libboost_regex//g -e s/\.[a-z]*$//g`
 echo "LIBBOOST_SUFFIX=$libboost_suffix" >> $makefile_config
 
+if [ ! "$xerces_include_path" ]; then
+    xerces_include_path=$include_path
+fi
+
+if [ ! "$xerces_library_path" ]; then
+    xerces_library_path=$library_path
+fi
+
+
 # 各種変数を出力
 echo BOOST_VERSION=$boost_lib_version >> $makefile_config
 echo BOOST_DIR=$include_path >> $makefile_config
-echo XERCES_DIR=$include_path >> $makefile_config
+echo XERCES_DIR=$xerces_include_path >> $makefile_config
 echo LIBBOOST_DIR=$library_path >> $makefile_config
-echo LIBXERCES_DIR=$library_path >> $makefile_config
+echo LIBXERCES_DIR=$xerces_library_path >> $makefile_config
 echo OPTIONS=$options >> $makefile_config
 if test $with_xml -eq 1
 then
