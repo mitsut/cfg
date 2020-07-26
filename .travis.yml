@@ -26,17 +26,18 @@ after_success:
 - cd cfg ; tar cvzf "cfg-${TRAVIS_BRANCH}-${TARGET}.tar.gz" cfg ; cd ../
 - mkdir -p $TRAVIS_BUILD_DIR/dist ; cp cfg/"cfg-${TRAVIS_BRANCH}-${TARGET}.tar.gz"
   $TRAVIS_BUILD_DIR/dist/ ; cd $TRAVIS_BUILD_DIR/dist
-- git init
-- git config user.name "${GH_USER_NAME}"
-- git config user.email "{GH_USER_EMAIL}"
-- git add . ; git commit -m "Deploy to GitHub Pages"
-- git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:gh-pages > /dev/null
-  2>&1
+- ls 
+# - git init
+# - git config user.name "${GH_USER_NAME}"
+# - git config user.email "{GH_USER_EMAIL}"
+# - git add . ; git commit -m "Deploy to GitHub Pages"
+# - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:gh-pages > /dev/null
+#   2>&1
 deploy:
   provider: releases
   api_key:
     secure: WcmBEeA2xj3v/+z/+r2143h541IMd6XQNgoSAu7qBB88IrWhjy+CAHSpuSsGJwe2QF+EUoCS0qkyEq/2fnCAldMDa4aJirvDIdE+/seBQSP+PLmiZmyY/XwTx1Zkfe65nZxIMESHiHCOx5YLRr3Fc3vFzmNY9cpQKtlXocMKQ2VgNuMxSnPbARALI2n3qPU1NkysDvAKyA+0EBqFr0xU4D610p/cYSfKHdfaOw/swrNAQENGWkI0TiYyyTJD7lyVyAlrNUt43Ke4ekn2w6IjT88XjqI/kGWJ8S42Z8+itfLnCRgOardMgaV7rwrflEgrQWzqb3PQZpKxU76eOH/F9k4hplwOIgrhbh4lnJNLy0Nrx9B0LpJ6EYJ+7kXfdQqlCZ5/Y4ue5mjRLGTE1/XDWt+FE0prmVsAkWboCHz2rCUyqtMvmwU/MOwC0ABA+qUbqO+TlmrNNClHiKJ4bnUMQ6WK8KQg7ytKjSny0vVAROt5oP5SJWFy90cSkb+yMIfbDQgeWp6WkfK4IGvBbs7B3lLQDWWnWMZYqDMProLsTTWmLbmnSfeK9orHd/pzyuVEbgmWnRML8LdVfcRv4gz6DD9B5a05U89JL9pvWkNa8lbFuUxAK4tTxRcFuYJl11c7achOMPTVo+CE3dN62CM2QN2CnWEzHcvl3qjYAX9Gn2A=
-  file: "$TRAVIS_BUILD_DIR/dist/*.{tar.gz,zip}"
+  file: "$TRAVIS_BUILD_DIR/dist/*"
   on:
     tags: true
   skip_cleanup: 'true'
