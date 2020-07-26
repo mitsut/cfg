@@ -1,10 +1,11 @@
 PACKAGE cfg
-VERSION 1.9.6
+VERSION 1.9.7
 
 configure
 Makefile
 MANIFEST
 README.txt
+bash.sh
 
 cfg/cfg.cpp
 cfg/cfg.hpp
