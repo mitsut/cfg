@@ -23,10 +23,11 @@ before_install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then brew update          ; fi
 script: "./build.sh"
 after_success:
-- cd cfg ; tar cvzf "cfg-${TRAVIS_BRANCH}-${TARGET}.tar.gz" cfg ; cd ../
-- mkdir -p $TRAVIS_BUILD_DIR/dist ; cp cfg/"cfg-${TRAVIS_BRANCH}-${TARGET}.tar.gz"
-  $TRAVIS_BUILD_DIR/dist/ ; cd $TRAVIS_BUILD_DIR/dist
-#- pwd; ls 
+- mkdir -p $TRAVIS_BUILD_DIR/dist
+- perl makerelease ; cp RELEASE/*.tar.gz $TRAVIS_BUILD_DIR/dist/
+- cd cfg ; tar cvzf "cfg-${TRAVIS_BRANCH}-${TARGET}.tar.gz" cfg ; 
+  cp "cfg-${TRAVIS_BRANCH}-${TARGET}.tar.gz" $TRAVIS_BUILD_DIR/dist/
+- cd $TRAVIS_BUILD_DIR/dist ; pwd; ls 
 deploy:
   provider: releases
   api_key:
