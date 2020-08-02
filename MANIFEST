@@ -5,7 +5,7 @@ configure
 Makefile
 MANIFEST
 README.txt
-bash.sh
+build.sh
 
 cfg/cfg.cpp
 cfg/cfg.hpp
