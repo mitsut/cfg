@@ -37,4 +37,3 @@ deploy:
   on:
     tags: true
   skip_cleanup: 'true'
-  draft: 'true'
