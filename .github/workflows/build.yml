@@ -1,0 +1,26 @@
+name: build
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          submodules: true  # Fetch athrill repo
+          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+
+      - name: Build linux
+        if:  " (matrix.os == 'ubuntu-18.04')"
+        run: |
+          sudo apt update
+          sudo apt install -y libboost-dev libboost-regex-dev libboost-system-dev libboost-filesystem-dev libboost-program-options-dev
+          ./build.sh
+          cfg/cfg --version
