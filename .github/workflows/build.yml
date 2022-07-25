@@ -32,9 +32,17 @@ jobs:
           ./build.sh
           ./cfg/cfg --version
 
-      - name: Setup MinGW for Windows
+      - name: Setup MinGW and Boost for Windows
         if:  matrix.os == 'windows-latest'
-        uses: egor-tensin/setup-mingw@v2
+        uses: egor-tensin/build-boost@v1
+        with:
+          version: 1.71.0
+          libraries: filesystem program_options system regex
+          toolset:  mingw
+          platform: x64
+          configuration: Release
+          static: 1
+          static-runtime: 1
 
       - name: Build athrill for Windows
         if:  matrix.os == 'windows-latest'
