@@ -66,6 +66,7 @@
 #include <algorithm>
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/scoped_array.hpp>
 
 #include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/sax2/DefaultHandler.hpp>

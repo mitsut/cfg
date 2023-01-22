@@ -30,7 +30,9 @@ jobs:
         run: |
           brew update
           brew install boost
-          ./build.sh
+          brew install xerces-c
+          brew reinstall icu4c
+          ./configure --with-xml
           ./cfg/cfg --version
 
       - name: Setup MinGW and Boost for Windows
