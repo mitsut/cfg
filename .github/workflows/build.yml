@@ -31,8 +31,8 @@ jobs:
           brew update
           brew install boost
           brew install xerces-c
-          brew reinstall icu4c
-          ./configure --with-xml
+          brew install icu4c
+          ./configure --with-xml --with-xerces-libraries=/opt/homebrew/opt/icu4c/lib
           make
           ./cfg/cfg --version
 
