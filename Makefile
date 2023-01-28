@@ -7,8 +7,8 @@ ifndef BOOST_DIR
 	ifeq ($(OSTYPE), msys)
 		BOOST_DIR = /mingw/include/boost-$(BOOST_VERSION)
 	else
-		ifeq ($(OSTYPE), cygwin)
-			BOOST_DIR = /usr/include/boost-$(BOOST_VERSION)
+		ifeq ($(OSTYPE), darwin*)
+			BOOST_DIR = /opt/homebrew/include/boost-$(BOOST_VERSION)
 		else
 			BOOST_DIR = /usr/local/include/boost-$(BOOST_VERSION)
 		endif
@@ -17,7 +17,7 @@ endif
 
 # 非力なマシンなどでコンパイルに非常に長い時間がかかる、もしくはコンパイル時に
 # ハングアップする場合には、-O0に変更してみてください。
-OPTIMIZE = -O0
+OPTIMIZE = -O0 -std=c++11
 
 MODULES = toppers/itronx \
 	toppers/oil

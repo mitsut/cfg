@@ -17,7 +17,7 @@ ifeq ($(OSTYPE), linux-gnu)
 	LDFLAGS := $(LDFLAGS) -static -static-libgcc -static-libstdc++
 endif
 ifeq ($(shell uname), Darwin)
-	LIBXERCES_DIR := $(LIBXERCES_DIR) -L/usr/local/opt/boost/lib/ -L/usr/local/opt/xerces-c/lib/ -L/usr/local/opt/icu4c/lib/
+	LIBXERCES_DIR := $(LIBXERCES_DIR) -L/opt/homebrew/lib/
 endif
 
 CXXFILES = \

@@ -31,7 +31,7 @@ do
 done
 
 # Boost C++ Librariesのヘッダファイルがあるディレクトリをサーチ
-for dir in $include_path "/usr/local/include" "/opt/local/include" "/opt/include" "/usr/include" "/mingw/include"
+for dir in $include_path "/usr/local/include" "/opt/local/include" "/opt/include" "/usr/include" "/mingw/include" "/opt/homebrew/include"
 do
 	ls $dir/boost* 2> /dev/null > /dev/null
 	if test $? -eq 0
@@ -48,7 +48,7 @@ do
 done
 
 # Boost C++ Librariesのライブラリファイルがあるディレクトリをサーチ
-for dir in $library_path "/usr/local/lib" "/opt/local/lib" "/opt/lib" "/usr/lib" "/lib" "/mingw/lib" "/usr/lib/x86_64-linux-gnu"
+for dir in $library_path "/usr/local/lib" "/opt/local/lib" "/opt/lib" "/usr/lib" "/lib" "/mingw/lib" "/usr/lib/x86_64-linux-gnu" "/opt/homebrew/lib"
 do
 	ls $dir/libboost* 2> /dev/null > /dev/null
 	if test $? -eq 0
