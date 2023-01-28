@@ -7,10 +7,10 @@ ifndef BOOST_DIR
 	ifeq ($(OSTYPE), msys)
 		BOOST_DIR = /mingw/include/boost-$(BOOST_VERSION)
 	else
-		ifeq ($(OSTYPE), cygwin)
-			BOOST_DIR = /usr/include/boost-$(BOOST_VERSION)
-		else
+		ifeq ($(OSTYPE), darwin*)
 			BOOST_DIR = /opt/homebrew/include/boost-$(BOOST_VERSION)
+		else
+			BOOST_DIR = /usr/local/include/boost-$(BOOST_VERSION)
 		endif
 	endif
 endif
