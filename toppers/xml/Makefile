@@ -56,9 +56,6 @@
 PROJDIR = ../..
 WORKDIR = $(PROJDIR)/toppers/xml
 
-ifeq ($(shell uname), Darwin)
-	CPPFLAGS := $(CPPFLAGS) -std=c++11
-endif
 CPPFLAGS := $(CPPFLAGS) -DXERCES_STATIC_LIBRARY -I$(BOOST_DIR) -I$(XERCES_DIR) -I$(PROJDIR)
 
 CXXFILES = \

@@ -17,7 +17,8 @@ endif
 
 # 非力なマシンなどでコンパイルに非常に長い時間がかかる、もしくはコンパイル時に
 # ハングアップする場合には、-O0に変更してみてください。
-OPTIMIZE = -O0 -std=c++11
+# OPTIMIZE = -O0 -std=c++11
+OPTIMIZE = -std=c++11
 
 MODULES = toppers/itronx \
 	toppers/oil
