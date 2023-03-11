@@ -12,10 +12,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
-        with:
-          submodules: true  # Fetch athrill repo
-          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+        uses: actions/checkout@v3
 
       - name: Build linux
         if:  " (matrix.os == 'ubuntu-latest')"
