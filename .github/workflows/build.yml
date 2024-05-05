@@ -7,15 +7,21 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Target OS
+        run: |
+          echo "OS_NAME=$(uname -s)" >> $GITHUB_ENV
+          echo "OS_ARCH=$(uname -m)" >> $GITHUB_ENV
 
       - name: Build linux
-        if:  " (matrix.os == 'ubuntu-latest')"
+        if:  matrix.os == 'ubuntu-latest'
         run: |
           sudo apt update
           sudo apt install -y libboost-dev libboost-regex-dev libboost-system-dev libboost-filesystem-dev libboost-program-options-dev
@@ -23,7 +29,7 @@ jobs:
           ./cfg/cfg --version
 
       - name: Build macOS
-        if:  " (matrix.os == 'macos-latest')"
+        if:  matrix.os == 'macos-latest'
         run: |
           brew update
           brew install boost
@@ -50,3 +56,17 @@ jobs:
         run: |
           ./build.sh
           ./cfg/cfg --version
+
+      - name: binaly archive
+        run: |
+          tar -cvzf "cfg_${{ env.OS_NAME }}_${{ env.OS_ARCH }}.tar.gz" ./cfg/cfg
+          echo "ARTIFACT_CFG=cfg_${{ env.OS_NAME }}_${{ env.OS_ARCH }}.tar.gz" >> $GITHUB_ENV
+          ls -la
+
+      - name: upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: cfg_${{ env.OS_NAME }}_${{ env.OS_ARCH }}
+          path: |
+            ${{ env.ARTIFACT_CFG }}
+          retention-days: 5
