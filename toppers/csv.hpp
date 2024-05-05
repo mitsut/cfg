@@ -49,6 +49,7 @@
 #include <vector>
 #include <algorithm>
 #include <boost/utility.hpp>
+#include <boost/next_prior.hpp>
 #include "toppers/misc.hpp"
 
 namespace toppers
