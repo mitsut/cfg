@@ -54,9 +54,11 @@ jobs:
       - name: Build cfg for Windows
         if:  matrix.os == 'windows-latest'
         run: |
-          bash.exe ./configure --with-headers=..\boost  --with-libraries=..\boost\stage\x64\Release\lib --with-xml
+          bash.exe ./configure --with-headers=../boost  --with-libraries=../boost/stage/x64/Release/lib --with-xml
           make
           dir -R
+          dir ../
+          dir ../boost
           type Makefile.config
 
       - name: binaly archive
