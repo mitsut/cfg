@@ -54,7 +54,7 @@ jobs:
       - name: Build cfg for Windows
         if:  matrix.os == 'windows-latest'
         run: |
-          ./configure --with-xml
+          bash.exe ./configure --with-xml
           make
           dir -R
           type Makefile.config
