@@ -54,7 +54,9 @@ jobs:
       - name: Build athrill for Windows
         if:  matrix.os == 'windows-latest'
         run: |
-          ./build.sh
+          ./configure
+          cat Makefile.config
+          make
           ./cfg/cfg --version
 
       - name: binaly archive
