@@ -54,7 +54,9 @@ jobs:
       - name: Build cfg for Windows
         if:  matrix.os == 'windows-latest'
         run: |
-          bash.exe build.sh
+          ./configure --with-xml
+          cat Makefile.config
+          make
           dir /s
 
       - name: binaly archive
