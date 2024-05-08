@@ -55,7 +55,6 @@ jobs:
         if:  matrix.os == 'windows-latest'
         run: |
           ./configure --with-xml
-          cat Makefile.config
           make
           dir /s
 
