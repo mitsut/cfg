@@ -1,8 +1,13 @@
+# Makefileの存在するディレクトリ
+MAKEFILE_DIR:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+# 一つ上のディレクトリ
+PARENT_DIR := $(shell dirname ${MAKEFILE_DIR})
+
 LIBBOOST_SUFFIX=
 BOOST_VERSION=
-BOOST_DIR=../boost
-XERCES_DIR=../boost
-LIBBOOST_DIR=../boost/stage/x64/Release/lib
-LIBXERCES_DIR=../boost/stage/x64/Release/lib
+BOOST_DIR=$(PARENT_DIR)/boost
+XERCES_DIR=$(PARENT_DIR)/boost
+LIBBOOST_DIR=$(PARENT_DIR)/boost/stage/x64/Release/lib
+LIBXERCES_DIR=$(PARENT_DIR)/boost/stage/x64/Release/lib
 OPTIONS=
 HAS_CFG_XML=1
