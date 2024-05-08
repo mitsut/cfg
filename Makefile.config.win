@@ -1,0 +1,8 @@
+LIBBOOST_SUFFIX=
+BOOST_VERSION=
+BOOST_DIR=../boost
+XERCES_DIR=../boost
+LIBBOOST_DIR=../boost/stage/x64/Release/lib
+LIBXERCES_DIR=../boost/stage/x64/Release/lib
+OPTIONS=
+HAS_CFG_XML=1
