@@ -56,7 +56,8 @@ jobs:
         run: |
           ./configure --with-xml
           make
-          dir /s
+          dir -R
+          type Makefile.config
 
       - name: binaly archive
         run: |
