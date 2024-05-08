@@ -51,11 +51,11 @@ jobs:
           static: 1
           static-runtime: 1
 
-      - name: Build athrill for Windows
+      - name: Build cfg for Windows
         if:  matrix.os == 'windows-latest'
         run: |
-          ./build.sh
-          ./cfg/cfg --version
+          bash.exe build.sh
+          dir /s
 
       - name: binaly archive
         run: |
